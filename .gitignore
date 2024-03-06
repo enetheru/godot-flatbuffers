@@ -1,3 +1,22 @@
+# CMake
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+cmake-build*
+.cmake/
+
+# FetchContent and generated files
+gdextension/
+godot-cpp/
+
 # Prerequisites
 *.d
 
@@ -30,3 +49,14 @@
 *.exe
 *.out
 *.app
+
+# Godot 4+ specific ignores
+.godot/
+
+# Godot-specific ignores
+.import/
+export.cfg
+export_presets.cfg
+
+# jetbrains IDE
+.idea/
