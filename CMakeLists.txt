@@ -10,9 +10,10 @@ cmake_policy(SET CMP0077 NEW ) # don't let option(...) to reset my values TODO t
 
 ### Independent Global CMake options
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/" )
-include(cmake/PreventInSourceBuilds.cmake)
-include(cmake/options.cmake)
 include(CMakePrintHelpers)
+include(PreventInSourceBuilds)
+include(options.cmake)
+
 
 ### Global options
 set(CMAKE_CXX_STANDARD 17)
