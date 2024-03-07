@@ -69,6 +69,12 @@ add_custom_target(dump_api DEPENDS
 ### Fetch and configure Godot C++ GDExtension interface(godot-cpp)
 # TODO optionally use the GEL_DIR and dont fetch
 
+# We need git to perform some actions so make sure we have it.
+find_program(GIT_EXECUTABLE NAMES "git" DOC "" NO_CACHE REQUIRED)
+if( NOT EXISTS "${GIT_EXECUTABLE}" )
+    message( FATAL_ERROR "Unable to find Git at: '${GIT_EXECUTABLE}'")
+endif()
+
 # if we dont have a tag specified, try to match up our godot.exe version and the remote godot-cpp repo.
 if( GEL_GIT_TAG STREQUAL "" )
     include( godot-cpp-git-tag )

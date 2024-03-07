@@ -1,4 +1,5 @@
-function(find_godot_cpp_tag)
+function(godot_cpp_git_tag)
+    message( "Using Git:  ${GIT_EXECUTABLE}" )
     execute_process(
             COMMAND ${GIT_EXECUTABLE} ls-remote --tags ${GEL_GIT_URL}
             OUTPUT_VARIABLE GEL_GIT_TAGS
@@ -27,4 +28,4 @@ function(find_godot_cpp_tag)
 
 endfunction()
 
-find_godot_cpp_tag()
+godot_cpp_git_tag()
