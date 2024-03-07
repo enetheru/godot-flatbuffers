@@ -13,5 +13,4 @@ set_target_properties( ${PROJECT_NAME}
     PROPERTIES
         #PREFIX "lib"
         OUTPUT_NAME "${GDE_OUTPUT_NAME}"
-        SUFFIX ""
 )

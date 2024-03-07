@@ -27,7 +27,7 @@ function( gde_generate_names )
 
     list(APPEND NAME_PARTS "${GDE_TARGET_PLATFORM}")
 
-    if (TOOLS_ENABLED)
+    if (GEL_TOOLS_ENABLED)
         list(APPEND NAME_PARTS "editor")
     elseif (CMAKE_BUILD_TYPE MATCHES "Debug")
         list(APPEND NAME_PARTS "template_debug")
@@ -35,11 +35,11 @@ function( gde_generate_names )
         list(APPEND NAME_PARTS "template_release")
     endif ()
 
-    if (DEV_BUILD)
+    if (GEL_DEV_BUILD)
         list(APPEND NAME_PARTS "dev")
     endif ()
 
-    if (FLOAT_DOUBLE)
+    if (GEL_FLOAT_DOUBLE)
         list(APPEND NAME_PARTS "double")
     endif ()
 
@@ -48,8 +48,6 @@ function( gde_generate_names )
     if (NOT GDE_CUSTOM_SUFFIX STREQUAL "")
         list(APPEND NAME_PARTS "${GDE_CUSTOM_SUFFIX}")
     endif ()
-
-    list( APPEND NAME_PARTS "dll" )
 
     list(JOIN NAME_PARTS "." GDE_OUTPUT_NAME)
 
