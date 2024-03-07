@@ -31,11 +31,11 @@ set( GODOT_DUMP_DIR "gdextension" CACHE PATH "Path to the api.json and headers e
 set( GODOT_API_JSON "${PROJECT_SOURCE_DIR}/${GODOT_DUMP_DIR}/extension_api.json" CACHE PATH "Location of extension_api.json, default is '${GODOT_DUMP_DIR}/extension_api.json'" )
 
 ### Options relating to the godot-cpp Extension Library
-set(    GEL_DIR "godot-cpp" CACHE PATH "Path to the directory containing the godot-cpp GDExtension library, if we're fetching then this is where it will go" )
+set( GEL_DIR "godot-cpp" CACHE PATH "Path to the directory containing the godot-cpp GDExtension library, if we're fetching then this is where it will go" )
 
 ## Git repo info for fetching if there is no api dir set.
-set(    GEL_GIT_URL "https://github.com/godotengine/godot-cpp.git" CACHE STRING "Location of the godot-cpp git respository" )
-set(    GEL_GIT_TAG "" CACHE STRING "The git tag to use when pulling godot-cpp, will try to automatically detect based on godot.exe --version" )
+set( GEL_GIT_URL "https://github.com/godotengine/godot-cpp.git" CACHE STRING "Location of the godot-cpp git respository" )
+set( GEL_GIT_TAG "" CACHE STRING "The git tag to use when pulling godot-cpp, will try to automatically detect based on godot.exe --version" )
 option( GEL_GIT_SHALLOW "" ON)
 
 ## Configure options for godot-cpp - Copied to the equivalent cmake options
@@ -43,7 +43,7 @@ option( GEL_HEADERS_AS_SYSTEM   "Mark the godot-cpp header files as SYSTEM to su
 option( GEL_WARNING_AS_ERROR    "Treat any compilation warnings from godot-cpp as errors" OFF )
 option( GEL_GENERATE_TEMPLATE_GET_NODE "Generate a template version of the Node class's get_node." ON )
 option( GEL_DISABLE_EXCEPTIONS "Force disabling exception handling code" ON)
-set(    GEL_FLOAT_PRECISION "single" CACHE STRING "Floating-point precision level ('single', 'double')" )
+set( GEL_FLOAT_PRECISION "single" CACHE STRING "Floating-point precision level ('single', 'double')" )
 set_property( CACHE GEL_FLOAT_PRECISION PROPERTY STRINGS "single" "double" )
 
 ### Additional configure options because the default generation of the cmake is limited.
@@ -55,9 +55,9 @@ option( GEL_TOOLS_ENABLED "Enable editor features" OFF)
 
 ## Compilation and linking
 option( GEL_HIDE_SYMBOLS "Hide symbols visibility on GNU platforms" OFF )
-option( GEL_USE_STATIC_CPP "Link MinGW/MSVC C++ runtime libraries statically" ON)
+option( GEL_USE_STATIC_CPP "Link MinGW/MSVC C++ runtime libraries statically" ON )
 
-set(    GEL_OPTIMISATION_MODE "speed_trace" CACHE STRING "The desired optimization flags (none|custom|debug|speed|speed_trace|size)" )
+set( GEL_OPTIMISATION_MODE "speed_trace" CACHE STRING "The desired optimization flags (none|custom|debug|speed|speed_trace|size)" )
 set_property( CACHE GEL_OPTIMISATION_MODE PROPERTY STRINGS "none" "custom" "debug" "speed" "speed_trace" "size" )
 
 ### Options consumed by godot-cpp
