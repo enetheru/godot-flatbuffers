@@ -1,9 +1,16 @@
 
 function(get_godot_version)
+    if( NOT EXISTS ${GODOT_EXECUTABLE} )
+        message( FATAL_ERROR "Unable to find godot executable at location: ${GODOT_EXECUTABLE}" )
+    endif()
+
     execute_process(COMMAND ${GODOT_EXECUTABLE} --version
             OUTPUT_VARIABLE GODOT_VERSION
             COMMAND_ECHO STDOUT
             ERROR_QUIET)
+    if( GODOT_VERSION STREQUAL "" )
+        message( FATAL_ERROR "Godot executable did not produce an understandable version string: ${GODOT_EXECUTABLE}" )
+    endif ()
     message(STATUS "Godot Version: ${GODOT_VERSION}")
 
     string(REPLACE "." ";" GODOT_VERSION_LIST ${GODOT_VERSION})

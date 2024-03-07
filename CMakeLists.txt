@@ -6,7 +6,8 @@ project( gdexample
         DESCRIPTION ""
         LANGUAGES CXX)
 
-cmake_policy(SET CMP0077 NEW ) # don't let option(...) to reset my values TODO this needs testing.
+cmake_policy(SET CMP0077 NEW ) # don't let option(...) to reset my values
+# FIXME this only appears to work for my own code, not the imported code from godot-cpp.
 
 ### Independent Global CMake options
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/" )
