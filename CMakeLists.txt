@@ -49,7 +49,8 @@ set(GODOT_FIND_PATHS "") # FIXME Add a list of common locations
 find_program(GODOT_EXECUTABLE NAMES ${GODOT_FIND_NAMES} PATHS ${GODOT_FIND_PATHS} DOC "" NO_CACHE REQUIRED)
 
 if (NOT GODOT_EXECUTABLE)
-    message(FATAL_ERROR "Godot is required to export the api files")
+    message( WARNING "Missing Godot Executable: ${GODOT_EXECUTABLE}")
+    message( FATAL_ERROR "Specify godot.exe on the commandline by adding -DGODOT_EXECUTABLE=<path to godot.exe>")
 else ()
     execute_process(COMMAND ${GODOT_EXECUTABLE} --version
             OUTPUT_VARIABLE GODOT_VERSION)
