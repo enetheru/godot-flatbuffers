@@ -56,7 +56,6 @@ option( GEL_TOOLS_ENABLED "Enable editor features" OFF)
 ## Compilation and linking
 option( GEL_HIDE_SYMBOLS "Hide symbols visibility on GNU platforms" OFF )
 option( GEL_USE_STATIC_CPP "Link MinGW/MSVC C++ runtime libraries statically" ON)
-option( GEL_DEBUG_SYMBOLS "Build with debugging symbols" ON) # TODO This might be able to be handled by cmake
 
 set(    GEL_OPTIMISATION_MODE "speed_trace" CACHE STRING "The desired optimization flags (none|custom|debug|speed|speed_trace|size)" )
 set_property( CACHE GEL_OPTIMISATION_MODE PROPERTY STRINGS "none" "custom" "debug" "speed" "speed_trace" "size" )
