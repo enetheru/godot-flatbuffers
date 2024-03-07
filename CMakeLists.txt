@@ -53,39 +53,12 @@ if (NOT GODOT_EXECUTABLE)
     message( WARNING "Missing Godot Executable: ${GODOT_EXECUTABLE}")
     message( FATAL_ERROR "Specify godot.exe on the commandline by adding -DGODOT_EXECUTABLE=<path to godot.exe>")
 else ()
-    execute_process(COMMAND ${GODOT_EXECUTABLE} --version
-            OUTPUT_VARIABLE GODOT_VERSION)
-    message(STATUS "Using Godot: ${GODOT_EXECUTABLE}")
-    message(STATUS "Godot Version: ${GODOT_VERSION}")
+    # Determine the godot version using the executable.
+    include( godot-version )
 endif ()
 
 ### Dump extension-api and gdextension-interface
-# TODO split this into a separate file.
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/${GODOT_DUMP_DIR}")
-    message( "Creating ${GODOT_DUMP_DIR}" )
-    execute_process(
-            COMMAND mkdir ${GODOT_DUMP_DIR} #TODO Customise this per platform
-            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-            COMMAND_ERROR_IS_FATAL ANY
-    )
-endif()
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/${GODOT_DUMP_DIR}/gdextension_interface.h")
-    execute_process(
-            COMMAND ${GODOT_EXECUTABLE} --headless --dump-gdextension-interface
-            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/${GODOT_DUMP_DIR}
-            COMMAND_ECHO STDOUT
-            COMMAND_ERROR_IS_FATAL ANY
-    )
-endif()
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/${GODOT_DUMP_DIR}/extension_api.json")
-    execute_process(
-            COMMAND ${GODOT_EXECUTABLE} --headless --dump-extension-api
-            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/${GODOT_DUMP_DIR}
-            COMMAND_ECHO STDOUT
-            COMMAND_ERROR_IS_FATAL ANY
-    )
-endif()
-# TODO --dump-extension-api-with-docs
+include( godot-dump )
 
 ### We add the dump target so that the sources can be relied upon. if it weren't for the fact that the generation of
 # the api in godot-cpp was constructed at configure time I could use add_custom_command above instead of execute process
@@ -95,6 +68,12 @@ add_custom_target(dump_api DEPENDS
 
 ### Fetch and configure Godot C++ GDExtension interface(godot-cpp)
 # TODO optionally use the GEL_DIR and dont fetch
+
+# if we dont have a tag specified, try to match up our godot.exe version and the remote godot-cpp repo.
+if( GEL_GIT_TAG STREQUAL "" )
+    include( godot-cpp-git-tag )
+endif()
+
 include(FetchContent)
 FetchContent_Declare(godot-cpp
         GIT_REPOSITORY "${GEL_GIT_URL}"
@@ -107,8 +86,8 @@ FetchContent_MakeAvailable(godot-cpp)
 add_dependencies(godot-cpp dump_api)
 
 # At this point godot-cpp has been configured using our cached variables, but it's not enough to enable some features.
-# We need to figure out and override things like build and link flags because godot-cpp isnt setup as a cmake project
-# that has feature parity with the scons build.
+# We need to figure out and override things like build and link flags because the godot-cpp cmake project
+# doesn't have feature parity with the scons build.
 
 # Scrub the options so we can start again.
 set_target_properties( godot-cpp
@@ -131,8 +110,8 @@ endif ()
 # TODO properly separate out these things.
 # platforms = ("linux", "macos", "windows", "android", "ios", "web")
 
-
 ### Code Features
+#TODO move these compile definitions to the tagets so they dont polute other packages thay we might want.
 add_compile_definitions("GDEXTENSION")
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)

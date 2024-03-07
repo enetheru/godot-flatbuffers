@@ -34,9 +34,8 @@ set( GODOT_API_JSON "${PROJECT_SOURCE_DIR}/${GODOT_DUMP_DIR}/extension_api.json"
 set(    GEL_DIR "godot-cpp" CACHE PATH "Path to the directory containing the godot-cpp GDExtension library, if we're fetching then this is where it will go" )
 
 ## Git repo info for fetching if there is no api dir set.
-set(    GEL_GIT_URL "https://github.com/godotengine/godot-cpp.git" CACHE STRING "Git repo for godot-cpp" )
-set(    GEL_GIT_TAG "godot-4.2.1-stable" CACHE STRING "" )
-set(    GEL_GIT_BRANCH "" CACHE STRING "" )
+set(    GEL_GIT_URL "https://github.com/godotengine/godot-cpp.git" CACHE STRING "Location of the godot-cpp git respository" )
+set(    GEL_GIT_TAG "" CACHE STRING "The git tag to use when pulling godot-cpp, will try to automatically detect based on godot.exe --version" )
 option( GEL_GIT_SHALLOW "" ON)
 
 ## Configure options for godot-cpp - Copied to the equivalent cmake options
