@@ -43,12 +43,22 @@ message("Output Filename: ${GDE_OUTPUT_NAME}")
 # TODO Find godot automatically if not specified.
 # - installed locally
 # - installed by steam
-
-set(GODOT_FIND_NAMES "") # FIXME generate a list of names
-set(GODOT_FIND_PATHS "") # FIXME Add a list of common locations
+list( APPEND GODOT_FIND_NAMES ${GODOT_EXECUTABLE_NAME} )
+list( APPEND GODOT_FIND_NAMES "godot.windows.opt.tools.64.exe" ) #steam exe name
+list( APPEND GODOT_FIND_PATHS "/Program Files/ (x86)/Steam/steamapps/common/Godot\ Engine") #steam exe path
+list( APPEND GODOT_FIND_PATHS "/git/godot/bin")
 
 # This does not run if CMAKE_EXECUTABLE is already set.
-find_program(GODOT_EXECUTABLE NAMES ${GODOT_FIND_NAMES} PATHS ${GODOT_FIND_PATHS} DOC "" NO_CACHE REQUIRED)
+if( GODOT_EXECUTABLE STREQUAL "" )
+    unset( GODOT_EXECUTABLE CACHE )
+endif()
+if( GODOT_EXECUTABLE STREQUAL "GODOT_EXECUTABLE-NOTFOUND" )
+endif()
+
+find_program( GODOT_EXECUTABLE
+        NAMES ${GODOT_FIND_NAMES}
+        PATHS ${GODOT_FIND_PATHS}
+        REQUIRED )
 
 if (NOT GODOT_EXECUTABLE)
     message( WARNING "Missing Godot Executable: ${GODOT_EXECUTABLE}")
