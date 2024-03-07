@@ -1,0 +1,73 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets": [
+
+    {
+      "name": "editor",
+      "description": "Build GDExtension for the Editor",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "GODOT_EXECUTABLE": "C:\\git\\godot\\bin\\godot.windows.editor.x86_64.exe",
+        "GEL_TOOLS_ENABLED": "ON",
+        "GEL_OPTIMISATION_MODE": "speed"
+      }
+    },
+    {
+      "name": "editor_debug",
+      "description": "Build GDExtension for the Editor with debug symbols",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "GEL_TOOLS_ENABLED": "ON",
+        "GEL_OPTIMISATION_MODE": "speed_trace",
+        "GODOT_EXECUTABLE": "C:\\git\\godot\\bin\\godot.windows.editor.debug.x86_64.exe"
+      }
+    },
+    {
+      "name": "editor_debug_dev",
+      "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "GEL_TOOLS_ENABLED": "ON",
+        "GEL_HEADERS_AS_SYSTEM" : "OFF",
+        "GEL_OPTIMISATION_MODE": "debug",
+        "GEL_DEV_BUILD": "ON",
+        "GODOT_EXECUTABLE": "C:\\git\\godot\\bin\\godot.windows.editor.dev.x86_64.exe"
+      }
+    },
+    {
+      "name": "template_release",
+      "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "GEL_OPTIMISATION_MODE": "speed",
+        "GODOT_EXECUTABLE": "C:\\git\\godot\\bin\\godot.windows.editor.x86_64.exe"
+      }
+    },
+    {
+      "name": "template_debug",
+      "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "GEL_OPTIMISATION_MODE": "speed_trace",
+        "GODOT_EXECUTABLE": "C:\\git\\godot\\bin\\godot.windows.editor.debug.x86_64.exe"
+      }
+    },
+    {
+      "name": "template_debug_dev",
+      "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "GEL_OPTIMISATION_MODE": "debug",
+        "GEL_HEADERS_AS_SYSTEM" : "OFF",
+        "GEL_DEV_BUILD": "ON",
+        "GODOT_EXECUTABLE": "C:\\git\\godot\\bin\\godot.windows.editor.dev.x86_64.exe"
+
+      }
+    }
+  ]
+}

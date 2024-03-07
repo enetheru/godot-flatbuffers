@@ -154,13 +154,8 @@ endif ()
 ### separate CMakeLists for our gdextension sources.
 add_subdirectory(src)
 
-# TODO add all targets as separate configurations
-#   editor|template_release|template_debug
-
 ## Add a dummy target for when I need to debug from clion.
 ## This needs additional configuration from the clion side of things to make it work
 # * The executable to run
 # * The command line options ie -e --path
-add_custom_target(copy_lib DEPENDS ${PROJECT_NAME})
-add_custom_command(TARGET copy_lib COMMAND "") # TODO copy build artifact to demo project folder
 add_custom_target(demo_project DEPENDS ${PROJECT_NAME})
