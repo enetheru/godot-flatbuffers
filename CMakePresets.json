@@ -26,8 +26,8 @@
       "description": "Build GDExtension for the Editor",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "GEL_TOOLS_ENABLED": "ON",
-        "GEL_OPTIMISATION_MODE": "speed"
+        "GODOT_CPP_TOOLS_ENABLED": "ON",
+        "GODOT_CPP_OPTIMISATION_MODE": "speed"
       }
     },
     {
@@ -36,8 +36,8 @@
       "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "GEL_TOOLS_ENABLED": "ON",
-        "GEL_OPTIMISATION_MODE": "speed_trace"
+        "GODOT_CPP_TOOLS_ENABLED": "ON",
+        "GODOT_CPP_OPTIMISATION_MODE": "speed_trace"
       }
     },
     {
@@ -46,10 +46,10 @@
       "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "GEL_TOOLS_ENABLED": "ON",
-        "GEL_HEADERS_AS_SYSTEM" : "OFF",
-        "GEL_OPTIMISATION_MODE": "debug",
-        "GEL_DEV_BUILD": "ON"
+        "GODOT_CPP_TOOLS_ENABLED": "ON",
+        "GODOT_CPP_HEADERS_AS_SYSTEM" : "OFF",
+        "GODOT_CPP_OPTIMISATION_MODE": "debug",
+        "GODOT_CPP_DEV_BUILD": "ON"
       }
     },
     {
@@ -58,7 +58,7 @@
       "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "GEL_OPTIMISATION_MODE": "speed"
+        "GODOT_CPP_OPTIMISATION_MODE": "speed"
       }
     },
     {
@@ -67,7 +67,7 @@
       "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "GEL_OPTIMISATION_MODE": "speed_trace"
+        "GODOT_CPP_OPTIMISATION_MODE": "speed_trace"
       }
     },
     {
@@ -76,9 +76,9 @@
       "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "GEL_OPTIMISATION_MODE": "debug",
-        "GEL_HEADERS_AS_SYSTEM" : "OFF",
-        "GEL_DEV_BUILD": "ON"
+        "GODOT_CPP_OPTIMISATION_MODE": "debug",
+        "GODOT_CPP_HEADERS_AS_SYSTEM" : "OFF",
+        "GODOT_CPP_DEV_BUILD": "ON"
       }
     }
   ]

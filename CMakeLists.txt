@@ -78,7 +78,7 @@ add_custom_target(dump_api DEPENDS
         ${GODOT_API_JSON})
 
 ### Fetch and configure Godot C++ GDExtension interface(godot-cpp)
-# TODO optionally use the GEL_DIR and dont fetch
+# TODO optionally use the GODOT_CPP_DIR and dont fetch
 
 # We need git to perform some actions so make sure we have it.
 find_program(GIT_EXECUTABLE NAMES "git" DOC "" NO_CACHE REQUIRED)
@@ -87,16 +87,17 @@ if( NOT EXISTS "${GIT_EXECUTABLE}" )
 endif()
 
 # if we dont have a tag specified, try to match up our godot.exe version and the remote godot-cpp repo.
-if( GEL_GIT_TAG STREQUAL "" )
+if( GODOT_CPP_GIT_TAG STREQUAL "" )
     include( godot-cpp-git-tag )
 endif()
 
 include(FetchContent)
+message( STATUS "Fetching ${GODOT_CPP_GIT_URL} : ${GODOT_CPP_GIT_TAG}")
 FetchContent_Declare(godot-cpp
-        GIT_REPOSITORY "${GEL_GIT_URL}"
-        GIT_TAG "${GEL_GIT_TAG}"
-        GIT_SHALLOW ${GEL_GIT_SHALLOW}
-        SOURCE_DIR "${PROJECT_SOURCE_DIR}/${GEL_DIR}"
+        GIT_REPOSITORY "${GODOT_CPP_GIT_URL}"
+        GIT_TAG "${GODOT_CPP_GIT_TAG}"
+        GIT_SHALLOW ON
+        SOURCE_DIR "${PROJECT_SOURCE_DIR}/${GODOT_CPP_DIR}"
 )
 FetchContent_MakeAvailable(godot-cpp)
 # Add dependency to dump_api

@@ -31,7 +31,7 @@ gde_name_platform()
 
 function( gde_name_preset )
     # Target Platform
-    if (GEL_TOOLS_ENABLED)
+    if (GODOT_CPP_TOOLS_ENABLED)
         set( GDE_TARGET_PRESET "editor")
     elseif (CMAKE_BUILD_TYPE MATCHES "Debug")
         set( GDE_TARGET_PRESET "template_debug")
@@ -48,11 +48,11 @@ function( godot_executable_name )
     list(APPEND NAME_PARTS "${GDE_TARGET_PLATFORM}")
     list(APPEND NAME_PARTS "editor") # we dont need preset here, we always want the editor
 
-    if (${GEL_DEV_BUILD})
+    if (${GODOT_CPP_DEV_BUILD})
         list(APPEND NAME_PARTS "dev")
     endif ()
 
-    if(${GEL_FLOAT_DOUBLE})
+    if(${GODOT_CPP_FLOAT_DOUBLE})
         list(APPEND NAME_PARTS "double")
     endif ()
 
@@ -79,11 +79,11 @@ function( gde_names_gdextension )
     list(APPEND NAME_PARTS "${GDE_TARGET_PLATFORM}")
     list(APPEND NAME_PARTS "${GDE_TARGET_PRESET}")
 
-    if (${GEL_DEV_BUILD})
+    if (${GODOT_CPP_DEV_BUILD})
         list(APPEND NAME_PARTS "dev")
     endif ()
 
-    if (${GEL_FLOAT_DOUBLE})
+    if (${GODOT_CPP_FLOAT_DOUBLE})
         list(APPEND NAME_PARTS "double")
     endif ()
 

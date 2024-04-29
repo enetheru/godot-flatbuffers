@@ -4,7 +4,7 @@ target_compile_options( godot-cpp PUBLIC "-fPIC" "-g" "-Wwrite-strings" )
 target_link_options( godot-cpp PUBLIC "-Wl,--no-undefined" )
 
 ### Pull in dependencies statically
-if( GEL_USE_STATIC_CPP )
+if( GODOT_CPP_USE_STATIC_CPP )
     target_link_options( godot-cpp
         PUBLIC
             "-static" "-static-libgcc" "-static-libstdc++" "-Wl,-R,'$$ORIGIN'")
@@ -12,7 +12,7 @@ endif()
 
 ### Disable exception handling.
 # Godot doesn't use exceptions anywhere, and this saves around 20% of binary size and very significant build time (GH-80513).
-if( GEL_DISABLE_EXCEPTIONS )
+if( GODOT_CPP_DISABLE_EXCEPTIONS )
     target_compile_options(godot-cpp PUBLIC
             "-fno-exceptions")
 endif()
@@ -25,7 +25,7 @@ if( CMAKE_BUILD_TYPE MATCHES "Debug" )
     # Adding dwarf-4 explicitly makes stacktraces work with clang builds,
     # otherwise addr2line doesn't understand them.
     target_compile_options(godot-cpp PUBLIC  "-gdwarf-4")
-    if( GEL_DEV_BUILD )
+    if( GODOT_CPP_DEV_BUILD )
         target_compile_options(godot-cpp PUBLIC  "-g3")
     else()
         target_compile_options(godot-cpp PUBLIC  "-g2")
@@ -41,23 +41,23 @@ else()
 endif()
 
 # TODO wasnt this supposed to be for gnu platforms only ie linux?
-if( GEL_HIDE_SYMBOLS )
+if( GODOT_CPP_HIDE_SYMBOLS )
     target_compile_options( godot-cpp PUBLIC "-fvisibility=hidden" )
     target_link_options( godot-cpp PUBLIC "-fvisibility=hidden" )
 endif()
 
 ### Optimisation level
-if( GEL_OPTIMISATION_MODE MATCHES "speed" )
+if( GODOT_CPP_OPTIMISATION_MODE MATCHES "speed" )
     target_compile_options( godot-cpp PUBLIC "-fvisibility=hidden" )
     target_compile_options( godot-cpp PUBLIC "-O3" )
-elseif( GEL_OPTIMISATION_MODE STREQUAL "speed_trace" )
+elseif( GODOT_CPP_OPTIMISATION_MODE STREQUAL "speed_trace" )
     # `-O2` is friendlier to debuggers than `-O3`, leading to better crash backtraces.
     target_compile_options( godot-cpp PUBLIC "-O2" )
-elseif( GEL_OPTIMISATION_MODE STREQUAL "size" )
+elseif( GODOT_CPP_OPTIMISATION_MODE STREQUAL "size" )
     target_compile_options( godot-cpp PUBLIC "-Os" )
-elseif( GEL_OPTIMISATION_MODE STREQUAL "debug" )
+elseif( GODOT_CPP_OPTIMISATION_MODE STREQUAL "debug" )
     target_compile_options( godot-cpp PUBLIC "-Og" )
-elseif( GEL_OPTIMISATION_MODE STREQUAL "none" )
+elseif( GODOT_CPP_OPTIMISATION_MODE STREQUAL "none" )
     target_compile_options( godot-cpp PUBLIC "-O0" )
 endif()
 

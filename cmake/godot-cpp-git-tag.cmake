@@ -1,30 +1,31 @@
 function(godot_cpp_git_tag)
     message(STATUS  "Using Git:  ${GIT_EXECUTABLE}" )
     execute_process(
-            COMMAND ${GIT_EXECUTABLE} ls-remote --tags ${GEL_GIT_URL}
-            OUTPUT_VARIABLE GEL_GIT_TAGS
+            COMMAND ${GIT_EXECUTABLE} ls-remote --tags ${GODOT_CPP_GIT_URL}
+            OUTPUT_VARIABLE GODOT_CPP_GIT_TAGS
             COMMAND_ERROR_IS_FATAL ANY)
-    string(REGEX MATCHALL "godot-[0-9]+.[0-9]+(.[0-9]+)?-[a-z]+" GEL_GIT_TAGS "${GEL_GIT_TAGS}")
 
-    list(FIND GEL_GIT_TAGS "godot-${GODOT_VERSION_MAJOR}.${GODOT_VERSION_MINOR}.${GODOT_VERSION_POINT}-stable" GEL_GIT_TAG)
+    # Turn the out put into a cmake list.
+    string( REGEX REPLACE "\n" ";" TEMP "${GODOT_CPP_GIT_TAGS}" )
 
-    if (GEL_GIT_TAG EQUAL -1)
+    list(FILTER TEMP INCLUDE REGEX "godot-${GODOT_VERSION_MAJOR}.${GODOT_VERSION_MINOR}.${GODOT_VERSION_POINT}-stable$")
+    if (NOT TEMP )
         message(STATUS "unable to get exact matching tag for godot version: ${GODOT_VERSION_MAJOR}.${GODOT_VERSION_MINOR}.${GODOT_VERSION_POINT}, attempting minor version")
-        list(FIND GEL_GIT_TAGS "godot-${GODOT_VERSION_MAJOR}.${GODOT_VERSION_MINOR}-stable" GEL_GIT_TAG)
+        list(FILTER TEMP INCLUDE REGEX "godot-${GODOT_VERSION_MAJOR}.${GODOT_VERSION_MINOR}-stable$")
     endif ()
 
-    if (GEL_GIT_TAG EQUAL -1)
+    # Get the tag hash
+    string( REGEX REPLACE "([a-z0-9]+).*$" "\\1" GODOT_CPP_GIT_TAG "${TEMP}")
+
+    if (NOT GODOT_CPP_GIT_TAG )
         message(WARNING "Unable to determine git tag to clone")
-        message("Available Tags:")
-        foreach (tag ${GEL_GIT_TAGS})
-            message("${tag}")
-        endforeach ()
-        message("Add '-DGEL_GIT_TAG=<git-tag>' to your cmake configuration")
-        message(FATAL_ERROR "Unable to clone godot-cpp")
-    else ()
-        list(GET GEL_GIT_TAGS ${GEL_GIT_TAG} GEL_GIT_TAG)
-        message(STATUS "Found godot-cpp Tag for Godot Version: ${GEL_GIT_TAG}")
+        message("Run \"git ls-remote --tags ${GODOT_CPP_GIT_URL}\" ")
+        message("Add '-DGODOT_CPP_GIT_TAG=<git-tag>' to your cmake configuration")
+        message(FATAL_ERROR "Unable to determine which tag from godot-cpp to clone")
     endif ()
+
+    message(STATUS "Found godot-cpp commit hash: ${GODOT_CPP_GIT_TAG}")
+    set( GODOT_CPP_GIT_TAG ${GODOT_CPP_GIT_TAG} PARENT_SCOPE)
 
 endfunction()
 

@@ -16,7 +16,7 @@ set_property( CACHE USE_LD PROPERTY STRINGS "" "bfd" "lld" "gold" "mold" )
 # Rather than expose the options for the consumed godot-cpp library, I have chosen to abstract them behind top level
 # options to keep them grouped together
 ## GODOT_   Godot executable and related
-## GEL_     Godot Extension Library aka godot-cpp
+## GODOT_CPP_     Godot Extension Library aka godot-cpp
 ## GDE_     GDExtension AKA this project
 
 ## Target options
@@ -31,43 +31,42 @@ set( GODOT_DUMP_DIR "gdextension" CACHE PATH "Path to the api.json and headers e
 set( GODOT_API_JSON "${PROJECT_SOURCE_DIR}/${GODOT_DUMP_DIR}/extension_api.json" CACHE PATH "Location of extension_api.json, default is '${GODOT_DUMP_DIR}/extension_api.json'" )
 
 ### Options relating to the godot-cpp Extension Library
-set( GEL_DIR "godot-cpp" CACHE PATH "Path to the directory containing the godot-cpp GDExtension library, if we're fetching then this is where it will go" )
+set( GODOT_CPP_DIR "godot-cpp" CACHE PATH "Path to the directory containing the godot-cpp GDExtension library, if we're fetching then this is where it will go" )
 
 ## Git repo info for fetching if there is no api dir set.
-set( GEL_GIT_URL "https://github.com/godotengine/godot-cpp.git" CACHE STRING "Location of the godot-cpp git respository" )
-set( GEL_GIT_TAG "" CACHE STRING "The git tag to use when pulling godot-cpp, will try to automatically detect based on godot.exe --version" )
-option( GEL_GIT_SHALLOW "" ON)
+set( GODOT_CPP_GIT_URL "https://github.com/godotengine/godot-cpp.git" CACHE STRING "Location of the godot-cpp git respository" )
+set( GODOT_CPP_GIT_TAG "" CACHE STRING "The git tag to use when pulling godot-cpp, will try to automatically detect based on godot.exe --version" )
 
 ## Configure options for godot-cpp - Copied to the equivalent cmake options
-option( GEL_HEADERS_AS_SYSTEM   "Mark the godot-cpp header files as SYSTEM to suppress warnings from godot-cpp" ON )
-option( GEL_WARNING_AS_ERROR    "Treat any compilation warnings from godot-cpp as errors" OFF )
-option( GEL_GENERATE_TEMPLATE_GET_NODE "Generate a template version of the Node class's get_node." ON )
-option( GEL_DISABLE_EXCEPTIONS "Force disabling exception handling code" ON)
-set( GEL_FLOAT_PRECISION "single" CACHE STRING "Floating-point precision level ('single', 'double')" )
-set_property( CACHE GEL_FLOAT_PRECISION PROPERTY STRINGS "single" "double" )
+option( GODOT_CPP_HEADERS_AS_SYSTEM   "Mark the godot-cpp header files as SYSTEM to suppress warnings from godot-cpp" ON )
+option( GODOT_CPP_WARNING_AS_ERROR    "Treat any compilation warnings from godot-cpp as errors" OFF )
+option( GODOT_CPP_GENERATE_TEMPLATE_GET_NODE "Generate a template version of the Node class's get_node." ON )
+option( GODOT_CPP_DISABLE_EXCEPTIONS "Force disabling exception handling code" ON)
+set( GODOT_CPP_FLOAT_PRECISION "single" CACHE STRING "Floating-point precision level ('single', 'double')" )
+set_property( CACHE GODOT_CPP_FLOAT_PRECISION PROPERTY STRINGS "single" "double" )
 
 ### Additional configure options because the default generation of the cmake is limited.
 #TODO option( GDE_DOCS "Generate Documentation" OFF )
 ## Code Feature Options
-option( GEL_DEV_BUILD "Developer build with dev-only debugging code" OFF)
-option( GEL_HOT_RELOAD "Enable the extra accounting required to support hot reload" ON)
-option( GEL_TOOLS_ENABLED "Enable editor features" OFF)
+option( GODOT_CPP_DEV_BUILD "Developer build with dev-only debugging code" OFF)
+option( GODOT_CPP_HOT_RELOAD "Enable the extra accounting required to support hot reload" ON)
+option( GODOT_CPP_TOOLS_ENABLED "Enable editor features" OFF)
 
 ## Compilation and linking
-option( GEL_HIDE_SYMBOLS "Hide symbols visibility on GNU platforms" OFF )
-option( GEL_USE_STATIC_CPP "Link MinGW/MSVC C++ runtime libraries statically" ON )
+option( GODOT_CPP_HIDE_SYMBOLS "Hide symbols visibility on GNU platforms" OFF )
+option( GODOT_CPP_USE_STATIC_CPP "Link MinGW/MSVC C++ runtime libraries statically" ON )
 
-set( GEL_OPTIMISATION_MODE "speed_trace" CACHE STRING "The desired optimization flags (none|custom|debug|speed|speed_trace|size)" )
-set_property( CACHE GEL_OPTIMISATION_MODE PROPERTY STRINGS "none" "custom" "debug" "speed" "speed_trace" "size" )
+set( GODOT_CPP_OPTIMISATION_MODE "speed_trace" CACHE STRING "The desired optimization flags (none|custom|debug|speed|speed_trace|size)" )
+set_property( CACHE GODOT_CPP_OPTIMISATION_MODE PROPERTY STRINGS "none" "custom" "debug" "speed" "speed_trace" "size" )
 
 ### Options consumed by godot-cpp
 # Explicitly mentioned in the documentation
 # CMAKE_BUILD_TYPE:			Compilation target (Debug or Release defaults to Debug)
 set( GODOT_GDEXTENSION_DIR "${GODOT_DUMP_DIR}" CACHE INTERNAL "Path to the directory containing GDExtension interface header and API JSON file")
-set( GODOT_CPP_SYSTEM_HEADERS ${GEL_HEADERS_AS_SYSTEM} CACHE INTERNAL "Mark the header files as SYSTEM. This may be useful to supress warnings in projects including this one")
-set( GODOT_CPP_WARNING_AS_ERROR	${GEL_WARNING_AS_ERROR} INTERNAL "Treat any warnings as errors" )
+set( GODOT_CPP_SYSTEM_HEADERS ${GODOT_CPP_HEADERS_AS_SYSTEM} CACHE INTERNAL "Mark the header files as SYSTEM. This may be useful to supress warnings in projects including this one")
+set( GODOT_CPP_WARNING_AS_ERROR	${GODOT_CPP_WARNING_AS_ERROR} INTERNAL "Treat any warnings as errors" )
 set( GODOT_CUSTOM_API_FILE "${GODOT_API_JSON}" CACHE  INTERNAL "Path to a custom GDExtension API JSON file (takes precedence over `gdextension_dir`" )
-set( FLOAT_PRECISION "${GEL_FLOAT_PRECISION}" CACHE  INTERNAL "Floating-point precision level ('single', 'double')" )
+set( FLOAT_PRECISION "${GODOT_CPP_FLOAT_PRECISION}" CACHE  INTERNAL "Floating-point precision level ('single', 'double')" )
 
 # Android cmake arguments
 # CMAKE_TOOLCHAIN_FILE:		The path to the android cmake toolchain ($ANDROID_NDK/build/cmake/android.toolchain.cmake)
@@ -77,8 +76,8 @@ set( FLOAT_PRECISION "${GEL_FLOAT_PRECISION}" CACHE  INTERNAL "Floating-point pr
 # More info here: https://godot.readthedocs.io/en/latest/development/compiling/compiling_for_android.html
 
 ### additional explicitly stated as a cached set or option command but not listed in the docstring at the top
-set(GENERATE_TEMPLATE_GET_NODE ${GEL_GENERATE_TEMPLATE_GET_NODE} CACHE INTERNAL "Generate a template version of the Node class's get_node." )
-set(GODOT_DISABLE_EXCEPTIONS ${GEL_DISABLE_EXCEPTIONS} CACHE INTERNAL "Force disabling exception handling code" )
+set(GENERATE_TEMPLATE_GET_NODE ${GODOT_CPP_GENERATE_TEMPLATE_GET_NODE} CACHE INTERNAL "Generate a template version of the Node class's get_node." )
+set(GODOT_DISABLE_EXCEPTIONS ${GODOT_CPP_DISABLE_EXCEPTIONS} CACHE INTERNAL "Force disabling exception handling code" )
 
 ### used within the project but not cached or exposed as options
 #set( BITS "" CACHE STRING INTERNAL "this is defaulted to the host system processor bits 32/64" )
