@@ -2,7 +2,7 @@
 function(godot_dump_api)
     # TODO --dump-extension-api-with-docs
     if (NOT EXISTS "${PROJECT_SOURCE_DIR}/${GODOT_DUMP_DIR}")
-        message("Creating ${GODOT_DUMP_DIR}")
+        message(STATUS "Creating ${GODOT_DUMP_DIR}")
         execute_process(
                 COMMAND mkdir ${GODOT_DUMP_DIR} #TODO Customise this per platform
                 WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}

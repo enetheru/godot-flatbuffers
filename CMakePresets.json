@@ -6,13 +6,26 @@
     "patch": 0
   },
   "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "default",
+      "description": "Default preset that are inherited by all",
+      "generator": "Ninja",
+      "hidden": true,
+      "environment": {
+        "PROJECT_NAME": "MyGodotExtention"
+      },
+      "cacheVariables": {
+        "GODOT_EXECUTABLE": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Godot Engine\\godot.windows.opt.tools.64.exe"
+      }
+    },
 
     {
       "name": "editor",
+      "inherits": "default",
       "description": "Build GDExtension for the Editor",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "GODOT_EXECUTABLE": "C:\\git\\godot\\bin\\godot.windows.editor.x86_64.exe",
         "GEL_TOOLS_ENABLED": "ON",
         "GEL_OPTIMISATION_MODE": "speed"
       }
@@ -20,53 +33,52 @@
     {
       "name": "editor_debug",
       "description": "Build GDExtension for the Editor with debug symbols",
+      "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "GEL_TOOLS_ENABLED": "ON",
-        "GEL_OPTIMISATION_MODE": "speed_trace",
-        "GODOT_EXECUTABLE": "C:\\git\\godot\\bin\\godot.windows.editor.debug.x86_64.exe"
+        "GEL_OPTIMISATION_MODE": "speed_trace"
       }
     },
     {
       "name": "editor_debug_dev",
       "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
+      "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "GEL_TOOLS_ENABLED": "ON",
         "GEL_HEADERS_AS_SYSTEM" : "OFF",
         "GEL_OPTIMISATION_MODE": "debug",
-        "GEL_DEV_BUILD": "ON",
-        "GODOT_EXECUTABLE": "C:\\git\\godot\\bin\\godot.windows.editor.dev.x86_64.exe"
+        "GEL_DEV_BUILD": "ON"
       }
     },
     {
       "name": "template_release",
       "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
+      "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "GEL_OPTIMISATION_MODE": "speed",
-        "GODOT_EXECUTABLE": "C:\\git\\godot\\bin\\godot.windows.editor.x86_64.exe"
+        "GEL_OPTIMISATION_MODE": "speed"
       }
     },
     {
       "name": "template_debug",
       "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
+      "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "GEL_OPTIMISATION_MODE": "speed_trace",
-        "GODOT_EXECUTABLE": "C:\\git\\godot\\bin\\godot.windows.editor.debug.x86_64.exe"
+        "GEL_OPTIMISATION_MODE": "speed_trace"
       }
     },
     {
       "name": "template_debug_dev",
       "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
+      "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "GEL_OPTIMISATION_MODE": "debug",
         "GEL_HEADERS_AS_SYSTEM" : "OFF",
-        "GEL_DEV_BUILD": "ON",
-        "GODOT_EXECUTABLE": "C:\\git\\godot\\bin\\godot.windows.editor.dev.x86_64.exe"
-
+        "GEL_DEV_BUILD": "ON"
       }
     }
   ]

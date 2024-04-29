@@ -25,9 +25,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${GODOT_PROJECT_PATH}/b
 
 ### Generate target name
 include(cmake/naming.cmake)
-message("Target Platform: ${GDE_TARGET_PLATFORM}")
-message("Target Architecture: ${GDE_TARGET_ARCH}")
-message("Output Filename: ${GDE_OUTPUT_NAME}")
+message(STATUS "Target Platform: ${GDE_TARGET_PLATFORM}")
+message(STATUS "Target Architecture: ${GDE_TARGET_ARCH}")
+message(STATUS "Output Filename: ${GDE_OUTPUT_NAME}")
 
 ### Verify contents of GDExtension Directory
 # TODO if the gdextension directory is specified then we dont need to dump-api
