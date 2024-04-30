@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 # The name of the project is used for the build target
-project( gdexample
+project( gdextension
         VERSION 1.0
         DESCRIPTION ""
         LANGUAGES CXX)
@@ -27,6 +27,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${GODOT_PROJECT_PATH}/b
 include(cmake/naming.cmake)
 message(STATUS "Target Platform: ${GDE_TARGET_PLATFORM}")
 message(STATUS "Target Architecture: ${GDE_TARGET_ARCH}")
+message(STATUS "Tools Enabled: ${GODOT_CPP_TOOLS_ENABLED}")
 message(STATUS "Output Filename: ${GDE_OUTPUT_NAME}")
 
 ### Verify contents of GDExtension Directory
@@ -34,7 +35,8 @@ message(STATUS "Output Filename: ${GDE_OUTPUT_NAME}")
 # This means I probably need to have a separate target for the files involved that can be satisfied either way
 
 # Specify godot executable to pull version information from
-# Godot's compile name appears to be
+# TODO Split this out into its own find-godot.cmake script
+# Compiling godot from source appears to produce the following name:
 # godot.<platform>.<target>[.dev][.double].<arch>[.custom_suffix][.console].exe
 # so in my case its:
 #   godot.windows.editor.x86_64.exe
@@ -52,13 +54,15 @@ list( APPEND GODOT_FIND_PATHS "/git/godot/bin")
 if( GODOT_EXECUTABLE STREQUAL "" )
     unset( GODOT_EXECUTABLE CACHE )
 endif()
-if( GODOT_EXECUTABLE STREQUAL "GODOT_EXECUTABLE-NOTFOUND" )
-endif()
 
 find_program( GODOT_EXECUTABLE
         NAMES ${GODOT_FIND_NAMES}
         PATHS ${GODOT_FIND_PATHS}
         REQUIRED )
+
+if( GODOT_EXECUTABLE STREQUAL "GODOT_EXECUTABLE-NOTFOUND" )
+    message( FATAL_ERROR "Unable to find Godot executable" )
+endif()
 
 if (NOT GODOT_EXECUTABLE)
     message( WARNING "Missing Godot Executable: ${GODOT_EXECUTABLE}")
@@ -129,7 +133,7 @@ endif ()
 # platforms = ("linux", "macos", "windows", "android", "ios", "web")
 
 ### Code Features
-#TODO move these compile definitions to the tagets so they dont polute other packages thay we might want.
+#TODO move these compile definitions to the targets so they dont pollute other packages that we might want.
 add_compile_definitions("GDEXTENSION")
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
@@ -137,11 +141,6 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
     # to give *users* extra debugging information for their game development.
     # DEBUG_METHODS_ENABLED is added to typedefs.h in Godot when DEBUG_ENABLED is set.
     add_compile_definitions("DEBUG_ENABLED" "DEBUG_METHODS_ENABLED")
-endif ()
-
-# DEV_ENABLED enables *engine developer* code which should only be compiled for those working on the engine itself.
-if (DEV_ENABLED)
-    add_compile_definitions("DEV_ENABLED")
 else ()
     # define NDEBUG to disable assert() for production targets (only used in third-party code)
     add_compile_definitions("NDEBUG")
@@ -149,17 +148,17 @@ endif ()
 
 # if editor tools are intended to be enabled.
 # Analogous to the target=editor from scons
-if (TOOLS_ENABLED)
+if (GODOT_CPP_TOOLS_ENABLED)
     add_compile_definitions("TOOLS_ENABLED")
 endif ()
 
 # Hot reload
 # TODO, the original logic was if unspecified enable in debug and editor builds
-if (USE_HOT_RELOAD)
+if (GODOT_CPP_USE_HOT_RELOAD)
     add_compile_definitions("HOT_RELOAD_ENABLED")
 endif ()
 
-if (FLOAT_DOUBLE)
+if (GODOT_CPP_FLOAT_DOUBLE)
     add_compile_definitions("REAL_T_IS_DOUBLE")
 endif ()
 
@@ -170,4 +169,4 @@ add_subdirectory(src)
 ## This needs additional configuration from the clion side of things to make it work
 # * The executable to run
 # * The command line options ie -e --path
-add_custom_target(demo_project DEPENDS ${PROJECT_NAME})
+add_custom_target(demo_project DEPENDS ${GDE_NAME})

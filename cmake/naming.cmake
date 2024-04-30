@@ -29,28 +29,11 @@ function( gde_name_platform )
 endfunction()
 gde_name_platform()
 
-function( gde_name_preset )
-    # Target Platform
-    if (GODOT_CPP_TOOLS_ENABLED)
-        set( GDE_TARGET_PRESET "editor")
-    elseif (CMAKE_BUILD_TYPE MATCHES "Debug")
-        set( GDE_TARGET_PRESET "template_debug")
-    else ()
-        set( GDE_TARGET_PRESET "template_release")
-    endif ()
-    return( PROPAGATE GDE_TARGET_PRESET )
-endfunction()
-gde_name_preset()
-
 function( godot_executable_name )
     # look for godot executable with these names
     set(NAME_PARTS "godot")
     list(APPEND NAME_PARTS "${GDE_TARGET_PLATFORM}")
     list(APPEND NAME_PARTS "editor") # we dont need preset here, we always want the editor
-
-    if (${GODOT_CPP_DEV_BUILD})
-        list(APPEND NAME_PARTS "dev")
-    endif ()
 
     if(${GODOT_CPP_FLOAT_DOUBLE})
         list(APPEND NAME_PARTS "double")
@@ -64,7 +47,6 @@ function( godot_executable_name )
 
     list(APPEND NAME_PARTS "exe")
 
-
     list(JOIN NAME_PARTS "." GODOT_EXECUTABLE_NAME)
     return( PROPAGATE GODOT_EXECUTABLE_NAME )
 endfunction()
@@ -73,15 +55,23 @@ godot_executable_name()
 # Output Library Name
 # godot.<platform>.<target>[.dev][.double].<arch>[.custom_suffix][.console].exe
 function( gde_names_gdextension )
+    # Entry Symbol
+    string(REGEX REPLACE "[ -]" "_" GDE_ENTRY_SYMBOL ${GDE_NAME} )
+    set( GDE_ENTRY_SYMBOL "${GDE_ENTRY_SYMBOL}_library_init" )
+    message( STATUS "Entry Symbol: ${GDE_ENTRY_SYMBOL}")
+
     # Output gdextension library name
-    set(NAME_PARTS ${PROJECT_NAME})
+    set(NAME_PARTS ${GDE_NAME})
 
     list(APPEND NAME_PARTS "${GDE_TARGET_PLATFORM}")
-    list(APPEND NAME_PARTS "${GDE_TARGET_PRESET}")
 
-    if (${GODOT_CPP_DEV_BUILD})
-        list(APPEND NAME_PARTS "dev")
-    endif ()
+    if( ${GODOT_CPP_TOOLS_ENABLED} )
+        list(APPEND NAME_PARTS "editor")
+    endif()
+
+    if (CMAKE_BUILD_TYPE MATCHES Debug)
+        list(APPEND NAME_PARTS "debug")
+    endif()
 
     if (${GODOT_CPP_FLOAT_DOUBLE})
         list(APPEND NAME_PARTS "double")
@@ -95,7 +85,9 @@ function( gde_names_gdextension )
 
     list(JOIN NAME_PARTS "." GDE_OUTPUT_NAME)
 
-    return( PROPAGATE GDE_OUTPUT_NAME )
+    message( STATUS "Library Filename: ${GDE_OUTPUT_NAME}")
+
+    return( PROPAGATE GDE_OUTPUT_NAME GDE_ENTRY_SYMBOL )
 endfunction()
 
 gde_names_gdextension()

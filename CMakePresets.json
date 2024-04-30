@@ -12,10 +12,8 @@
       "description": "Default preset that are inherited by all",
       "generator": "Ninja",
       "hidden": true,
-      "environment": {
-        "PROJECT_NAME": "MyGodotExtention"
-      },
       "cacheVariables": {
+        "GDE_NAME": "godot-flatbuffers",
         "GODOT_EXECUTABLE": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Godot Engine\\godot.windows.opt.tools.64.exe"
       }
     },
@@ -41,19 +39,7 @@
       }
     },
     {
-      "name": "editor_debug_dev",
-      "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
-      "inherits": "default",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "GODOT_CPP_TOOLS_ENABLED": "ON",
-        "GODOT_CPP_HEADERS_AS_SYSTEM" : "OFF",
-        "GODOT_CPP_OPTIMISATION_MODE": "debug",
-        "GODOT_CPP_DEV_BUILD": "ON"
-      }
-    },
-    {
-      "name": "template_release",
+      "name": "template",
       "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
       "inherits": "default",
       "cacheVariables": {
@@ -68,17 +54,6 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "GODOT_CPP_OPTIMISATION_MODE": "speed_trace"
-      }
-    },
-    {
-      "name": "template_debug_dev",
-      "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
-      "inherits": "default",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "GODOT_CPP_OPTIMISATION_MODE": "debug",
-        "GODOT_CPP_HEADERS_AS_SYSTEM" : "OFF",
-        "GODOT_CPP_DEV_BUILD": "ON"
       }
     }
   ]

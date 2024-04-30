@@ -60,3 +60,6 @@ export_presets.cfg
 
 # jetbrains IDE
 .idea/
+src/entry_point.cpp
+
+project/godot-flatbuffers.gdextension

@@ -48,7 +48,6 @@ set_property( CACHE GODOT_CPP_FLOAT_PRECISION PROPERTY STRINGS "single" "double"
 ### Additional configure options because the default generation of the cmake is limited.
 #TODO option( GDE_DOCS "Generate Documentation" OFF )
 ## Code Feature Options
-option( GODOT_CPP_DEV_BUILD "Developer build with dev-only debugging code" OFF)
 option( GODOT_CPP_HOT_RELOAD "Enable the extra accounting required to support hot reload" ON)
 option( GODOT_CPP_TOOLS_ENABLED "Enable editor features" OFF)
 

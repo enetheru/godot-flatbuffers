@@ -1,0 +1,43 @@
+[configuration]
+
+entry_symbol = "${GDE_ENTRY_SYMBOL}"
+compatibility_minimum = "${GODOT_VERSION_MAJOR}.${GODOT_VERSION_MINOR}"
+
+[libraries]
+windows.editor.debug.x86_64 = "res://bin/lib${GDE_NAME}.windows.editor.debug.x86_64.dll"
+windows.editor.release.x86_64 = "res://bin/lib${GDE_NAME}.windows.editor.x86_64.dll"
+windows.debug.x86_64 = "res://bin/lib${GDE_NAME}.windows.template.debug.x86_64.dll"
+windows.release.x86_64 = "res://bin/lib${GDE_NAME}.windows.template.x86_64.dll"
+
+macos.debug = "res://bin/lib${GDE_NAME}.macos.template.debug.framework"
+macos.release = "res://bin/lib${GDE_NAME}.macos.template.framework"
+windows.debug.x86_32 = "res://bin/lib${GDE_NAME}.windows.template.debug.x86_32.dll"
+windows.release.x86_32 = "res://bin/lib${GDE_NAME}.windows.template.x86_32.dll"
+windows.debug.arm64 = "res://bin/lib${GDE_NAME}.windows.template.debug.arm64.dll"
+windows.release.arm64 = "res://bin/lib${GDE_NAME}.windows.template.arm64.dll"
+linux.debug.x86_32 = "res://bin/lib${GDE_NAME}.linux.template.debug.x86_32.so"
+linux.release.x86_32 = "res://bin/lib${GDE_NAME}.linux.template.x86_32.so"
+linux.debug.x86_64 = "res://bin/lib${GDE_NAME}.linux.template.debug.x86_64.so"
+linux.release.x86_64 = "res://bin/lib${GDE_NAME}.linux.template.x86_64.so"
+linux.debug.arm32 = "res://bin/lib${GDE_NAME}.linux.template.debug.arm32.so"
+linux.release.arm32 = "res://bin/lib${GDE_NAME}.linux.template.arm32.so"
+linux.debug.arm64 = "res://bin/lib${GDE_NAME}.linux.template.debug.arm64.so"
+linux.release.arm64 = "res://bin/lib${GDE_NAME}.linux.template.arm64.so"
+linux.debug.rv64 = "res://bin/lib${GDE_NAME}.linux.template.debug.rv64.so"
+linux.release.rv64 = "res://bin/lib${GDE_NAME}.linux.template.rv64.so"
+android.debug.x86_64 = "res://bin/lib${GDE_NAME}.android.template.debug.x86_64.so"
+android.release.x86_64 = "res://bin/lib${GDE_NAME}.android.template.x86_64.so"
+android.debug.arm64 = "res://bin/lib${GDE_NAME}.android.template.debug.arm64.so"
+android.release.arm64 = "res://bin/lib${GDE_NAME}.android.template.arm64.so"
+ios.debug = "res://bin/lib${GDE_NAME}.ios.template.debug.xcframework"
+ios.release = "res://bin/lib${GDE_NAME}.ios.template.xcframework"
+web.debug.wasm32 = "res://bin/lib${GDE_NAME}.web.template.debug.wasm32.wasm"
+web.release.wasm32 = "res://bin/lib${GDE_NAME}.web.template.wasm32.wasm"
+
+[dependencies]
+ios.debug = {
+  "res://bin/libgodot-cpp.ios.template.debug.xcframework": ""
+}
+ios.release = {
+  "res://bin/libgodot-cpp.ios.template.xcframework": ""
+}
