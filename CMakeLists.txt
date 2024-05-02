@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 # The name of the project is used for the build target
-project( gdextension
+project( godot-flatbuffers-extension
         VERSION 1.0
         DESCRIPTION ""
         LANGUAGES CXX)
@@ -161,6 +161,17 @@ endif ()
 if (GODOT_CPP_FLOAT_DOUBLE)
     add_compile_definitions("REAL_T_IS_DOUBLE")
 endif ()
+
+
+### Add Flatbuffers as a sub project
+message( STATUS "Fetching https://github.com/google/flatbuffers.git : 595bf00")
+FetchContent_Declare(FlatBuffers
+        GIT_REPOSITORY "https://github.com/google/flatbuffers.git"
+        GIT_TAG "595bf00"
+        GIT_SHALLOW ON
+        SOURCE_DIR "${PROJECT_SOURCE_DIR}/flatbuffers"
+)
+FetchContent_MakeAvailable( FlatBuffers )
 
 ### separate CMakeLists for our gdextension sources.
 add_subdirectory(src)

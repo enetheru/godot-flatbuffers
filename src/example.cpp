@@ -279,11 +279,11 @@ void Example::_bind_methods() {
 }
 
 Example::Example() {
-	//UtilityFunctions::print("Constructor.");
+	UtilityFunctions::print("Constructor.");
 }
 
 Example::~Example() {
-	//UtilityFunctions::print("Destructor.");
+	UtilityFunctions::print("Destructor.");
 }
 
 // Methods.

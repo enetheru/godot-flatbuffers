@@ -28,7 +28,7 @@
 using namespace godot;
 
 class ExampleRef : public RefCounted {
-	GDCLASS(ExampleRef, RefCounted);
+	GDCLASS(ExampleRef, RefCounted); // NOLINT(*-use-auto)
 
 private:
 	static int instance_count;
@@ -44,7 +44,7 @@ protected:
 
 public:
 	ExampleRef();
-	~ExampleRef();
+	~ExampleRef() override;
 
 	void set_id(int p_id);
 	int get_id() const;
@@ -53,14 +53,14 @@ public:
 };
 
 class ExampleMin : public Control {
-	GDCLASS(ExampleMin, Control);
+	GDCLASS(ExampleMin, Control); // NOLINT(*-use-auto)
 
 protected:
 	static void _bind_methods(){};
 };
 
 class Example : public Control {
-	GDCLASS(Example, Control);
+	GDCLASS(Example, Control); // NOLINT(*-use-auto)
 
 protected:
 	static void _bind_methods();
@@ -98,7 +98,7 @@ public:
 	};
 
 	Example();
-	~Example();
+	~Example() override;
 
 	// Functions.
 	void simple_func();
@@ -179,26 +179,27 @@ public:
 	static void test_static2();
 
 	// Virtual function override (no need to bind manually).
-	virtual bool _has_point(const Vector2 &point) const override;
-	virtual void _input(const Ref<InputEvent> &event) override;
+	bool _has_point(const Vector2 &point) const override;
+	void _input(const Ref<InputEvent> &event) override;
 };
 
-VARIANT_ENUM_CAST(Example::Constants);
-VARIANT_BITFIELD_CAST(Example::Flags);
+VARIANT_ENUM_CAST(Example::Constants)
+VARIANT_BITFIELD_CAST(Example::Flags)
 
 enum EnumWithoutClass {
 	OUTSIDE_OF_CLASS = 512
 };
-VARIANT_ENUM_CAST(EnumWithoutClass);
+VARIANT_ENUM_CAST(EnumWithoutClass)
 
 class ExampleVirtual : public Object {
-	GDCLASS(ExampleVirtual, Object);
+	GDCLASS(ExampleVirtual, Object); // NOLINT(*-use-auto)
 
 protected:
 	static void _bind_methods() {}
 };
 
 class ExampleAbstractBase : public Object {
+	GDCLASS(ExampleAbstractBase, Object); // NOLINT(*-use-auto)
 protected:
 	static void _bind_methods() {}
 
@@ -206,12 +207,12 @@ protected:
 };
 
 class ExampleConcrete : public ExampleAbstractBase {
-	GDCLASS(ExampleConcrete, ExampleAbstractBase);
+	GDCLASS(ExampleConcrete, ExampleAbstractBase); // NOLINT(*-use-auto)
 
 protected:
 	static void _bind_methods() {}
 
-	virtual int test_function() override { return 25; }
+	int test_function() override { return 25; }
 };
 
 #endif // EXAMPLE_CLASS_H

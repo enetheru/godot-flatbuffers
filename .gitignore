@@ -63,3 +63,5 @@ export_presets.cfg
 src/entry_point.cpp
 
 project/godot-flatbuffers.gdextension
+
+flatbuffers/

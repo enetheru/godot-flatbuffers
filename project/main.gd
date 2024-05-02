@@ -7,6 +7,9 @@ class TestClass:
 		return p_msg + " world"
 
 func _ready():
+	var builder : FlatBufferBuilder = FlatBufferBuilder.new()
+
+
 	var example: Example = $Example
 
 	# Signal.
