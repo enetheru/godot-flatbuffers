@@ -25,3 +25,4 @@ Now that we can read a FlatBuffer in our target language using our custom reader
 
 ## Generating Code
 Using the above two examples, We can then use the IR flabuffer reflection.fbs and other generators to generate our own readers and writers.
+
