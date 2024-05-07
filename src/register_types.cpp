@@ -10,6 +10,7 @@
 
 #include "example.h"
 #include "flatbuffer.h"
+#include "flatbufferbuilder.h"
 
 void initialize_module(godot::ModuleInitializationLevel p_level) {
 	if (p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE) {
@@ -17,7 +18,7 @@ void initialize_module(godot::ModuleInitializationLevel p_level) {
 	}
 
 	using namespace godot_flatbuffers;
-	godot::ClassDB::register_class<FlatBufferBase>();
+	godot::ClassDB::register_class<FlatBuffer>();
 	godot::ClassDB::register_class<FlatBufferBuilder>();
 
 	ClassDB::register_class<ExampleMin>();
