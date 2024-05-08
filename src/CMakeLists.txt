@@ -18,6 +18,8 @@ target_sources( ${GDE_NAME}
         flatbuffer.h
         flatbufferbuilder.cpp
         flatbufferbuilder.h
+        flatbufferarray.cpp
+        flatbufferarray.h
         ${FBHEADERS}
 )
 

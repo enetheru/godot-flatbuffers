@@ -20,6 +20,7 @@ void initialize_module(godot::ModuleInitializationLevel p_level) {
 	using namespace godot_flatbuffers;
 	godot::ClassDB::register_class<FlatBuffer>();
 	godot::ClassDB::register_class<FlatBufferBuilder>();
+	godot::ClassDB::register_class<FlatBufferArray>();
 
 	ClassDB::register_class<ExampleMin>();
 	ClassDB::register_class<Example>();
