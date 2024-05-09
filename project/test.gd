@@ -13,7 +13,7 @@ func _run() -> void:
 
 	pprint( schema )
 
-# Dumping thebfbs using flatcc's tool to convert it to json and pretty pring provides the below structure.
+# Dumping the bfbs using flatcc's tool to convert it to json and pretty print provides the below structure.
 #{
 	#"objects": [
 		#{
@@ -84,23 +84,29 @@ func print_Type( type : reflection.FB_Type, heading = "" ):
 	pprint("Type {", heading)
 	Indent()
 	#base_type:BaseType;
-	print_BaseType( type.base_type(), "base_type")
+	if type.base_type_is_present():
+		print_BaseType( type.base_type(), "base_type")
 	#element:BaseType = None;  // Only if base_type == Vector
 							  #// or base_type == Array.
-	print_BaseType( type.element(), "element")
+	if type.element_is_present():
+		print_BaseType( type.element(), "element")
 	#index:int = -1;  // If base_type == Object, index into "objects" below.
 					 #// If base_type == Union, UnionType, or integral derived
 					 #// from an enum, index into "enums" below.
 					 #// If base_type == Vector && element == Union or UnionType.
-	pprint( type.index(), "index")
+	if type.index_is_present():
+		pprint( type.index(), "index")
 	#fixed_length:uint16 = 0;  // Only if base_type == Array.
-	pprint( type.fixed_length(), "fixed_length")
+	if type.fixed_length_is_present():
+		pprint( type.fixed_length(), "fixed_length")
 	#/// The size (octets) of the `base_type` field.
 	#base_size:uint = 4; // 4 Is a common size due to offsets being that size.
-	pprint( type.base_size(), "base_size")
+	if type.base_size_is_present():
+		pprint( type.base_size(), "base_size")
 	#/// The size (octets) of the `element` field, if present.
 	#element_size:uint = 0;
-	pprint( type.element_size(), "element_size")
+	if type.element_size_is_present():
+		pprint( type.element_size(), "element_size")
 	Outdent()
 	pprint("}")
 
@@ -112,28 +118,39 @@ func print_Field( field : reflection.FB_Field, heading = ""):
 	#type:Type (required);
 	pprint( field.type(), "type")
 	#id:ushort;
-	pprint( field.id(), "id")
+	if field.id_is_present():
+		pprint( field.id(), "id")
 	#offset:ushort;  // Offset into the vtable for tables, or into the struct.
-	pprint( field.offset(), "offset")
+	if field.offset_is_present():
+		pprint( field.offset(), "offset")
 	#default_integer:long = 0;
-	pprint( field.default_integer(), "default_integer")
+	if field.default_integer_is_present():
+		pprint( field.default_integer(), "default_integer")
 	#default_real:double = 0.0;
-	pprint( field.default_real(), "default_real" )
+	if field.default_real_is_present():
+		pprint( field.default_real(), "default_real" )
 	#deprecated:bool = false;
-	pprint( field.deprecated(), "deprecated")
+	if field.deprecated_is_present():
+		pprint( field.deprecated(), "deprecated")
 	#required:bool = false;
-	pprint( field.required(), "required")
+	if field.required_is_present():
+		pprint( field.required(), "required")
 	#key:bool = false;
-	pprint( field.key(), "key" )
+	if field.key_is_present():
+		pprint( field.key(), "key" )
 	#attributes:[KeyValue];
-	pprint( field.attributes(), "attributes" )
+	if field.attributes_is_present():
+		pprint( field.attributes(), "attributes" )
 	#documentation:[string];
-	pprint( field.documentation(), "documentation")
+	if field.documentation_is_present():
+		pprint( field.documentation(), "documentation")
 	#optional:bool = false;
-	pprint( field.optional(), "optional")
+	if field.optional_is_present():
+		pprint( field.optional(), "optional")
 	#/// Number of padding octets to always add after this field. Structs only.
 	#padding:uint16 = 0;
-	pprint( field.padding(), "padding")
+	if field.padding_is_present():
+		pprint( field.padding(), "padding")
 	Outdent()
 	pprint("}")
 
@@ -154,22 +171,30 @@ func print_Object( object : reflection.FB_Object, heading = ""):
 	pprint( "Object {", heading )
 	Indent()
 	#name:string (required, key);
-	pprint( object.name(), "name" )
+	if object.name_is_present():
+		pprint( object.name(), "name" )
 	#fields:[Field] (required);  // Sorted.
-	pprint( object.fields(), "fields" )
+	if object.fields_is_present():
+		pprint( object.fields(), "fields" )
 	#is_struct:bool = false;
-	pprint( object.is_struct(), "is_struct" )
+	if object.is_struct_is_present():
+		pprint( object.is_struct(), "is_struct" )
 	#minalign:int;
-	pprint( object.minalign(), "minalign" )
+	if object.minalign_is_present():
+		pprint( object.minalign(), "minalign" )
 	#bytesize:int;  // For structs.
-	pprint( object.bytesize(), "bytesize" )
+	if object.bytesize_is_present():
+		pprint( object.bytesize(), "bytesize" )
 	#attributes:[KeyValue];
-	pprint( object.attributes(), "attributes" )
+	if object.attributes_is_present():
+		pprint( object.attributes(), "attributes" )
 	#documentation:[string];
-	pprint( object.documentation(), "documentation" )
+	if object.documentation_is_present():
+		pprint( object.documentation(), "documentation" )
 	#/// File that this Object is declared in.
 	#declaration_file: string;
-	pprint( object.declaration_file(), "declaration_file" )
+	if object.declaration_file_is_present():
+		pprint( object.declaration_file(), "declaration_file" )
 	Outdent()
 	pprint("}")
 
@@ -207,20 +232,27 @@ func print_Schema( schema : reflection.FB_Schema, heading = "" ):
 	pprint( "Schema {", heading )
 	Indent()
 	#objects:[Object] (required);    // Sorted.
-	pprint( schema.objects(), "objects" )
+	if schema.objects_is_present():
+		pprint( schema.objects(), "objects" )
 	##enums:[Enum] (required);        // Sorted.
-	pprint( schema.enums(), "enums" )
+	if schema.enums_is_present():
+		pprint( schema.enums(), "enums" )
 	##file_ident:string;
-	pprint( schema.file_ident(), "file_ident" )
+	if schema.file_ident_is_present():
+		pprint( schema.file_ident(), "file_ident" )
 	##file_ext:string;
-	pprint( schema.file_ext(), "file_ext" )
+	if schema.file_ext_is_present():
+		pprint( schema.file_ext(), "file_ext" )
 	##root_table:Object;
-	pprint( schema.root_table(), "root_table" )
+	if schema.root_table_is_present():
+		pprint( schema.root_table(), "root_table" )
 	##advanced_features:AdvancedFeatures;
-	print_AdvancedFeatures( schema.advanced_features(), "advanced_features" )
+	if schema.advanced_features_is_present():
+		print_AdvancedFeatures( schema.advanced_features(), "advanced_features" )
 	##/// All the files used in this compilation. Files are relative to where
 	##/// flatc was invoked.
 	##fbs_files:[SchemaFile];         // Sorted.
-	pprint( schema.fbs_files(), "fbs_files" )
+	if schema.fbs_files_is_present():
+		pprint( schema.fbs_files(), "fbs_files" )
 	Outdent()
 	pprint("}")
