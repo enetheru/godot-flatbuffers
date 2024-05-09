@@ -35,24 +35,7 @@ public:
 	int get_array_element_start( int array_start, int idx  );
 
 	// Decode Functions
-	// ? decode_utype( int start_ );
-	bool decode_bool( int start_ ) { return bytes.decode_u8(start_ ); }
-	int decode_char( int start_ ){ return bytes.decode_s8(start_ ); }
-	int decode_uchar( int start_ ){ return bytes.decode_u8(start_ ); }
-	int decode_short( int start_ ){ return bytes.decode_s8(start_ ); }
-	int decode_ushort( int start_ ){ return bytes.decode_u8(start_ ); }
-	int decode_int( int start_ ){ return bytes.decode_s8(start_ ); }
-	int decode_uint( int start_ ){ return bytes.decode_u8(start_ ); }
-	int decode_long( int start_ ){ return bytes.decode_s8(start_ ); }
-	int decode_ulong( int start_ ){ return bytes.decode_u8(start_ ); }
-	float decode_float( int start_ ){ return bytes.decode_float(start_ ); }
-	float decode_double( int start_ ){ return bytes.decode_double(start_ ); }
 	godot::String decode_string( int start_ );
-	// ? decode_vector( int start_ );
-	// ? decode_vector64( int start_ );
-	// ? decode_struct( int start_ );
-	// ? decode_union( int start_ );
-	// ? decode_array( int start_ );
 };
 
 } //namespace godot_flatbuffers

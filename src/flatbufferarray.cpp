@@ -33,12 +33,10 @@ int FlatBufferArray::count() {
 }
 
 godot::Variant FlatBufferArray::get(int idx) {
-	//func get_idx( idx ):
-	//	# what do we need to do here? decode the offset for the object from the array, and then pass it tothe interpretor.
-	//	var offset = bytes.decode_u32( start + 4 + (idx * 4) )
-	//	var pos = start + 4 + (idx * 4) + offset
-	//	return interpreter.call( pos, bytes )
-	return godot::Variant();
+	// decode the offset for the object from the array, and then pass it to the interpretor.
+	int offset = bytes.decode_u32( start + 4 + (idx * 4) );
+	int pos = start + 4 + (idx * 4) + offset;
+	return constructor.call( pos, bytes );
 }
 
 }// end namespace godot_flatbuffers

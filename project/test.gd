@@ -1,48 +1,6 @@
 @tool
 extends EditorScript
 
-var indent : String = ""
-func pprint( object, heading = "" ):
-	if object is FlatBuffer_Array:
-		print_Array( object, heading )
-		return
-	if object is reflection.FB_Schema:
-		print_Schema( object, heading )
-		return
-	if object is reflection.FB_Object:
-		print_Object( object, heading )
-		return
-	if object is reflection.FB_SchemaFile:
-		print_SchemaFile( object, heading )
-		return
-	if object is reflection.FB_Field:
-		print_Field( object, heading )
-		return
-	if object is reflection.FB_Type:
-		print_Type( object, heading )
-		return
-	if not heading.is_empty():
-		heading += ": "
-	print( indent, heading, object )
-
-func Indent():
-	indent += "\t"
-
-func Outdent():
-	indent = indent.erase(0,1)
-
-
-enum testing {
-		VT_OBJECTS = 4,
-		VT_ENUMS = 6,
-		VT_FILE_IDENT = 8,
-		VT_FILE_EXT = 10,
-		VT_ROOT_TABLE = 12,
-		VT_SERVICES = 14,
-		VT_ADVANCED_FEATURES = 16,
-		VT_FBS_FILES = 18
-	}
-
 func _run() -> void:
 	print("Test script is running")
 	var filename : String = "res://smol.bfbs"
@@ -90,6 +48,37 @@ func _run() -> void:
 	#},
 	#"services": []
 #}
+
+var indent : String = ""
+func pprint( object, heading = "" ):
+	if object is FlatBufferArray:
+		print_Array( object, heading )
+		return
+	if object is reflection.FB_Schema:
+		print_Schema( object, heading )
+		return
+	if object is reflection.FB_Object:
+		print_Object( object, heading )
+		return
+	if object is reflection.FB_SchemaFile:
+		print_SchemaFile( object, heading )
+		return
+	if object is reflection.FB_Field:
+		print_Field( object, heading )
+		return
+	if object is reflection.FB_Type:
+		print_Type( object, heading )
+		return
+	if not heading.is_empty():
+		heading += ": "
+	print( indent, heading, object )
+
+func Indent():
+	indent += "\t"
+
+func Outdent():
+	indent = indent.erase(0,1)
+
 
 func print_Type( type : reflection.FB_Type, heading = "" ):
 	pprint("Type {", heading)
@@ -197,18 +186,18 @@ func print_AdvancedFeatures( features : reflection.AdvancedFeatures, heading = "
 func print_BaseType( base_type : reflection.BaseType, heading = "" ):
 	pprint( reflection.BaseType.keys()[base_type], heading )
 
-func print_Array( array : FlatBuffer_Array, heading = "" ):
-	if array.size == 0:
+func print_Array( array : FlatBufferArray, heading = "" ):
+	if array.count() == 0:
 		pprint("Array[empty]", heading )
 		return
 	pprint("Array{", heading )
 	Indent()
-	pprint( array.size, "count" )
-	pprint( "constructor: %s" % array.interpreter.get_method() )
+	pprint( array.count(), "count" )
+	pprint( "constructor: %s" % array.constructor.get_method() )
 	pprint( "items [")
 	Indent()
-	for idx in range( array.size ):
-		pprint( array.get_idx(idx) )
+	for idx in range( array.count() ):
+		pprint( array.get(idx) )
 	Outdent()
 	pprint( "]")
 	Outdent()

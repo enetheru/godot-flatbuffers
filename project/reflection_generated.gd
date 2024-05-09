@@ -32,7 +32,7 @@ enum AdvancedFeatures {
 	DEFAULTVECTORSANDSTRINGS = 8
 }
 
-class FB_Type extends GD_FlatBuffer:
+class FB_Type extends FlatBuffer:
 	static func GetType( _start : int, _bytes : PackedByteArray ) -> FB_Type:
 		var new_Type = FB_Type.new()
 		new_Type.start = _start
@@ -70,40 +70,40 @@ class FB_Type extends GD_FlatBuffer:
 	func base_type() -> BaseType:
 		var foffset = get_field_offset( VT_BASE_TYPE )
 		if not foffset: return 0 as BaseType
-		return decode_char( start + foffset ) as BaseType
+		return bytes.decode_s8( start + foffset ) as BaseType
 
 	# element: BaseType
 	func element() -> BaseType:
 		var foffset = get_field_offset( VT_ELEMENT )
 		if not foffset: return 0 as BaseType
-		return decode_char( start + foffset ) as BaseType
+		return bytes.decode_s8( start + foffset ) as BaseType
 
 	# index: int
 	func index() -> int:
 		var foffset = get_field_offset( VT_INDEX )
 		if not foffset: return 0 as int
-		return decode_int( start + foffset ) as int
+		return bytes.decode_s32( start + foffset ) as int
 
 	# fixed_length: int
 	func fixed_length() -> int:
 		var foffset = get_field_offset( VT_FIXED_LENGTH )
 		if not foffset: return 0 as int
-		return decode_ushort( start + foffset ) as int
+		return bytes.decode_u16( start + foffset ) as int
 
 	# base_size: int
 	func base_size() -> int:
 		var foffset = get_field_offset( VT_BASE_SIZE )
 		if not foffset: return 0 as int
-		return decode_uint( start + foffset ) as int
+		return bytes.decode_u32( start + foffset ) as int
 
 	# element_size: int
 	func element_size() -> int:
 		var foffset = get_field_offset( VT_ELEMENT_SIZE )
 		if not foffset: return 0 as int
-		return decode_uint( start + foffset ) as int
+		return bytes.decode_u32( start + foffset ) as int
 
 
-class FB_KeyValue extends GD_FlatBuffer:
+class FB_KeyValue extends FlatBuffer:
 	static func GetKeyValue( _start : int, _bytes : PackedByteArray ) -> FB_KeyValue:
 		var new_KeyValue = FB_KeyValue.new()
 		new_KeyValue.start = _start
@@ -134,7 +134,7 @@ class FB_KeyValue extends GD_FlatBuffer:
 		return  decode_string( get_field_start( foffset ) )
 
 
-class FB_EnumVal extends GD_FlatBuffer:
+class FB_EnumVal extends FlatBuffer:
 	static func GetEnumVal( _start : int, _bytes : PackedByteArray ) -> FB_EnumVal:
 		var new_EnumVal = FB_EnumVal.new()
 		new_EnumVal.start = _start
@@ -174,7 +174,7 @@ class FB_EnumVal extends GD_FlatBuffer:
 	func value() -> int:
 		var foffset = get_field_offset( VT_VALUE )
 		if not foffset: return 0 as int
-		return decode_long( start + foffset ) as int
+		return bytes.decode_s64( start + foffset ) as int
 
 	# union_type: Type
 	func union_type() -> FB_Type:
@@ -182,7 +182,40 @@ class FB_EnumVal extends GD_FlatBuffer:
 		if not foffset: return null
 		return FB_Type.GetType( get_field_start(foffset), bytes )
 
-	# documentation: Vector[string]
+	# GenFieldDebug for: 'documentation'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 12
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element: string
+	#  struct_def: <null>
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = false
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func documentation_count() -> int:
 		return get_array_count( VT_DOCUMENTATION )
 
@@ -193,11 +226,48 @@ class FB_EnumVal extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return decode_string( element_start )
 
-	func documentation() -> FlatBuffer_Array:
-		return get_array( VT_DOCUMENTATION, decode_string )
+	func documentation() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_DOCUMENTATION )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, decode_string )
 
+	# documentation: Vector[String]
 
-	# attributes: Vector[KeyValue]
+	# GenFieldDebug for: 'attributes'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 14
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func attributes_count() -> int:
 		return get_array_count( VT_ATTRIBUTES )
 
@@ -209,12 +279,16 @@ class FB_EnumVal extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_KeyValue.GetKeyValue( element_start, bytes )
 
-	func attributes() -> FlatBuffer_Array:
-		return get_array( VT_ATTRIBUTES, FB_KeyValue.GetKeyValue )
+	func attributes() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_ATTRIBUTES )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_KeyValue.GetKeyValue )
+
+	# attributes: Vector[KeyValue]
 
 
-
-class FB_Enum extends GD_FlatBuffer:
+class FB_Enum extends FlatBuffer:
 	static func GetEnum( _start : int, _bytes : PackedByteArray ) -> FB_Enum:
 		var new_Enum = FB_Enum.new()
 		new_Enum.start = _start
@@ -258,7 +332,40 @@ class FB_Enum extends GD_FlatBuffer:
 		if not foffset: return ""
 		return  decode_string( get_field_start( foffset ) )
 
-	# values: Vector[EnumVal]
+	# GenFieldDebug for: 'values'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 6
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func values_count() -> int:
 		return get_array_count( VT_VALUES )
 
@@ -270,15 +377,19 @@ class FB_Enum extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_EnumVal.GetEnumVal( element_start, bytes )
 
-	func values() -> FlatBuffer_Array:
-		return get_array( VT_VALUES, FB_EnumVal.GetEnumVal )
+	func values() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_VALUES )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_EnumVal.GetEnumVal )
 
+	# values: Vector[EnumVal]
 
 	# is_union: bool
 	func is_union() -> bool:
 		var foffset = get_field_offset( VT_IS_UNION )
 		if not foffset: return 0 as bool
-		return decode_bool( start + foffset ) as bool
+		return bytes.decode_u8( start + foffset ) as bool
 
 	# underlying_type: Type
 	func underlying_type() -> FB_Type:
@@ -286,7 +397,40 @@ class FB_Enum extends GD_FlatBuffer:
 		if not foffset: return null
 		return FB_Type.GetType( get_field_start(foffset), bytes )
 
-	# attributes: Vector[KeyValue]
+	# GenFieldDebug for: 'attributes'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 12
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func attributes_count() -> int:
 		return get_array_count( VT_ATTRIBUTES )
 
@@ -298,11 +442,48 @@ class FB_Enum extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_KeyValue.GetKeyValue( element_start, bytes )
 
-	func attributes() -> FlatBuffer_Array:
-		return get_array( VT_ATTRIBUTES, FB_KeyValue.GetKeyValue )
+	func attributes() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_ATTRIBUTES )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_KeyValue.GetKeyValue )
 
+	# attributes: Vector[KeyValue]
 
-	# documentation: Vector[string]
+	# GenFieldDebug for: 'documentation'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 14
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element: string
+	#  struct_def: <null>
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = false
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func documentation_count() -> int:
 		return get_array_count( VT_DOCUMENTATION )
 
@@ -313,9 +494,13 @@ class FB_Enum extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return decode_string( element_start )
 
-	func documentation() -> FlatBuffer_Array:
-		return get_array( VT_DOCUMENTATION, decode_string )
+	func documentation() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_DOCUMENTATION )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, decode_string )
 
+	# documentation: Vector[String]
 
 	# declaration_file: String
 	func declaration_file() -> String:
@@ -324,7 +509,7 @@ class FB_Enum extends GD_FlatBuffer:
 		return  decode_string( get_field_start( foffset ) )
 
 
-class FB_Field extends GD_FlatBuffer:
+class FB_Field extends FlatBuffer:
 	static func GetField( _start : int, _bytes : PackedByteArray ) -> FB_Field:
 		var new_Field = FB_Field.new()
 		new_Field.start = _start
@@ -402,45 +587,78 @@ class FB_Field extends GD_FlatBuffer:
 	func id() -> int:
 		var foffset = get_field_offset( VT_ID )
 		if not foffset: return 0 as int
-		return decode_ushort( start + foffset ) as int
+		return bytes.decode_u16( start + foffset ) as int
 
 	# offset: int
 	func offset() -> int:
 		var foffset = get_field_offset( VT_OFFSET )
 		if not foffset: return 0 as int
-		return decode_ushort( start + foffset ) as int
+		return bytes.decode_u16( start + foffset ) as int
 
 	# default_integer: int
 	func default_integer() -> int:
 		var foffset = get_field_offset( VT_DEFAULT_INTEGER )
 		if not foffset: return 0 as int
-		return decode_long( start + foffset ) as int
+		return bytes.decode_s64( start + foffset ) as int
 
 	# default_real: float
 	func default_real() -> float:
 		var foffset = get_field_offset( VT_DEFAULT_REAL )
 		if not foffset: return 0 as float
-		return decode_double( start + foffset ) as float
+		return bytes.decode_double( start + foffset ) as float
 
 	# deprecated: bool
 	func deprecated() -> bool:
 		var foffset = get_field_offset( VT_DEPRECATED )
 		if not foffset: return 0 as bool
-		return decode_bool( start + foffset ) as bool
+		return bytes.decode_u8( start + foffset ) as bool
 
 	# required: bool
 	func required() -> bool:
 		var foffset = get_field_offset( VT_REQUIRED )
 		if not foffset: return 0 as bool
-		return decode_bool( start + foffset ) as bool
+		return bytes.decode_u8( start + foffset ) as bool
 
 	# key: bool
 	func key() -> bool:
 		var foffset = get_field_offset( VT_KEY )
 		if not foffset: return 0 as bool
-		return decode_bool( start + foffset ) as bool
+		return bytes.decode_u8( start + foffset ) as bool
 
-	# attributes: Vector[KeyValue]
+	# GenFieldDebug for: 'attributes'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 22
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func attributes_count() -> int:
 		return get_array_count( VT_ATTRIBUTES )
 
@@ -452,11 +670,48 @@ class FB_Field extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_KeyValue.GetKeyValue( element_start, bytes )
 
-	func attributes() -> FlatBuffer_Array:
-		return get_array( VT_ATTRIBUTES, FB_KeyValue.GetKeyValue )
+	func attributes() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_ATTRIBUTES )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_KeyValue.GetKeyValue )
 
+	# attributes: Vector[KeyValue]
 
-	# documentation: Vector[string]
+	# GenFieldDebug for: 'documentation'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 24
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element: string
+	#  struct_def: <null>
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = false
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func documentation_count() -> int:
 		return get_array_count( VT_DOCUMENTATION )
 
@@ -467,24 +722,28 @@ class FB_Field extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return decode_string( element_start )
 
-	func documentation() -> FlatBuffer_Array:
-		return get_array( VT_DOCUMENTATION, decode_string )
+	func documentation() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_DOCUMENTATION )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, decode_string )
 
+	# documentation: Vector[String]
 
 	# optional: bool
 	func optional() -> bool:
 		var foffset = get_field_offset( VT_OPTIONAL )
 		if not foffset: return 0 as bool
-		return decode_bool( start + foffset ) as bool
+		return bytes.decode_u8( start + foffset ) as bool
 
 	# padding: int
 	func padding() -> int:
 		var foffset = get_field_offset( VT_PADDING )
 		if not foffset: return 0 as int
-		return decode_ushort( start + foffset ) as int
+		return bytes.decode_u16( start + foffset ) as int
 
 
-class FB_Object extends GD_FlatBuffer:
+class FB_Object extends FlatBuffer:
 	static func GetObject( _start : int, _bytes : PackedByteArray ) -> FB_Object:
 		var new_Object = FB_Object.new()
 		new_Object.start = _start
@@ -532,7 +791,40 @@ class FB_Object extends GD_FlatBuffer:
 		if not foffset: return ""
 		return  decode_string( get_field_start( foffset ) )
 
-	# fields: Vector[Field]
+	# GenFieldDebug for: 'fields'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 6
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func fields_count() -> int:
 		return get_array_count( VT_FIELDS )
 
@@ -544,29 +836,66 @@ class FB_Object extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_Field.GetField( element_start, bytes )
 
-	func fields() -> FlatBuffer_Array:
-		return get_array( VT_FIELDS, FB_Field.GetField )
+	func fields() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_FIELDS )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_Field.GetField )
 
+	# fields: Vector[Field]
 
 	# is_struct: bool
 	func is_struct() -> bool:
 		var foffset = get_field_offset( VT_IS_STRUCT )
 		if not foffset: return 0 as bool
-		return decode_bool( start + foffset ) as bool
+		return bytes.decode_u8( start + foffset ) as bool
 
 	# minalign: int
 	func minalign() -> int:
 		var foffset = get_field_offset( VT_MINALIGN )
 		if not foffset: return 0 as int
-		return decode_int( start + foffset ) as int
+		return bytes.decode_s32( start + foffset ) as int
 
 	# bytesize: int
 	func bytesize() -> int:
 		var foffset = get_field_offset( VT_BYTESIZE )
 		if not foffset: return 0 as int
-		return decode_int( start + foffset ) as int
+		return bytes.decode_s32( start + foffset ) as int
 
-	# attributes: Vector[KeyValue]
+	# GenFieldDebug for: 'attributes'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 14
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func attributes_count() -> int:
 		return get_array_count( VT_ATTRIBUTES )
 
@@ -578,11 +907,48 @@ class FB_Object extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_KeyValue.GetKeyValue( element_start, bytes )
 
-	func attributes() -> FlatBuffer_Array:
-		return get_array( VT_ATTRIBUTES, FB_KeyValue.GetKeyValue )
+	func attributes() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_ATTRIBUTES )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_KeyValue.GetKeyValue )
 
+	# attributes: Vector[KeyValue]
 
-	# documentation: Vector[string]
+	# GenFieldDebug for: 'documentation'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 16
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element: string
+	#  struct_def: <null>
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = false
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func documentation_count() -> int:
 		return get_array_count( VT_DOCUMENTATION )
 
@@ -593,9 +959,13 @@ class FB_Object extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return decode_string( element_start )
 
-	func documentation() -> FlatBuffer_Array:
-		return get_array( VT_DOCUMENTATION, decode_string )
+	func documentation() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_DOCUMENTATION )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, decode_string )
 
+	# documentation: Vector[String]
 
 	# declaration_file: String
 	func declaration_file() -> String:
@@ -604,7 +974,7 @@ class FB_Object extends GD_FlatBuffer:
 		return  decode_string( get_field_start( foffset ) )
 
 
-class FB_RPCCall extends GD_FlatBuffer:
+class FB_RPCCall extends FlatBuffer:
 	static func GetRPCCall( _start : int, _bytes : PackedByteArray ) -> FB_RPCCall:
 		var new_RPCCall = FB_RPCCall.new()
 		new_RPCCall.start = _start
@@ -652,7 +1022,40 @@ class FB_RPCCall extends GD_FlatBuffer:
 		if not foffset: return null
 		return FB_Object.GetObject( get_field_start(foffset), bytes )
 
-	# attributes: Vector[KeyValue]
+	# GenFieldDebug for: 'attributes'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 10
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func attributes_count() -> int:
 		return get_array_count( VT_ATTRIBUTES )
 
@@ -664,11 +1067,48 @@ class FB_RPCCall extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_KeyValue.GetKeyValue( element_start, bytes )
 
-	func attributes() -> FlatBuffer_Array:
-		return get_array( VT_ATTRIBUTES, FB_KeyValue.GetKeyValue )
+	func attributes() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_ATTRIBUTES )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_KeyValue.GetKeyValue )
 
+	# attributes: Vector[KeyValue]
 
-	# documentation: Vector[string]
+	# GenFieldDebug for: 'documentation'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 12
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element: string
+	#  struct_def: <null>
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = false
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func documentation_count() -> int:
 		return get_array_count( VT_DOCUMENTATION )
 
@@ -679,12 +1119,16 @@ class FB_RPCCall extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return decode_string( element_start )
 
-	func documentation() -> FlatBuffer_Array:
-		return get_array( VT_DOCUMENTATION, decode_string )
+	func documentation() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_DOCUMENTATION )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, decode_string )
+
+	# documentation: Vector[String]
 
 
-
-class FB_Service extends GD_FlatBuffer:
+class FB_Service extends FlatBuffer:
 	static func GetService( _start : int, _bytes : PackedByteArray ) -> FB_Service:
 		var new_Service = FB_Service.new()
 		new_Service.start = _start
@@ -720,7 +1164,40 @@ class FB_Service extends GD_FlatBuffer:
 		if not foffset: return ""
 		return  decode_string( get_field_start( foffset ) )
 
-	# calls: Vector[RPCCall]
+	# GenFieldDebug for: 'calls'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 6
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func calls_count() -> int:
 		return get_array_count( VT_CALLS )
 
@@ -732,11 +1209,48 @@ class FB_Service extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_RPCCall.GetRPCCall( element_start, bytes )
 
-	func calls() -> FlatBuffer_Array:
-		return get_array( VT_CALLS, FB_RPCCall.GetRPCCall )
+	func calls() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_CALLS )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_RPCCall.GetRPCCall )
 
+	# calls: Vector[RPCCall]
 
-	# attributes: Vector[KeyValue]
+	# GenFieldDebug for: 'attributes'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 8
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func attributes_count() -> int:
 		return get_array_count( VT_ATTRIBUTES )
 
@@ -748,11 +1262,48 @@ class FB_Service extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_KeyValue.GetKeyValue( element_start, bytes )
 
-	func attributes() -> FlatBuffer_Array:
-		return get_array( VT_ATTRIBUTES, FB_KeyValue.GetKeyValue )
+	func attributes() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_ATTRIBUTES )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_KeyValue.GetKeyValue )
 
+	# attributes: Vector[KeyValue]
 
-	# documentation: Vector[string]
+	# GenFieldDebug for: 'documentation'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 10
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element: string
+	#  struct_def: <null>
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = false
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func documentation_count() -> int:
 		return get_array_count( VT_DOCUMENTATION )
 
@@ -763,9 +1314,13 @@ class FB_Service extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return decode_string( element_start )
 
-	func documentation() -> FlatBuffer_Array:
-		return get_array( VT_DOCUMENTATION, decode_string )
+	func documentation() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_DOCUMENTATION )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, decode_string )
 
+	# documentation: Vector[String]
 
 	# declaration_file: String
 	func declaration_file() -> String:
@@ -777,7 +1332,7 @@ class FB_Service extends GD_FlatBuffer:
 #/// File specific information.
 #/// Symbols declared within a file may be recovered by iterating over all
 #/// symbols and examining the `declaration_file` field.
-class FB_SchemaFile extends GD_FlatBuffer:
+class FB_SchemaFile extends FlatBuffer:
 	static func GetSchemaFile( _start : int, _bytes : PackedByteArray ) -> FB_SchemaFile:
 		var new_SchemaFile = FB_SchemaFile.new()
 		new_SchemaFile.start = _start
@@ -801,7 +1356,40 @@ class FB_SchemaFile extends GD_FlatBuffer:
 		if not foffset: return ""
 		return  decode_string( get_field_start( foffset ) )
 
-	# included_filenames: Vector[string]
+	# GenFieldDebug for: 'included_filenames'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 6
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element: string
+	#  struct_def: <null>
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = false
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func included_filenames_count() -> int:
 		return get_array_count( VT_INCLUDED_FILENAMES )
 
@@ -812,12 +1400,16 @@ class FB_SchemaFile extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return decode_string( element_start )
 
-	func included_filenames() -> FlatBuffer_Array:
-		return get_array( VT_INCLUDED_FILENAMES, decode_string )
+	func included_filenames() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_INCLUDED_FILENAMES )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, decode_string )
+
+	# included_filenames: Vector[String]
 
 
-
-class FB_Schema extends GD_FlatBuffer:
+class FB_Schema extends FlatBuffer:
 	static func GetSchema( _start : int, _bytes : PackedByteArray ) -> FB_Schema:
 		var new_Schema = FB_Schema.new()
 		new_Schema.start = _start
@@ -859,7 +1451,40 @@ class FB_Schema extends GD_FlatBuffer:
 	func fbs_files_is_present() -> bool:
 		return get_field_offset( VT_FBS_FILES )
 
-	# objects: Vector[Object]
+	# GenFieldDebug for: 'objects'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 4
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func objects_count() -> int:
 		return get_array_count( VT_OBJECTS )
 
@@ -871,11 +1496,48 @@ class FB_Schema extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_Object.GetObject( element_start, bytes )
 
-	func objects() -> FlatBuffer_Array:
-		return get_array( VT_OBJECTS, FB_Object.GetObject )
+	func objects() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_OBJECTS )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_Object.GetObject )
 
+	# objects: Vector[Object]
 
-	# enums: Vector[Enum]
+	# GenFieldDebug for: 'enums'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 6
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func enums_count() -> int:
 		return get_array_count( VT_ENUMS )
 
@@ -887,9 +1549,13 @@ class FB_Schema extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_Enum.GetEnum( element_start, bytes )
 
-	func enums() -> FlatBuffer_Array:
-		return get_array( VT_ENUMS, FB_Enum.GetEnum )
+	func enums() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_ENUMS )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_Enum.GetEnum )
 
+	# enums: Vector[Enum]
 
 	# file_ident: String
 	func file_ident() -> String:
@@ -909,7 +1575,40 @@ class FB_Schema extends GD_FlatBuffer:
 		if not foffset: return null
 		return FB_Object.GetObject( get_field_start(foffset), bytes )
 
-	# services: Vector[Service]
+	# GenFieldDebug for: 'services'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 14
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func services_count() -> int:
 		return get_array_count( VT_SERVICES )
 
@@ -921,17 +1620,54 @@ class FB_Schema extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_Service.GetService( element_start, bytes )
 
-	func services() -> FlatBuffer_Array:
-		return get_array( VT_SERVICES, FB_Service.GetService )
+	func services() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_SERVICES )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_Service.GetService )
 
+	# services: Vector[Service]
 
 	# advanced_features: AdvancedFeatures
 	func advanced_features() -> AdvancedFeatures:
 		var foffset = get_field_offset( VT_ADVANCED_FEATURES )
 		if not foffset: return 0 as AdvancedFeatures
-		return decode_ulong( start + foffset ) as AdvancedFeatures
+		return bytes.decode_u64( start + foffset ) as AdvancedFeatures
 
-	# fbs_files: Vector[SchemaFile]
+	# GenFieldDebug for: 'fbs_files'
+	#FieldDef {
+	#  deprecated = false
+	#  key = false
+	#  shared = false
+	#  native_inline = false
+	#  flexbuffer = false
+	#  offset64 = false
+	#  IsScalar() = false
+	#}
+	#FieldDef.Value {
+	#  constant: 0
+	#  offset: 18
+	#}
+	#FieldDef.Value.Type {
+	#  base_type:
+	#  element:
+	#  struct_def: exists
+	#  enum_def: <null>
+	#  fixed_length: 0
+	#  IsStruct() = false
+	#  IsArray() = false
+	#  IsIncompleteStruct: false
+	#  IsUnion() = false
+	#  IsUnionType() = false
+	#  IsSeries() = true
+	#  IsVector() = true
+	#  IsVectorOfTable() = true
+	#  IsVectorOfStruct: false
+	#  IsArray() = false
+	#  IsString() = false
+	#  IsTable() = false
+	#  IsEnum() = false
+	#}
 	func fbs_files_count() -> int:
 		return get_array_count( VT_FBS_FILES )
 
@@ -943,8 +1679,12 @@ class FB_Schema extends GD_FlatBuffer:
 		var element_start = get_array_element_start( array_start, index )
 		return FB_SchemaFile.GetSchemaFile( element_start, bytes )
 
-	func fbs_files() -> FlatBuffer_Array:
-		return get_array( VT_FBS_FILES, FB_SchemaFile.GetSchemaFile )
+	func fbs_files() -> FlatBufferArray:
+		var foffset = get_field_offset( VT_FBS_FILES )
+		if not foffset: return null
+		var array_start = get_field_start( foffset )
+		return get_array( array_start, FB_SchemaFile.GetSchemaFile )
 
+	# fbs_files: Vector[SchemaFile]
 
 

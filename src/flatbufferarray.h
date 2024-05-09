@@ -4,6 +4,7 @@
 #include "flatbuffers/flatbuffers.h"
 
 #include <godot_cpp/classes/object.hpp>
+#include <godot_cpp/core/object.hpp>
 
 namespace godot_flatbuffers {
 
@@ -11,7 +12,7 @@ class FlatBufferArray : public godot::Object {
 	GDCLASS(FlatBufferArray, Object) // NOLINT(*-use-auto)
 
 	int start {};
-	godot::PackedByteArray bytes;
+	godot::PackedByteArray bytes{};
 	godot::Callable constructor;
 
 public:

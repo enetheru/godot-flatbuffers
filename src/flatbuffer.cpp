@@ -16,28 +16,16 @@ void FlatBuffer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_bytes"), &FlatBuffer::get_bytes );
 	ADD_PROPERTY(PropertyInfo(Variant::PACKED_BYTE_ARRAY, "bytes"), "set_bytes", "get_bytes");
 
-	// Access Helpers
+	// Field Access Helpers
 	ClassDB::bind_method(D_METHOD("get_field_offset", "vtable_offset"), &FlatBuffer::get_field_offset );
 	ClassDB::bind_method(D_METHOD("get_field_start", "field_offset"), &FlatBuffer::get_field_start );
 
-	// TODO FlatBuffer_Array get_array( int vtable_offset, Callable interpreter  );
+	//Array Access Helpers
 	ClassDB::bind_method(D_METHOD("get_array", "start_", "constructor_"), &FlatBuffer::get_array );
 	ClassDB::bind_method(D_METHOD("get_array_count", "vtable_offset"), &FlatBuffer::get_array_count );
 	ClassDB::bind_method(D_METHOD("get_array_element_start", "array_start", "idx"), &FlatBuffer::get_array_element_start );
 
-
 	// Decode Functions
-	ClassDB::bind_method(D_METHOD("decode_bool", "start_" ), &FlatBuffer::decode_bool );
-	ClassDB::bind_method(D_METHOD("decode_char", "start_" ), &FlatBuffer::decode_char );
-	ClassDB::bind_method(D_METHOD("decode_uchar", "start_" ), &FlatBuffer::decode_uchar );
-	ClassDB::bind_method(D_METHOD("decode_short", "start_" ), &FlatBuffer::decode_short );
-	ClassDB::bind_method(D_METHOD("decode_ushort", "start_" ), &FlatBuffer::decode_ushort );
-	ClassDB::bind_method(D_METHOD("decode_int", "start_" ), &FlatBuffer::decode_int );
-	ClassDB::bind_method(D_METHOD("decode_uint", "start_" ), &FlatBuffer::decode_uint );
-	ClassDB::bind_method(D_METHOD("decode_long", "start_" ), &FlatBuffer::decode_long );
-	ClassDB::bind_method(D_METHOD("decode_ulong", "start_" ), &FlatBuffer::decode_ulong );
-	ClassDB::bind_method(D_METHOD("decode_float", "start_" ), &FlatBuffer::decode_float );
-	ClassDB::bind_method(D_METHOD("decode_double", "start_" ), &FlatBuffer::decode_double );
 	ClassDB::bind_method(D_METHOD("decode_string", "start_" ), &FlatBuffer::decode_string );
 }
 
@@ -63,8 +51,8 @@ int FlatBuffer::get_field_start(int field_offset) {
 }
 
 FlatBufferArray *FlatBuffer::get_array(int start_, godot::Callable constructor_) {
-	FlatBufferArray new_array( start_, bytes, constructor_ );
-	return &new_array;
+	auto new_array = memnew( FlatBufferArray( start_, bytes, constructor_ ) );
+	return new_array;
 }
 
 int FlatBuffer::get_array_count(int vtable_offset) {
