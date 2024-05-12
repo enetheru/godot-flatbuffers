@@ -1,0 +1,13 @@
+namespace godot_flatbuffers;
+
+table String{
+    value:string;
+}
+
+table StringName{
+    value:string;
+}
+
+table NodePath{
+    value:string;
+}

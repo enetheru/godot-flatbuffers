@@ -1,0 +1,10 @@
+native_include "variant/color.hpp";
+
+namespace godot_flatbuffers;
+
+struct Color(native_type:"godot::Color"){
+    r: float;
+    g: float;
+    b: float;
+    a: float;
+}

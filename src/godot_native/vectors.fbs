@@ -1,0 +1,37 @@
+namespace godot_flatbuffers;
+
+struct Vector2 {
+  x:float;
+  y:float;
+}
+
+struct Vector2i {
+  x:int;
+  y:int;
+}
+
+struct Vector3 {
+  x:float;
+  y:float;
+  z:float;
+}
+
+struct Vector3i {
+  x:int;
+  y:int;
+  z:int;
+}
+
+struct Vector4 {
+  x:float;
+  y:float;
+  z:float;
+  w:float;
+}
+
+struct Vector4i {
+  x:int;
+  y:int;
+  z:int;
+  w:int;
+}
