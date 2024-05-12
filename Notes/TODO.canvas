@@ -1,0 +1,23 @@
+{
+	"nodes":[
+		{"id":"748705eab59ac6c2","x":-120,"y":-281,"width":250,"height":60,"type":"text","text":"Editor Settings"},
+		{"id":"3c40f24606e80cd7","x":-120,"y":-200,"width":250,"height":60,"type":"text","text":"Recognition of fbs files"},
+		{"id":"0831b0478c07a9aa","x":220,"y":-200,"width":250,"height":60,"type":"text","text":"right click generate"},
+		{"id":"22398628d2fc8641","x":-120,"y":-120,"width":250,"height":60,"type":"text","text":"text_editor"},
+		{"id":"f294e8033bf5edda","x":221,"y":-120,"width":250,"height":60,"type":"text","text":"Syntax Highlighting"},
+		{"id":"30c933f00c2decac","x":-120,"y":-40,"width":250,"height":60,"type":"text","text":"Auto Generation of fbs from exported values"},
+		{"id":"b8c597d61f362249","x":-560,"y":-150,"width":250,"height":60,"type":"text","text":"Editor"},
+		{"id":"eee251c8afaad0e7","x":221,"y":-360,"width":250,"height":60,"type":"text","text":"path to external flatc"},
+		{"id":"a394b2100ffe39c1","x":220,"y":-281,"width":250,"height":60,"type":"text","text":"class prefix"}
+	],
+	"edges":[
+		{"id":"74d0004b1107afc6","fromNode":"748705eab59ac6c2","fromSide":"right","toNode":"eee251c8afaad0e7","toSide":"left"},
+		{"id":"e7a2755d94e15226","fromNode":"b8c597d61f362249","fromSide":"right","toNode":"748705eab59ac6c2","toSide":"left"},
+		{"id":"6f612d1c2728d3e7","fromNode":"b8c597d61f362249","fromSide":"right","toNode":"3c40f24606e80cd7","toSide":"left"},
+		{"id":"8b7cca8418dc09fa","fromNode":"b8c597d61f362249","fromSide":"right","toNode":"22398628d2fc8641","toSide":"left"},
+		{"id":"aa89d1f7f3201915","fromNode":"3c40f24606e80cd7","fromSide":"right","toNode":"0831b0478c07a9aa","toSide":"left"},
+		{"id":"a89f62dddd1f3582","fromNode":"22398628d2fc8641","fromSide":"right","toNode":"f294e8033bf5edda","toSide":"left"},
+		{"id":"a67bd42b8f59b4d2","fromNode":"b8c597d61f362249","fromSide":"right","toNode":"30c933f00c2decac","toSide":"left"},
+		{"id":"55f7a9ef8c61289d","fromNode":"748705eab59ac6c2","fromSide":"right","toNode":"a394b2100ffe39c1","toSide":"left"}
+	]
+}

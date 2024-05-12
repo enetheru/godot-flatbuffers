@@ -66,3 +66,6 @@ project/godot-flatbuffers.gdextension
 
 flatbuffers/
 /project/bin/
+
+*_generated.h
+*_generated.gd
