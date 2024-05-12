@@ -65,3 +65,4 @@ src/entry_point.cpp
 project/godot-flatbuffers.gdextension
 
 flatbuffers/
+/project/bin/

@@ -1,0 +1,15 @@
+
+table TestTable {
+test1:ubyte;
+test2:byte;
+test3:ushort;
+test4:short;
+test5:int;
+test6:uint;
+test7:long;
+test8:ulong;
+test9:float;
+test0:double;
+}
+
+root_type TestTable;

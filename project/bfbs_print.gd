@@ -3,7 +3,7 @@ extends EditorScript
 
 func _run() -> void:
 	print("Test script is running")
-	var filename : String = "res://smol.bfbs"
+	var filename : String = "res://binary_schema.bfbs"
 	var bfbs : PackedByteArray = FileAccess.get_file_as_bytes( filename )
 
 	print( filename, ", size: ", bfbs.size() )
