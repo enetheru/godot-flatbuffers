@@ -103,7 +103,20 @@ FetchContent_Declare(godot-cpp
         GIT_SHALLOW ON
         SOURCE_DIR "${PROJECT_SOURCE_DIR}/${GODOT_CPP_DIR}"
 )
-FetchContent_MakeAvailable(godot-cpp)
+
+if(NOT godot-cpp_POPULATED)
+    FetchContent_Populate(godot-cpp)
+
+    set(GODOT_GDEXTENSION_DIR "${PROJECT_SOURCE_DIR}/gdextension" CACHE INTERNAL "Path to the directory containing GDExtension interface header and API JSON file" )
+    set(GODOT_CPP_SYSTEM_HEADERS ON CACHE INTERNAL "Mark the header files as SYSTEM. This may be useful to supress warnings in projects including this one." )
+    set(GODOT_CPP_WARNING_AS_ERROR ON CACHE INTERNAL "Treat any warnings as errors" )
+    set(GODOT_CUSTOM_API_FILE ${PROJECT_SOURCE_DIR}/gdextension/extension_api.json CACHE INTERNAL "Path to a custom GDExtension API JSON file (takes precedence over `gdextension_dir`)" )
+    set(FLOAT_PRECISION "single" CACHE INTERNAL "docstring" )
+
+    add_subdirectory(godot-cpp)
+endif()
+# TODO add any additional godot-cpp definitions here.
+# TODO unset any exclusively godot-cpp variable here.
 # Add dependency to dump_api
 add_dependencies(godot-cpp dump_api)
 
@@ -114,8 +127,8 @@ add_dependencies(godot-cpp dump_api)
 # Scrub the options so we can start again.
 set_target_properties( godot-cpp
         PROPERTIES
-        COMPILE_OPTIONS ""
-        COMPILE_FLAGS ""
+#        COMPILE_OPTIONS ""
+#        COMPILE_FLAGS ""
         LINK_OPTIONS ""
         LINK_FLAGS ""
 )
@@ -135,6 +148,7 @@ endif ()
 ### Code Features
 #TODO move these compile definitions to the targets so they dont pollute other packages that we might want.
 add_compile_definitions("GDEXTENSION")
+target_compile_definitions( godot-cpp PRIVATE "GDEXTENSION" )
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     # DEBUG_ENABLED enables debugging *features* and debug-only code, which is intended
@@ -149,13 +163,13 @@ endif ()
 # if editor tools are intended to be enabled.
 # Analogous to the target=editor from scons
 if (GODOT_CPP_TOOLS_ENABLED)
-    add_compile_definitions("TOOLS_ENABLED")
+    target_compile_definitions(godot-cpp PUBLIC "TOOLS_ENABLED")
 endif ()
 
 # Hot reload
 # TODO, the original logic was if unspecified enable in debug and editor builds
 if (GODOT_CPP_USE_HOT_RELOAD)
-    add_compile_definitions("HOT_RELOAD_ENABLED")
+    target_compile_definitions(godot-cpp PUBLIC "HOT_RELOAD_ENABLED")
 endif ()
 
 if (GODOT_CPP_FLOAT_DOUBLE)
