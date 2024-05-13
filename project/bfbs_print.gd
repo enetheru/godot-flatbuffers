@@ -9,7 +9,9 @@ func _run() -> void:
 	print( filename, ", size: ", bfbs.size() )
 	print( "data: ", bfbs )
 
-	var schema := reflection.FB_Schema.GetSchema(bfbs.decode_u32(0), bfbs)
+	var test : Reflection.FB_Schema
+
+	var schema := Reflection.FB_Schema.GetSchema(bfbs.decode_u32(0), bfbs)
 
 	pprint( schema )
 
@@ -54,19 +56,19 @@ func pprint( object, heading = "" ):
 	if object is FlatBufferArray:
 		print_Array( object, heading )
 		return
-	if object is reflection.FB_Schema:
+	if object is Reflection.FB_Schema:
 		print_Schema( object, heading )
 		return
-	if object is reflection.FB_Object:
+	if object is Reflection.FB_Object:
 		print_Object( object, heading )
 		return
-	if object is reflection.FB_SchemaFile:
+	if object is Reflection.FB_SchemaFile:
 		print_SchemaFile( object, heading )
 		return
-	if object is reflection.FB_Field:
+	if object is Reflection.FB_Field:
 		print_Field( object, heading )
 		return
-	if object is reflection.FB_Type:
+	if object is Reflection.FB_Type:
 		print_Type( object, heading )
 		return
 	if not heading.is_empty():
@@ -80,7 +82,7 @@ func Outdent():
 	indent = indent.erase(0,1)
 
 
-func print_Type( type : reflection.FB_Type, heading = "" ):
+func print_Type( type : Reflection.FB_Type, heading = "" ):
 	pprint("Type {", heading)
 	Indent()
 	#base_type:BaseType;
@@ -110,7 +112,7 @@ func print_Type( type : reflection.FB_Type, heading = "" ):
 	Outdent()
 	pprint("}")
 
-func print_Field( field : reflection.FB_Field, heading = ""):
+func print_Field( field : Reflection.FB_Field, heading = ""):
 	pprint("Field {", heading )
 	Indent()
 	#name:string (required, key);
@@ -154,7 +156,7 @@ func print_Field( field : reflection.FB_Field, heading = ""):
 	Outdent()
 	pprint("}")
 
-func print_SchemaFile( object : reflection.FB_SchemaFile, heading = "" ):
+func print_SchemaFile( object : Reflection.FB_SchemaFile, heading = "" ):
 	pprint("SchemaFile {", heading)
 	Indent()
 	#/// Filename, relative to project root.
@@ -167,7 +169,7 @@ func print_SchemaFile( object : reflection.FB_SchemaFile, heading = "" ):
 	Outdent()
 	pprint("}")
 
-func print_Object( object : reflection.FB_Object, heading = ""):
+func print_Object( object : Reflection.FB_Object, heading = ""):
 	pprint( "Object {", heading )
 	Indent()
 	#name:string (required, key);
@@ -198,18 +200,18 @@ func print_Object( object : reflection.FB_Object, heading = ""):
 	Outdent()
 	pprint("}")
 
-func print_AdvancedFeatures( features : reflection.AdvancedFeatures, heading = "" ):
+func print_AdvancedFeatures( features : Reflection.AdvancedFeatures, heading = "" ):
 	pprint("AdvancedFeatures {", heading )
 	Indent()
-	var keys = reflection.AdvancedFeatures.keys()
+	var keys = Reflection.AdvancedFeatures.keys()
 	for key in keys:
-		if reflection.AdvancedFeatures[key] & features:
+		if Reflection.AdvancedFeatures[key] & features:
 			pprint(key)
 	Outdent()
 	pprint("}")
 
-func print_BaseType( base_type : reflection.BaseType, heading = "" ):
-	pprint( reflection.BaseType.keys()[base_type], heading )
+func print_BaseType( base_type : Reflection.BaseType, heading = "" ):
+	pprint( Reflection.BaseType.keys()[base_type], heading )
 
 func print_Array( array : FlatBufferArray, heading = "" ):
 	if array.count() == 0:
@@ -228,7 +230,7 @@ func print_Array( array : FlatBufferArray, heading = "" ):
 	Outdent()
 	pprint("}")
 
-func print_Schema( schema : reflection.FB_Schema, heading = "" ):
+func print_Schema( schema : Reflection.FB_Schema, heading = "" ):
 	pprint( "Schema {", heading )
 	Indent()
 	#objects:[Object] (required);    // Sorted.

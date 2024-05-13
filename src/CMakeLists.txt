@@ -11,9 +11,7 @@ add_library( ${GDE_NAME} SHARED )
 target_sources( ${GDE_NAME}
     PRIVATE
         entry_point.cpp
-        example.cpp example.h
         register_types.cpp register_types.h
-        tests.h
         flatbuffer.cpp
         flatbuffer.h
         flatbufferbuilder.cpp
