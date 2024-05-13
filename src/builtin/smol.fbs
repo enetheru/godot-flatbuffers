@@ -1,7 +1,0 @@
-// Example IDL file for our monster's schema.
-
-table Smol {
-  value:ubyte = 7;
-}
-
-root_type Smol;
