@@ -1,0 +1,26 @@
+// structs only allow other structs and scalars, which includes enums.
+// Not allowed are: tables, strings, vectors
+
+enum enum_type: short {
+	first, second, third
+}
+
+struct basic_struct {
+	my_enum:enum_type;
+	my_byte:byte;
+	my_ubyte:ubyte;
+	my_short:short;
+	my_ushort:ushort;
+	my_int:int;
+	my_uint:uint;
+	my_long:long;
+	my_ulong:ulong;
+	my_float:float;
+	my_double:double;
+}
+
+struct nested {
+	child:basic_struct;
+	value: int;
+	my_enum:enum_type;
+}

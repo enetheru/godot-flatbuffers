@@ -1,0 +1,35 @@
+enum enum_type: short {
+	first, second, third
+}
+
+struct basic_struct{
+	a:int;
+	b:long;
+}
+
+table basic_table {
+	my_enum:enum_type;
+	my_byte:byte;
+	my_ubyte:ubyte;
+	my_short:short;
+	my_ushort:ushort;
+	my_int:int;
+	my_uint:uint;
+	my_long:long;
+	my_ulong:ulong;
+	my_float:float;
+	my_double:double;
+}
+
+table kitchen_sink {
+	id: ulong (key);			// Scalar			| key
+	name:string (required);		// String			| required
+	surname:string;				// String
+	age: ubyte (deprecated);	// Scalar			| deprecated
+	order:enum_type;			// enum value
+	nested_struct:basic_struct;	// Nested Struct
+	nested_table:basic_table;	// Nested Tables
+	data:[ubyte];				// Array of scalar
+	structs:[basic_struct];		// Array of structs
+	tables:[basic_table];		// Array of tables
+}
