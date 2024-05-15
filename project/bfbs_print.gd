@@ -3,7 +3,7 @@ extends EditorScript
 
 func _run() -> void:
 	print("Test script is running")
-	var filename : String = "res://binary_schema.bfbs"
+	var filename : String = "res://fbs_files/Reflection.bfbs"
 	var bfbs : PackedByteArray = FileAccess.get_file_as_bytes( filename )
 
 	print( filename, ", size: ", bfbs.size() )
@@ -173,11 +173,9 @@ func print_Object( object : Reflection.FB_Object, heading = ""):
 	pprint( "Object {", heading )
 	Indent()
 	#name:string (required, key);
-	if object.name_is_present():
-		pprint( object.name(), "name" )
+	pprint( object.name(), "name" )
 	#fields:[Field] (required);  // Sorted.
-	if object.fields_is_present():
-		pprint( object.fields(), "fields" )
+	pprint( object.fields(), "fields" )
 	#is_struct:bool = false;
 	if object.is_struct_is_present():
 		pprint( object.is_struct(), "is_struct" )
@@ -234,11 +232,9 @@ func print_Schema( schema : Reflection.FB_Schema, heading = "" ):
 	pprint( "Schema {", heading )
 	Indent()
 	#objects:[Object] (required);    // Sorted.
-	if schema.objects_is_present():
-		pprint( schema.objects(), "objects" )
+	pprint( schema.objects(), "objects:%s" % schema.objects_count() )
 	##enums:[Enum] (required);        // Sorted.
-	if schema.enums_is_present():
-		pprint( schema.enums(), "enums" )
+	pprint( schema.enums(), "enums:%s" % schema.enums_count() )
 	##file_ident:string;
 	if schema.file_ident_is_present():
 		pprint( schema.file_ident(), "file_ident" )
@@ -255,6 +251,6 @@ func print_Schema( schema : Reflection.FB_Schema, heading = "" ):
 	##/// flatc was invoked.
 	##fbs_files:[SchemaFile];         // Sorted.
 	if schema.fbs_files_is_present():
-		pprint( schema.fbs_files(), "fbs_files" )
+		pprint( schema.fbs_files(), "fbs_files:%s" % schema.fbs_files_count() )
 	Outdent()
 	pprint("}")

@@ -1,0 +1,36 @@
+// File to test vector flatbufferrs
+
+enum enum_type : short {
+	first,
+	second,
+	third
+}
+
+struct example_struct {
+	a:int;
+	b:int;
+}
+
+table example_table {
+	a:int;
+	b:int;
+	c:example_struct;
+}
+
+table kitchen_sink {
+	obligatory:int;
+	enums:[enum_type];
+	bytes:[byte];
+	ubytes:[ubyte];
+	shorts:[short];
+	ushorts:[ushort];
+	ints:[int];
+	uints:[uint];
+	longs:[long];
+	ulongs:[ulong];
+	floats:[float];
+	doubles:[double];
+	strings:[string];
+	structs:[example_struct];
+	tables:[example_table];
+}

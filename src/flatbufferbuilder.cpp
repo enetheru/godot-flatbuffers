@@ -13,7 +13,7 @@ void FlatBufferBuilder::_bind_methods() {
 	godot::ClassDB::bind_method(godot::D_METHOD("reset"), &FlatBufferBuilder::Reset);
 	godot::ClassDB::bind_method(godot::D_METHOD("finished"), &FlatBufferBuilder::Finished);
 	godot::ClassDB::bind_method(godot::D_METHOD("start_table"), &FlatBufferBuilder::StartTable);
-	godot::ClassDB::bind_method(godot::D_METHOD("clear", "start"), &FlatBufferBuilder::EndTable);
+	godot::ClassDB::bind_method(godot::D_METHOD("end_table", "start"), &FlatBufferBuilder::EndTable);
 
 	godot::ClassDB::bind_method(godot::D_METHOD("add_bool", "voffset", "value"), &FlatBufferBuilder::add_scalar<bool, uint8_t >);
 	godot::ClassDB::bind_method(godot::D_METHOD("add_byte", "voffset", "value"), &FlatBufferBuilder::add_scalar<int64_t, int8_t >);

@@ -1,6 +1,7 @@
 #include "flatbuffer.h"
 #include <godot_cpp/classes/ref.hpp>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/variant/utility_functions.hpp>
 
 namespace godot_flatbuffers {
 
@@ -29,6 +30,9 @@ void FlatBuffer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("decode_string", "start_" ), &FlatBuffer::decode_string );
 }
 
+// Returns the field offset relative to 'start'.
+// If this is a scalar or a struct it will be where the data is
+// If this is a table, or an array, it will be a relative offset to the position of the field.
 int FlatBuffer::get_field_offset(int vtable_offset) {
 	// get vtable
 	int vtable_pos = start - bytes.decode_s32(start);
@@ -45,7 +49,8 @@ int FlatBuffer::get_field_offset(int vtable_offset) {
 	return bytes.decode_s16(vtable_pos + vtable_offset );
 }
 
-
+// returns offset from the zero of the bytes(PackedByteArray)
+// This isn't necessary with structs and scalars, as the data is inline with the
 int FlatBuffer::get_field_start(int field_offset) {
 	return start + field_offset + bytes.decode_u32(start + field_offset);
 }
@@ -55,10 +60,11 @@ FlatBufferArray *FlatBuffer::get_array(int start_, godot::Callable constructor_)
 	return new_array;
 }
 
-int FlatBuffer::get_array_count(int vtable_offset) {
+int FlatBuffer::get_array_count( int vtable_offset ) {
 	int foffset = get_field_offset( vtable_offset );
-	if( foffset ) return 0;
-	return bytes.decode_u32( get_field_start(foffset) );
+	if( !foffset )return 0;
+	int field_start = get_field_start( foffset );
+	return bytes.decode_u32( field_start );
 }
 
 int FlatBuffer::get_array_element_start(int array_start, int idx) {
