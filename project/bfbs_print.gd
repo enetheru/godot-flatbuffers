@@ -9,47 +9,9 @@ func _run() -> void:
 	print( filename, ", size: ", bfbs.size() )
 	print( "data: ", bfbs )
 
-	var test : Reflection.FB_Schema
-
 	var schema := Reflection.FB_Schema.GetSchema(bfbs.decode_u32(0), bfbs)
 
 	pprint( schema )
-
-# Dumping the bfbs using flatcc's tool to convert it to json and pretty print provides the below structure.
-#{
-	#"objects": [
-		#{
-			#"name": "Smol",
-			#"fields": [
-				#{
-					#"name": "value",
-					#"type": {
-						#"base_type": "UByte"
-					#},
-					#"default_integer": 7
-				#}
-			#],
-			#"minalign": 1
-		#}
-	#],
-	#"enums": [],
-	#"file_ident": "",
-	#"file_ext": "",
-	#"root_table": {
-		#"name": "Smol",
-		#"fields": [
-			#{
-				#"name": "value",
-				#"type": {
-					#"base_type": "UByte"
-				#},
-				#"default_integer": 7
-			#}
-		#],
-		#"minalign": 1
-	#},
-	#"services": []
-#}
 
 var indent : String = ""
 func pprint( object, heading = "" ):
@@ -71,9 +33,18 @@ func pprint( object, heading = "" ):
 	if object is Reflection.FB_Type:
 		print_Type( object, heading )
 		return
+	if object is Reflection.FB_Enum:
+		print_Enum( object, heading )
+		return
+	if object is Reflection.FB_EnumVal:
+		print_EnumVal( object, heading )
+		return
 	if not heading.is_empty():
 		heading += ": "
-	print( indent, heading, object )
+	if object is FlatBuffer:
+		printerr( indent, heading, "Unknown Flatbuffer Object" )
+	else:
+		print( indent, heading, object )
 
 func Indent():
 	indent += "\t"
@@ -81,6 +52,44 @@ func Indent():
 func Outdent():
 	indent = indent.erase(0,1)
 
+func print_EnumVal( object : Reflection.FB_EnumVal, heading = "" ):
+	pprint("EnumVal {", heading)
+	Indent()
+	#name:string (required);
+	pprint( object.name(), "name" )
+	#value:long (key);
+	pprint( object.value(), "value" )
+	#object:Object (deprecated);
+	#pprint( object.object(), "object" )
+	#union_type:Type;
+	pprint( object.union_type(), "union_type" )
+	#documentation:[string];
+	pprint( object.documentation(), "documentation" )
+	#attributes:[KeyValue];
+	pprint( object.attributes(), "attributes" )
+	Outdent()
+	pprint("}")
+
+func print_Enum( object : Reflection.FB_Enum, heading = "" ):
+	pprint("Enum {", heading)
+	Indent()
+	#name:string (required, key);
+	pprint( object.name, "name" )
+	#values:[EnumVal] (required);  // In order of their values.
+	pprint( object.values(), "values" )
+	#is_union:bool = false;
+	pprint( object.is_union(), "is_union" )
+	#underlying_type:Type (required);
+	pprint( object.underlying_type(), "underlying_type" )
+	#attributes:[KeyValue];
+	pprint( object.attributes(), "attributes" )
+	#documentation:[string];
+	pprint( object.documentation(), "documentation" )
+	#/// File that this Enum is declared in.
+	#declaration_file: string;
+	pprint( object.declaration_file(), "declaration_file" )
+	Outdent()
+	pprint("}")
 
 func print_Type( type : Reflection.FB_Type, heading = "" ):
 	pprint("Type {", heading)
