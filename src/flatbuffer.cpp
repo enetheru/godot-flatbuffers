@@ -41,7 +41,7 @@ int FlatBuffer::get_field_offset(int vtable_offset) {
 
 	//The vtable_pos being outside the range is not an error,
 	// it simply means that the element is not present in the table.
-	if( vtable_offset > vtable_size) {
+	if( vtable_offset >= vtable_size) {
 		return 0;
 	}
 
