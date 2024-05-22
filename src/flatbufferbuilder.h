@@ -4,17 +4,27 @@
 #include "flatbuffers/flatbuffer_builder.h"
 #include <godot_cpp/classes/object.hpp>
 
+
+
 class FlatBufferBuilder : public godot::Object {
 	GDCLASS(FlatBufferBuilder, Object) // NOLINT(*-use-auto)
 
 	flatbuffers::FlatBufferBuilder *builder;
 
 protected:
+	static FlatBufferBuilder *Create( int size ){
+		auto fbb = memnew(FlatBufferBuilder);
+		fbb->builder = new flatbuffers::FlatBufferBuilder( size );
+		return fbb;
+	}
+
 	static void _bind_methods();
 
 public:
-	explicit FlatBufferBuilder() { builder = new flatbuffers::FlatBufferBuilder(); }
+	explicit FlatBufferBuilder() = default;
 	~FlatBufferBuilder() override = default;
+
+	//FIXME delete the builder
 
 	using uoffset_t = flatbuffers::uoffset_t;
 	void Clear() { builder->Clear(); }
