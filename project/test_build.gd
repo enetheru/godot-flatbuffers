@@ -18,22 +18,24 @@ func _run() -> void:
 	builder_short.finish( short_end )
 #
 	# This must be called after `Finish()`.
-	var buf : PackedByteArray = builder_short.to_packed_byte_array()
-	var size : int = builder_short.get_size() # Returns the size of the buffer that `GetBufferPointer()` points to.
-	print( "buffer:%s { %s }" % [size, buf] )
+	var buf_short : PackedByteArray = builder_short.to_packed_byte_array()
+	var size_short : int = builder_short.get_size() # Returns the size of the buffer that `GetBufferPointer()` points to.
+	print( "buffer:%s { %s }" % [size_short, buf_short] )
 
-	var my_table := FB_MyTable.GetMyTable( buf.decode_u32(0), buf )
-
-	pp.rint( my_table )
+	var my_table_short := FB_MyTable.GetMyTable( buf_short.decode_u32(0), buf_short )
+	pp.rint( my_table_short )
 
 	# Long way
-	#var builder_long = FlatBufferBuilder.create(1024)
-	#var my_table_builder = FB_MyTable.MyTableBuilder.new( builder_long )
-	#my_table_builder.add_value( value )
-	#var offset = my_table_builder.finish()
-	#builder_long.finish( offset )
+	var builder_long = FlatBufferBuilder.create(1024)
+	var my_table_builder = FB_MyTable.MyTableBuilder.new( builder_long )
+	my_table_builder.add_value( value )
+	var offset = my_table_builder.finish()
+	builder_long.finish( offset )
 
 	# This must be called after `Finish()`.
-	#buf = builder_long.GetBufferPointer()
-	#size = builder_long.GetSize() # Returns the size of the buffer that `GetBufferPointer()` points to.
-	#print( "buffer:%s { %s }" % [size, buf] )
+	var buf_long = builder_long.to_packed_byte_array()
+	var size_long = builder_long.get_size() # Returns the size of the buffer that `GetBufferPointer()` points to.
+	print( "buffer:%s { %s }" % [size_long, buf_long] )
+
+	var my_table_long := FB_MyTable.GetMyTable( buf_long.decode_u32(0), buf_long )
+	pp.rint( my_table_long )
