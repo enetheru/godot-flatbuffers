@@ -18,6 +18,8 @@ protected:
 		auto fbb = memnew( FlatBufferBuilder );
 		fbb->builder = std::make_unique<flatbuffers::FlatBufferBuilder>( size );
 		return fbb;
+		// TODO Use this 'flatbuffers::FlatBufferBuilderImpl(...)' to add a custom allocator so that we can create directly into a PackedByteArray
+		//  This will make the need to copy the data after construction unnecessary
 	}
 
 	static void _bind_methods();
