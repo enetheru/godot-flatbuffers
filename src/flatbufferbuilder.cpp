@@ -4,11 +4,12 @@
 
 #include "flatbufferbuilder.h"
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/variant/utility_functions.hpp>
 
 /*
  * Flatbuffer Builder wrapper for gdscript
  */
-void FlatBufferBuilder::_bind_methods() {
+void godot_flatbuffers::FlatBufferBuilder::_bind_methods() {
 	godot::ClassDB::bind_static_method("FlatBufferBuilder", godot::D_METHOD("create", "size"), &FlatBufferBuilder::Create);
 	godot::ClassDB::bind_method(godot::D_METHOD("clear"), &FlatBufferBuilder::Clear);
 	godot::ClassDB::bind_method(godot::D_METHOD("reset"), &FlatBufferBuilder::Reset);
@@ -27,4 +28,14 @@ void FlatBufferBuilder::_bind_methods() {
 	godot::ClassDB::bind_method(godot::D_METHOD("add_element_ulong", "voffset", "value"), &FlatBufferBuilder::add_scalar<uint64_t, uint64_t >);
 	godot::ClassDB::bind_method(godot::D_METHOD("add_element_float", "voffset", "value"), &FlatBufferBuilder::add_scalar<double, float >);
 	godot::ClassDB::bind_method(godot::D_METHOD("add_element_double", "voffset", "value"), &FlatBufferBuilder::add_scalar<double, double >);
+}
+
+
+godot_flatbuffers::FlatBufferBuilder::FlatBufferBuilder() {
+	godot::UtilityFunctions::print("FlatBufferBuilder(): Constructor");
+}
+
+
+godot_flatbuffers::FlatBufferBuilder::~FlatBufferBuilder() {
+	godot::UtilityFunctions::print("~FlatBufferBuilder(): Destructor");
 }

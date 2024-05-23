@@ -3,26 +3,28 @@
 
 #include "flatbuffers/flatbuffer_builder.h"
 #include <godot_cpp/classes/object.hpp>
+#include <godot_cpp/classes/ref.hpp>
+#include <godot_cpp/variant/utility_functions.hpp>
 
+namespace godot_flatbuffers {
 
+class FlatBufferBuilder : public godot::RefCounted {
+	GDCLASS(FlatBufferBuilder, RefCounted) // NOLINT(*-use-auto)
 
-class FlatBufferBuilder : public godot::Object {
-	GDCLASS(FlatBufferBuilder, Object) // NOLINT(*-use-auto)
-
-	flatbuffers::FlatBufferBuilder *builder;
+	std::unique_ptr<flatbuffers::FlatBufferBuilder> builder;
 
 protected:
-	static FlatBufferBuilder *Create( int size ){
-		auto fbb = memnew(FlatBufferBuilder);
-		fbb->builder = new flatbuffers::FlatBufferBuilder( size );
+	static FlatBufferBuilder *Create(int size) {
+		auto fbb = memnew( FlatBufferBuilder );
+		fbb->builder = std::make_unique<flatbuffers::FlatBufferBuilder>( size );
 		return fbb;
 	}
 
 	static void _bind_methods();
 
 public:
-	explicit FlatBufferBuilder() = default;
-	~FlatBufferBuilder() override = default;
+	explicit FlatBufferBuilder();
+	~FlatBufferBuilder() override;
 
 	//FIXME delete the builder
 
@@ -38,4 +40,5 @@ public:
 	void add_scalar( uint16_t voffset, in value ){ builder->AddElement<out>( voffset, value); }
 };
 
+}
 #endif //GODOT_FLATBUFFERS_EXTENSION_FLATBUFFERBUILDER_H
