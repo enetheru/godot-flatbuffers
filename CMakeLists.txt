@@ -178,10 +178,9 @@ endif ()
 
 
 ### Add Flatbuffers as a sub project
-message( STATUS "Fetching https://github.com/google/flatbuffers.git : 595bf00")
-FetchContent_Declare(FlatBuffers
-        GIT_REPOSITORY "https://github.com/google/flatbuffers.git"
-        GIT_TAG "595bf00"
+FetchContent_Declare( FlatBuffers
+        GIT_REPOSITORY "https://github.com/enetheru/flatbuffers.git"
+        GIT_TAG e3e81693563bac9b7bbb1bbd76bb6563af7d702d
         GIT_SHALLOW ON
         SOURCE_DIR "${PROJECT_SOURCE_DIR}/flatbuffers"
 )
