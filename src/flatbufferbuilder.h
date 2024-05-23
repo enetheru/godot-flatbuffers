@@ -26,18 +26,23 @@ public:
 	explicit FlatBufferBuilder();
 	~FlatBufferBuilder() override;
 
-	//FIXME delete the builder
-
 	using uoffset_t = flatbuffers::uoffset_t;
+	using Offset = flatbuffers::Offset<>;
+
 	void Clear() { builder->Clear(); }
 	void Reset() { builder->Reset(); }
-	void Finished() { builder->Finished(); }
-	uoffset_t StartTable() { return builder->StartTable(); }
-	uoffset_t EndTable(uoffset_t start) { return builder->EndTable(start); }
 
 	// Scalar add functions
 	template<typename in, typename out>
 	void add_scalar( uint16_t voffset, in value ){ builder->AddElement<out>( voffset, value); }
+
+	uoffset_t StartTable() { return builder->StartTable(); }
+	uoffset_t EndTable(uoffset_t start) { return builder->EndTable(start); }
+
+	void Finish( uint32_t root );
+
+	int64_t GetSize() { return builder->GetSize(); }
+	godot::PackedByteArray GetPackedByteArray();
 };
 
 }
