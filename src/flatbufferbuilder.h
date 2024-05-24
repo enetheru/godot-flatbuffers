@@ -41,6 +41,8 @@ public:
 	uoffset_t StartTable() { return builder->StartTable(); }
 	uoffset_t EndTable(uoffset_t start) { return builder->EndTable(start); }
 
+	uoffset_t CreateString( const godot::String& string );
+
 	void Finish( uint32_t root );
 
 	int64_t GetSize() { return builder->GetSize(); }

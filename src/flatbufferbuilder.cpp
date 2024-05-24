@@ -29,6 +29,8 @@ void godot_flatbuffers::FlatBufferBuilder::_bind_methods() {
 	godot::ClassDB::bind_method(godot::D_METHOD("start_table"), &FlatBufferBuilder::StartTable);
 	godot::ClassDB::bind_method(godot::D_METHOD("end_table", "start"), &FlatBufferBuilder::EndTable);
 
+	godot::ClassDB::bind_method(godot::D_METHOD("create_string", "string"), &FlatBufferBuilder::CreateString);
+
 	godot::ClassDB::bind_method(godot::D_METHOD("finish", "root"), &FlatBufferBuilder::Finish);
 
 	godot::ClassDB::bind_method(godot::D_METHOD("get_size"), &FlatBufferBuilder::GetSize);
@@ -58,4 +60,10 @@ godot::PackedByteArray godot_flatbuffers::FlatBufferBuilder::GetPackedByteArray(
 	bytes.resize( size );
 	std::memcpy( bytes.ptrw(), builder->GetBufferPointer(), size );
 	return bytes;
+}
+
+godot_flatbuffers::FlatBufferBuilder::uoffset_t godot_flatbuffers::FlatBufferBuilder::CreateString(const godot::String& string) {
+	//FIXME this creates a copy, dumb.
+	auto str = string.utf8();
+	return builder->CreateString( str.ptr(), str.size()  ).o;
 }
