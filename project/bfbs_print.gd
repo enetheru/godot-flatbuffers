@@ -13,6 +13,6 @@ func _run() -> void:
 
 	var root_start = bfbs.decode_u32(0)
 	print( "root_start: ", root_start)
-	var schema := FB_Schema.GetSchema( root_start, bfbs )
+	var schema := Reflection.GetSchema( root_start, bfbs )
 
 	pp.rint( schema )
