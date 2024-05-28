@@ -64,7 +64,7 @@ src/entry_point.cpp
 
 project/godot-flatbuffers.gdextension
 
-flatbuffers/
+/flatbuffers/
 /project/bin/
 
 *_generated.h
