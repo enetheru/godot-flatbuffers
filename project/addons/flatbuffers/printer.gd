@@ -1,4 +1,4 @@
-class_name PP
+class_name FlatBufferPrinter
 
 var dent : String = ""
 

@@ -86,7 +86,7 @@ func rcm_generate( id ):
 	var output = []
 	var result = OS.execute( flatc_path, args, output, true )
 	if not output.is_empty():
-		if result: printerr( output )
-		else: print( output )
+		if result: printerr( "flatc output:", output )
+		else: print( "flatc output:", output )
 
 	EditorInterface.get_resource_filesystem().scan()

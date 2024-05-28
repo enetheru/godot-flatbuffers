@@ -1,7 +1,7 @@
 @tool
 extends EditorScript
 
-var pp : PP = PP.new()
+var pp := FlatBufferPrinter.new()
 
 func _run() -> void:
 	print("Test script is running")
@@ -16,3 +16,4 @@ func _run() -> void:
 	var schema := Reflection.GetSchema( root_start, bfbs )
 
 	pp.rint( schema )
+
