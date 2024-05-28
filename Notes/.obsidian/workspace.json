@@ -11,14 +11,11 @@
             "id": "4540d9866ba31c77",
             "type": "leaf",
             "state": {
-              "type": "canvas",
+              "type": "markdown",
               "state": {
-                "file": "TODO.canvas",
-                "viewState": {
-                  "x": 50.0001220703125,
-                  "y": -143.66671752929688,
-                  "zoom": 0
-                }
+                "file": "EditorSettings.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -88,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "TODO.canvas",
+                "file": "EditorSettings.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "TODO.canvas",
+                "file": "EditorSettings.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -128,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "TODO.canvas"
+                "file": "EditorSettings.md"
               }
             }
           }
@@ -151,12 +148,15 @@
   },
   "active": "4540d9866ba31c77",
   "lastOpenFiles": [
-    "Untitled.md",
     "TODO.canvas",
-    "reflection.fbs.canvas",
-    "Godot-FlatBuffers.md",
+    "EditorSettings.md",
+    "FileSystemDock.md",
     "Diary/2024-05.md",
     "Diary/2024-04.md",
+    "Godot-FlatBuffers.md",
+    "reflection.fbs.canvas",
+    "Diary/2024-05.md~",
+    "Untitled.md",
     "Welcome.md",
     "Diary"
   ]

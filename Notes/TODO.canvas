@@ -1,14 +1,19 @@
 {
 	"nodes":[
-		{"id":"748705eab59ac6c2","x":-120,"y":-281,"width":250,"height":60,"type":"text","text":"Editor Settings"},
-		{"id":"3c40f24606e80cd7","x":-120,"y":-200,"width":250,"height":60,"type":"text","text":"Recognition of fbs files"},
-		{"id":"0831b0478c07a9aa","x":220,"y":-200,"width":250,"height":60,"type":"text","text":"right click generate"},
-		{"id":"22398628d2fc8641","x":-120,"y":-120,"width":250,"height":60,"type":"text","text":"text_editor"},
-		{"id":"f294e8033bf5edda","x":221,"y":-120,"width":250,"height":60,"type":"text","text":"Syntax Highlighting"},
-		{"id":"30c933f00c2decac","x":-120,"y":-40,"width":250,"height":60,"type":"text","text":"Auto Generation of fbs from exported values"},
-		{"id":"b8c597d61f362249","x":-560,"y":-150,"width":250,"height":60,"type":"text","text":"Editor"},
-		{"id":"eee251c8afaad0e7","x":221,"y":-360,"width":250,"height":60,"type":"text","text":"path to external flatc"},
-		{"id":"a394b2100ffe39c1","x":220,"y":-281,"width":250,"height":60,"type":"text","text":"class prefix"}
+		{"id":"3c40f24606e80cd7","type":"text","text":"Recognition of fbs files","x":-120,"y":-200,"width":250,"height":60},
+		{"id":"0831b0478c07a9aa","type":"text","text":"right click generate","x":220,"y":-200,"width":250,"height":60},
+		{"id":"22398628d2fc8641","type":"text","text":"text_editor","x":-120,"y":-120,"width":250,"height":60},
+		{"id":"f294e8033bf5edda","type":"text","text":"Syntax Highlighting","x":221,"y":-120,"width":250,"height":60},
+		{"id":"30c933f00c2decac","type":"text","text":"Auto Generation of fbs from exported values","x":-120,"y":-40,"width":250,"height":60},
+		{"id":"b8c597d61f362249","type":"text","text":"Editor","x":-560,"y":-150,"width":250,"height":60},
+		{"id":"da23e929e43fab8f","type":"text","text":"[[FileSystemDock]]","x":-120,"y":213,"width":250,"height":60},
+		{"id":"4f832fd143ffc48f","type":"text","text":"Right Click -> New Flatbuffer Schema","x":297,"y":123,"width":348,"height":60},
+		{"id":"6c4ff8cb730d657b","type":"text","text":"Right Click on *.fbs* ->GEnerate gdscript","x":297,"y":183,"width":351,"height":60},
+		{"id":"9cf26592c512aaa5","type":"text","text":"icon for *.fbs* files","x":297,"y":243,"width":250,"height":55},
+		{"id":"bc126bba689b5bd6","type":"text","text":"Tooltip for *.fbs* files","x":296,"y":298,"width":250,"height":60},
+		{"id":"748705eab59ac6c2","type":"text","text":"[[EditorSettings]]","x":-120,"y":469,"width":250,"height":60},
+		{"id":"a394b2100ffe39c1","type":"text","text":"class prefix","x":297,"y":499,"width":250,"height":60},
+		{"id":"eee251c8afaad0e7","type":"text","text":"path to external flatc","x":298,"y":420,"width":250,"height":60}
 	],
 	"edges":[
 		{"id":"74d0004b1107afc6","fromNode":"748705eab59ac6c2","fromSide":"right","toNode":"eee251c8afaad0e7","toSide":"left"},
@@ -18,6 +23,11 @@
 		{"id":"aa89d1f7f3201915","fromNode":"3c40f24606e80cd7","fromSide":"right","toNode":"0831b0478c07a9aa","toSide":"left"},
 		{"id":"a89f62dddd1f3582","fromNode":"22398628d2fc8641","fromSide":"right","toNode":"f294e8033bf5edda","toSide":"left"},
 		{"id":"a67bd42b8f59b4d2","fromNode":"b8c597d61f362249","fromSide":"right","toNode":"30c933f00c2decac","toSide":"left"},
-		{"id":"55f7a9ef8c61289d","fromNode":"748705eab59ac6c2","fromSide":"right","toNode":"a394b2100ffe39c1","toSide":"left"}
+		{"id":"55f7a9ef8c61289d","fromNode":"748705eab59ac6c2","fromSide":"right","toNode":"a394b2100ffe39c1","toSide":"left"},
+		{"id":"8aa1693c0c9a1a69","fromNode":"b8c597d61f362249","fromSide":"right","toNode":"da23e929e43fab8f","toSide":"left"},
+		{"id":"cba49849aa2c2c9d","fromNode":"da23e929e43fab8f","fromSide":"right","toNode":"4f832fd143ffc48f","toSide":"left"},
+		{"id":"42698cc538235e9b","fromNode":"da23e929e43fab8f","fromSide":"right","toNode":"6c4ff8cb730d657b","toSide":"left"},
+		{"id":"530a1306ddf5bc74","fromNode":"da23e929e43fab8f","fromSide":"right","toNode":"9cf26592c512aaa5","toSide":"left"},
+		{"id":"7cd0d7e3e2c789a1","fromNode":"da23e929e43fab8f","fromSide":"right","toNode":"bc126bba689b5bd6","toSide":"left"}
 	]
 }
