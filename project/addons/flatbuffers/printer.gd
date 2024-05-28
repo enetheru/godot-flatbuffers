@@ -11,7 +11,7 @@ func outdent():
 	dent = dent.erase(0,1)
 
 
-func rint( object, heading = "" ):
+func print( object, heading = "" ):
 	if object is FlatBufferArray:
 		print_Array( object, heading )
 		return
@@ -31,17 +31,17 @@ func rint( object, heading = "" ):
 
 func print_Array( array : FlatBufferArray, heading = "" ):
 	if array.count() == 0:
-		rint("Array[empty]", heading )
+		self.print("Array[empty]", heading )
 		return
-	rint("Array{", heading )
+	self.print("Array {", heading )
 	indent()
-	rint( array.count(), "count" )
-	rint( "constructor: %s" % array.constructor.get_method() )
-	rint( "items [")
+	self.print( array.count(), "count" )
+	self.print( "constructor: %s" % array.constructor.get_method() )
+	self.print( "items [")
 	indent()
 	for idx in range( array.count() ):
-		rint( array.get(idx) )
+		self.print( array.get(idx) )
 	outdent()
-	rint( "]")
+	self.print( "]")
 	outdent()
-	rint("}")
+	self.print("}")

@@ -15,5 +15,5 @@ func _run() -> void:
 	print( "root_start: ", root_start)
 	var schema := Reflection.GetSchema( root_start, bfbs )
 
-	pp.rint( schema )
+	pp.print( schema )
 

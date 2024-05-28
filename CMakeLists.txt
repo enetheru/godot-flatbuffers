@@ -180,9 +180,10 @@ endif ()
 ### Add Flatbuffers as a sub project
 FetchContent_Declare( FlatBuffers
         GIT_REPOSITORY "https://github.com/enetheru/flatbuffers.git"
-        GIT_TAG e3e81693563bac9b7bbb1bbd76bb6563af7d702d
+        GIT_BRANCH origin/gdscript
         GIT_SHALLOW ON
         SOURCE_DIR "${PROJECT_SOURCE_DIR}/flatbuffers"
+        UPDATE_DISCONNECTED ON
 )
 FetchContent_MakeAvailable( FlatBuffers )
 
