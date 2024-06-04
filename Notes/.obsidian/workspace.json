@@ -11,11 +11,14 @@
             "id": "4540d9866ba31c77",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "canvas",
               "state": {
-                "file": "EditorSettings.md",
-                "mode": "source",
-                "source": false
+                "file": "TODO.canvas",
+                "viewState": {
+                  "x": 56.71930701552752,
+                  "y": 209.49686775491296,
+                  "zoom": -0.005966932159861755
+                }
               }
             }
           }
@@ -85,7 +88,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "EditorSettings.md",
+                "file": "TODO.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +105,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "EditorSettings.md",
+                "file": "TODO.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +128,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "EditorSettings.md"
+                "file": "TODO.canvas"
               }
             }
           }
@@ -148,6 +151,7 @@
   },
   "active": "4540d9866ba31c77",
   "lastOpenFiles": [
+    "ScriptEditor.md",
     "TODO.canvas",
     "EditorSettings.md",
     "FileSystemDock.md",
