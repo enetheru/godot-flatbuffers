@@ -1,7 +1,7 @@
 @tool
 extends EditorScript
 
-var pp : PP = PP.new()
+var pp := FlatBufferPrinter.new()
 
 func _run() -> void:
 	print("Test script is running")
@@ -23,7 +23,7 @@ func _run() -> void:
 	print( "buffer:%s { %s }" % [size_short, buf_short] )
 
 	var my_table_short := MyTable.GetMyTable_( buf_short.decode_u32(0), buf_short )
-	pp.rint( my_table_short )
+	pp.print( my_table_short )
 
 	# Long way
 	var builder_long = FlatBufferBuilder.create(1024)
@@ -38,4 +38,4 @@ func _run() -> void:
 	print( "buffer:%s { %s }" % [size_long, buf_long] )
 
 	var my_table_long := MyTable.GetMyTable_( buf_long.decode_u32(0), buf_long )
-	pp.rint( my_table_long )
+	pp.print( my_table_long )

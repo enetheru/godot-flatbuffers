@@ -9,17 +9,29 @@ var fbs := EditorInterface.get_file_system_dock()
 var fbs_rcm : PopupMenu
 var fbs_tree : Tree
 
+var highlighter : FlatBuffersHighlighter
+
+
 func _enter_tree() -> void:
+	highlighter = FlatBuffersHighlighter.new()
+
 	change_editor_settings()
-	add_syntax_highlighter()
+	enable_syntax_highlighter()
 	enable_changes_to_fbs()
+
 
 func _exit_tree() -> void:
 	disable_changes_to_fbs()
+	disable_syntax_highlighter()
 
 
-func add_syntax_highlighter():
-	script_editor.register_syntax_highlighter( FlatBuffersHighlighter.new() )
+func enable_syntax_highlighter():
+	script_editor.register_syntax_highlighter( highlighter )
+
+
+func disable_syntax_highlighter():
+	script_editor.unregister_syntax_highlighter( highlighter )
+
 
 func change_editor_settings():
 	# Editor Settings
@@ -37,6 +49,7 @@ func change_editor_settings():
 
 	settings.add_property_info(property_info)
 
+
 func enable_changes_to_fbs():
 	# get the tree
 	# I dont like using find_children, but all the names are auto generated.
@@ -51,9 +64,11 @@ func enable_changes_to_fbs():
 	fbs_tree.item_mouse_selected.connect( append_fbs_rcm )
 	fbs_rcm.id_pressed.connect( rcm_generate )
 
+
 func disable_changes_to_fbs():
 	fbs_tree.item_mouse_selected.disconnect( append_fbs_rcm )
 	fbs_rcm.id_pressed.disconnect( rcm_generate )
+
 
 # this is connected to the item_mouse_selected signal of the FileSystemDock Tree
 func append_fbs_rcm( _position: Vector2, _mouse_button_index: int ):
@@ -64,6 +79,7 @@ func append_fbs_rcm( _position: Vector2, _mouse_button_index: int ):
 	var index = fbs_rcm.item_count -1
 	# we have to add something to differentiate us from other menu items.
 	fbs_rcm.set_item_metadata(index, "fbs")
+
 
 # This function is connected to the is_pressed signal of the right click popup menu
 func rcm_generate( id ):

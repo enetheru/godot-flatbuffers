@@ -1,7 +1,7 @@
 @tool
 extends EditorScript
 
-var pp : PP = PP.new()
+var pp := FlatBufferPrinter.new()
 
 func _run() -> void:
 	print("Creating and Writing Orc FlatBuffers")
@@ -34,12 +34,12 @@ func _run() -> void:
 	weapons_vector.push_back( axe )
 	var weapons = builder.create_vector( weapons_vector )
 
-	var points : Array[Vec3] = [ Vec3(1.0, 2.0, 3.0), Vec3(4.0, 5.0, 6.0) ]
-	var path = builder.CreateVectorOfStructs( points, 2 )
+	#FIXME var points : Array[Monster.Vec3] = [ Monster.Vec3(1.0, 2.0, 3.0), Monster.Vec3(4.0, 5.0, 6.0) ]
+	#FIXME var path = builder.CreateVectorOfStructs( points, 2 )
 
 
 	# Create the position struct
-	var position = Vec3(1.0, 2.0, 3.0)
+	#FIXME var position = Vec3(1.0, 2.0, 3.0)
 
 	# Set his hit points to 300 and his mana to 150.
 	var hp : int = 300
@@ -47,18 +47,18 @@ func _run() -> void:
 
 	# Finally, create the monster using the `CreateMonster` helper function
 	# to set all fields.
-	var orc = Monster.CreateMonster(
-		builder,
-		position,
-		mana,
-		hp,
-		name,
-		inventory,
-		Monster.Color_.RED,
-		weapons,
-		Monster.Equipment.WEAPON,
-		axe.Union(),
-		path)
+	#FIXME var orc = Monster.CreateMonster(
+		#builder,
+		#position,
+		#mana,
+		#hp,
+		#name,
+		#inventory,
+		#Monster.Color_.RED,
+		#weapons,
+		#Monster.Equipment.WEAPON,
+		#axe.Union(),
+		#path)
 
 
 	# Alternate creation method
@@ -78,5 +78,5 @@ func _run() -> void:
 	# Call `Finish()` to instruct the builder that this monster is complete.
 	# Note: Regardless of how you created the `orc`, you still need to call
 	# `Finish()` on the `FlatBufferBuilder`.
-	builder.finish( orc ) # You could also call `FinishMonsterBuffer(builder, orc);`.
+	#FIXME builder.finish( orc ) # You could also call `FinishMonsterBuffer(builder, orc);`.
 
