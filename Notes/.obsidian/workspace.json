@@ -11,13 +11,14 @@
             "id": "4540d9866ba31c77",
             "type": "leaf",
             "state": {
-              "type": "canvas",
+              "type": "kanban",
               "state": {
-                "file": "TODO.canvas",
-                "viewState": {
-                  "x": 56.71930701552752,
-                  "y": 209.49686775491296,
-                  "zoom": -0.005966932159861755
+                "file": "Tracker.md",
+                "kanbanViewState": {
+                  "kanban-plugin": "board",
+                  "list-collapse": [
+                    false
+                  ]
                 }
               }
             }
@@ -88,7 +89,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "TODO.canvas",
+                "file": "Tracker.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +106,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "TODO.canvas",
+                "file": "Tracker.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -128,7 +129,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "TODO.canvas"
+                "file": "Tracker.md"
               }
             }
           }
@@ -144,21 +145,26 @@
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false
+      "obsidian-kanban:Create new board": false,
+      "daily-notes:Open today's daily note": true,
+      "templates:Insert template": true,
+      "command-palette:Open command palette": true
     }
   },
   "active": "4540d9866ba31c77",
   "lastOpenFiles": [
-    "ScriptEditor.md",
+    "Diary/2024-06.md",
+    "Tracker.md",
     "TODO.canvas",
     "EditorSettings.md",
     "FileSystemDock.md",
-    "Diary/2024-05.md",
-    "Diary/2024-04.md",
     "Godot-FlatBuffers.md",
     "reflection.fbs.canvas",
+    "ScriptEditor.md",
+    "Untitled.canvas",
+    "2024-06-05.md",
+    "Diary/2024-05.md",
+    "Diary/2024-04.md",
     "Diary/2024-05.md~",
     "Untitled.md",
     "Welcome.md",
