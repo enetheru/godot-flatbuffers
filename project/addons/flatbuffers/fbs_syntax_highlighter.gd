@@ -1,6 +1,8 @@
 @tool
 class_name FlatBuffersHighlighter extends EditorSyntaxHighlighter
 
+var print_debug : bool = false
+
 # schema grammer : https://flatbuffers.dev/flatbuffers_grammar.html
 #schema = include* ( namespace_decl
 #					| type_decl
@@ -106,7 +108,7 @@ func get_token() -> Dictionary:
 			break
 		if peek_char() == '"': token = get_string(); break
 		token = get_word(); break
-	print( "%s:%s | %s | '%s'" % [token.line, token.col, TokenType.keys()[token.type], token.t] )
+	if print_debug: print( "%s:%s | %s | '%s'" % [token.line, token.col, TokenType.keys()[token.type], token.t] )
 
 	return token
 
@@ -234,8 +236,8 @@ func is_float( word : String ) -> bool:
 
 func syntax_error( token : Dictionary, reason = "" ):
 	append( token, Color.RED )
-	print( token )
-	printerr( "Syntax error at line: %s, column: %s is '%s'%s" %
+	if print_debug: print( token )
+	if print_debug: printerr( "Syntax error at line: %s, column: %s is '%s'%s" %
 		[token.line, token.col, token.t, "" if reason.is_empty() else " | %s" % reason] )
 
 var word_separation : Array = [' ', '\t', '\n', '{','}', ':', ';', ',', '(', ')', '[', ']']
@@ -310,7 +312,7 @@ func color_default():
 	#print( "add: %s" % {line:{lp:{'color':color}}})
 
 func _init():
-	print("fbsh._init()")
+	if print_debug: print("fbsh._init()")
 	resource_name = "FlatBuffersSchemaHighlighter"
 	editor_settings = EditorInterface.get_editor_settings()
 	symbol_color = editor_settings.get_setting("text_editor/theme/highlighting/symbol_color")
@@ -327,12 +329,12 @@ func _init():
 
 # Override methods for EditorSyntaxHighlighter
 func _get_name ( ) -> String:
-	print("fbsh._get_name()")
+	if print_debug: print("fbsh._get_name()")
 	return "FlatBuffersSchema"
 
 
 func _get_supported_languages ( ) -> PackedStringArray:
-	print("fbsh._get_supported_languages()")
+	if print_debug: print("fbsh._get_supported_languages()")
 	return ["FlatBuffersSchema"]
 
 
@@ -350,12 +352,13 @@ func _get_line_syntax_highlighting ( line : int ) -> Dictionary:
 
 
 func _update_cache ( ):
-	print("fbsh._update_cache()")
+	if print_debug: print("fbsh._update_cache()")
 	fbs_text = get_text_edit().text
 	reset()
+	print_debug = EditorInterface.get_editor_settings().get( FlatBuffersPlugin.EDITOR_SETTINGS_BASE + &"fbs_debug_print" )
 	parse_schema()
 	for key in dict.keys():
-		print( "%s:%s" % [key,dict[key]] )
+		if print_debug: print( "%s:%s" % [key,dict[key]] )
 
 func parse_schema():
 	var token : Dictionary = { 'type': 0, 't':"" }

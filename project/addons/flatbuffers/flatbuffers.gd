@@ -1,5 +1,5 @@
 @tool
-extends EditorPlugin
+class_name FlatBuffersPlugin extends EditorPlugin
 
 const EDITOR_SETTINGS_BASE = &"plugin/FlatBuffers/"
 
@@ -10,7 +10,6 @@ var fbs_rcm : PopupMenu
 var fbs_tree : Tree
 
 var highlighter : FlatBuffersHighlighter
-
 
 func _enter_tree() -> void:
 	highlighter = FlatBuffersHighlighter.new()
@@ -34,20 +33,25 @@ func disable_syntax_highlighter():
 
 
 func change_editor_settings():
+	# TODO make these project settings
 	# Editor Settings
-	if settings.get( EDITOR_SETTINGS_BASE + &"flatc_path" ):
-		return
-
-	settings.set(EDITOR_SETTINGS_BASE + &"flatc_path", "")
-
-	var property_info = {
-		"name": EDITOR_SETTINGS_BASE + &"flatc_path",
-		"type": TYPE_STRING,
-		"hint": PROPERTY_HINT_GLOBAL_FILE,
-		"hint_string": "flatc.exe" # This will the filter string in the file dialog
-	}
-
-	settings.add_property_info(property_info)
+	if not settings.get( EDITOR_SETTINGS_BASE + &"flatc_path" ):
+		settings.set(EDITOR_SETTINGS_BASE + &"flatc_path", "")
+		var property_info = {
+			"name": EDITOR_SETTINGS_BASE + &"flatc_path",
+			"type": TYPE_STRING,
+			"hint": PROPERTY_HINT_GLOBAL_FILE,
+			"hint_string": "flatc.exe" # This will the filter string in the file dialog
+		}
+		settings.add_property_info(property_info)
+		
+	if not settings.get( EDITOR_SETTINGS_BASE + &"fbs_debug_print" ):
+		settings.set(EDITOR_SETTINGS_BASE + &"fbs_debug_print", false )
+		var property_info = {
+			"name": EDITOR_SETTINGS_BASE + &"fbs_debug_print",
+			"type": TYPE_BOOL,
+		}
+		settings.add_property_info(property_info)
 
 
 func enable_changes_to_fbs():
