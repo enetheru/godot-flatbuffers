@@ -1,11 +1,23 @@
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/variant/utility_functions.hpp>
+#include <utility>
 
 #include "flatbufferarray.h"
 
 namespace godot_flatbuffers {
 
+FlatBufferArray::FlatBufferArray() {
+	godot::UtilityFunctions::print("FlatBufferArray(): Constructor");
+}
+
 FlatBufferArray::FlatBufferArray(int start_, godot::PackedByteArray bytes_, godot::Callable constructor_):
-		start(start_), bytes( bytes_ ), constructor( constructor_ ) {}
+		start(start_), bytes(std::move( bytes_ )), constructor(std::move( constructor_ )) {
+	godot::UtilityFunctions::print("FlatBufferArray(): Constructor");
+}
+
+FlatBufferArray::~FlatBufferArray() {
+	godot::UtilityFunctions::print("~FlatBufferArray(): Destructor");
+}
 
 void FlatBufferArray::_bind_methods() {
 	using namespace godot;
@@ -28,14 +40,14 @@ void FlatBufferArray::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get", "idx"), &FlatBufferArray::get );
 }
 
-int FlatBufferArray::count() {
+int64_t FlatBufferArray::count() {
 	return bytes.decode_u32( start );
 }
 
 godot::Variant FlatBufferArray::get(int idx) {
-	// decode the offset for the object from the array, and then pass it to the interpretor.
-	int offset = bytes.decode_u32( start + 4 + (idx * 4) );
-	int pos = start + 4 + (idx * 4) + offset;
+	// decode the offset for the object from the array, and then pass it to the constructor.
+	int64_t offset = bytes.decode_u32( start + 4 + (idx * 4) );
+	int64_t pos = start + 4 + (idx * 4) + offset;
 	return constructor.call( pos, bytes );
 }
 
