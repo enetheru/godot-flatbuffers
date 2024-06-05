@@ -26,7 +26,7 @@ public:
 	void set_bytes( godot::PackedByteArray bytes_ );
 	godot::PackedByteArray get_bytes();
 	void set_start( int64_t start_);
-	int64_t get_start() const;
+	[[nodiscard]] int64_t get_start() const;
 
 	// Field offset and position
 	int64_t get_field_offset( int64_t vtable_offset );
