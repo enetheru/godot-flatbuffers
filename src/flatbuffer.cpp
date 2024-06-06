@@ -35,7 +35,9 @@ void FlatBuffer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_array_element_start", "array_start", "idx"), &FlatBuffer::get_array_element_start );
 
 	// Decode Functions
+	ClassDB::bind_method(D_METHOD("decode_color", "start_" ), &FlatBuffer::decode_color );
 	ClassDB::bind_method(D_METHOD("decode_string", "start_" ), &FlatBuffer::decode_string );
+	ClassDB::bind_method(D_METHOD("decode_vector3", "start_" ), &FlatBuffer::decode_vector3 );
 }
 
 // Returns the field offset relative to 'start'.
@@ -97,8 +99,29 @@ int64_t FlatBuffer::get_start() const {
 }
 
 // Decode Functions
+
+godot::Color FlatBuffer::decode_color( int64_t start_ ) {
+	return {
+		(real_t)bytes.decode_float(start_),
+		(real_t)bytes.decode_float(start_ + 4),
+		(real_t)bytes.decode_float(start_ + 8),
+		(real_t)bytes.decode_float(start_ + 12)
+	};
+}
+
+
 godot::String FlatBuffer::decode_string( int64_t start_ ) {
 	return bytes.slice(start_ + 4, start_ + 4 + bytes.decode_u32(start_) ).get_string_from_utf8();
+}
+
+
+godot::Vector3 FlatBuffer::decode_vector3( int64_t start_) {
+	// FIXME too much munging for what i want.
+	return {
+		(real_t)bytes.decode_float(start_),
+		(real_t)bytes.decode_float(start_ + 4),
+		(real_t)bytes.decode_float(start_ + 8)
+	};
 }
 
 }// end namespace godot_flatbuffers

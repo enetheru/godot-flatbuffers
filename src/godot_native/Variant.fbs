@@ -1,11 +1,14 @@
-include "vectors.fbs";
-include "Color.fbs";
-include "strings.fbs";
-
 namespace godot_flatbuffers;
 
-union Variant {
-    Vector2, Vector2i, Vector3, Vector3i, Vector4, Vector4i,
-    Color,
-    String, StringName, NodePath
+struct Vector3 {
+  x:float;
+  y:float;
+  z:float;
+}
+
+struct Color {
+  r:float;
+  g:float;
+  b:float;
+  a:float;
 }

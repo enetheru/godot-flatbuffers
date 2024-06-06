@@ -2,6 +2,8 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "godot_native/variant_generated.h"
+
 /*
  * Flatbuffer Builder wrapper for gdscript
  */
@@ -28,10 +30,13 @@ void FlatBufferBuilder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_element_float", "voffset", "value"), &FlatBufferBuilder::add_scalar<double, float>);
 	ClassDB::bind_method(D_METHOD("add_element_double", "voffset", "value"), &FlatBufferBuilder::add_scalar<double, double>);
 
+
 	ClassDB::bind_method(D_METHOD("start_table"), &FlatBufferBuilder::StartTable);
 	ClassDB::bind_method(D_METHOD("end_table", "start"), &FlatBufferBuilder::EndTable);
 
+	ClassDB::bind_method(D_METHOD("create_color", "color"), &FlatBufferBuilder::CreateColor);
 	ClassDB::bind_method(D_METHOD("create_string", "string"), &FlatBufferBuilder::CreateString);
+	ClassDB::bind_method(D_METHOD("create_vector3", "vector3"), &FlatBufferBuilder::CreateVector3);
 
 	ClassDB::bind_method(D_METHOD("finish", "root"), &FlatBufferBuilder::Finish);
 
@@ -69,6 +74,12 @@ godot::PackedByteArray FlatBufferBuilder::GetPackedByteArray() {
 	return bytes;
 }
 
+FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateColor( const godot::Color &value ) {
+	//FIXME this creates a copy, dumb.
+	Color col( value.r, value.g, value.b, value.a );
+	return builder->CreateStruct( col ).o;
+}
+
 FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateString( const godot::String &string ) {
 	//FIXME this creates a copy, dumb.
 	auto str = string.utf8();
@@ -76,8 +87,14 @@ FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateString( const godot::Strin
 	return offset;
 }
 
+FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVector3(const godot::Vector3 &value) {
+	// FIXME This creates a copy
+	Vector3 vec( value.x, value.y, value.z );
+	return builder->CreateStruct( vec ).o;
+}
 
 void FlatBufferBuilder::add_offset( uint16_t voffset, uint64_t value ) {
 	builder->AddOffset(voffset, Offset(value) );
 }
+
 } //end namespace

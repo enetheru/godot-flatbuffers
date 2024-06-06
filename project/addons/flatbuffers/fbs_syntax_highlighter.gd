@@ -174,6 +174,7 @@ func is_type( word : String )-> bool:
 	# | [ type ] | ident
 	if word in types: return true
 	if word in user_types: return true
+	if variant_included and word in variant_types: return true
 	return false
 
 func is_keyword( word : String ) -> bool:
@@ -237,7 +238,7 @@ func is_float( word : String ) -> bool:
 func syntax_error( token : Dictionary, reason = "" ):
 	append( token, Color.RED )
 	if print_debug: print( token )
-	if print_debug: printerr( "Syntax error at line: %s, column: %s is '%s'%s" %
+	printerr( "Syntax error at line: %s, column: %s is '%s'%s" %
 		[token.line, token.col, token.t, "" if reason.is_empty() else " | %s" % reason] )
 
 var word_separation : Array = [' ', '\t', '\n', '{','}', ':', ';', ',', '(', ')', '[', ']']
@@ -267,6 +268,12 @@ var types : Array = [
 	"float64",
 	"string"
 	]
+
+var variant_included : bool = false
+var variant_types : Array = [
+	"Vector3",
+	"Color"
+]
 
 var keywords : Array = [
 	'include',
@@ -369,14 +376,17 @@ func parse_schema():
 		if token.type == TokenType.EOF: break
 
 		# skip comments
-		if token.type == TokenType.COMMENT:
+		if token.type == TokenType.COMMENT: continue
+		
+		if token.type != TokenType.KEYWORD:
+			syntax_error( token )
+			next_line()
 			continue
 
 		#include = include string_constant ;
 		if token.t == 'include':
 			append( token, keyword_color )
-			if not include_allowed:
-				syntax_error( token, "includes not allowed mid file" )
+			if not include_allowed: syntax_error( token, "includes not allowed mid file" )
 			parse_include()
 		else: include_allowed = false
 
@@ -421,6 +431,8 @@ func parse_schema():
 func parse_include():
 	var token = get_token()
 	if token.type != TokenType.STRING: syntax_error(token, "wanted filename as string")
+	var quoted : String = token.t
+	parse_included_file( quoted.substr(1, quoted.length() -2 ) )
 	color_default()
 	token = get_token()
 	if token.t != ';': syntax_error( token, "wanted semicolon" )
@@ -581,3 +593,11 @@ func parse_metadata():
 		if token.t == ')': return
 		if token.t != ',': syntax_error( token, "expected ','")
 		token = get_token()
+
+func parse_included_file( filename : String ):
+	if filename == 'variant.fbs':
+		variant_included = true
+		return
+
+	# FIXME, there is currently no known way to know which file I am parsing.
+	# So that means its impossible to know which files to load and parse

@@ -42,10 +42,47 @@ public:
 	template<typename in, typename out>
 	void add_scalar( uint16_t voffset, in value ){ builder->AddElement<out>( voffset, value ); }
 
+	// AABB
+	// Array
+	// Basis
+	// bool
+	// Callable
+	// Color
+	uoffset_t CreateColor( const godot::Color& value );
+	// Dictionary
+	// NodePath
+	// Object
+	// PackedByteArray
+	// PackedColorArray
+	// PackedFloat32Array
+	// PackedFloat64Array
+	// PackedInt32Array
+	// PackedInt64Array
+	// PackedStringArray
+	// PackedVector2Array
+	// PackedVector3Array
+	// Plane
+	// Projection
+	// Quaternion
+	// Rect2
+	// Rect2i
+	// RID
+	// Signal
+	// String
+	uoffset_t CreateString( const godot::String& string );
+	// StringName
+	// Transform2D
+	// Transform3D
+	// Vector2
+	// Vector2i
+	// Vector3
+	uoffset_t CreateVector3( const godot::Vector3& value );
+	// Vector3i
+	// Vector4
+	// Vector4i
+
 	uoffset_t StartTable() { return builder->StartTable(); }
 	uoffset_t EndTable(uoffset_t start) { return builder->EndTable(start); }
-
-	uoffset_t CreateString( const godot::String& string );
 
 	void Finish( uint32_t root );
 

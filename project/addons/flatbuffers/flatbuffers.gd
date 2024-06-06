@@ -96,17 +96,18 @@ func rcm_generate( id ):
 		printerr( " Please specify the location of flatc in EditorSettings->Plugins->FlatBuffers")
 		return
 
+	var include_path = ProjectSettings.globalize_path( "res://addons/flatbuffers/" )
 	var source_path = ProjectSettings.globalize_path(EditorInterface.get_current_path())
 	var output_path = ProjectSettings.globalize_path(EditorInterface.get_current_directory())
 
 	var args : PackedStringArray = [
+		"-I", include_path,
 		"-o", output_path,
 		"--gdscript", source_path]
 
 	var output = []
 	var result = OS.execute( flatc_path, args, output, true )
-	if not output.is_empty():
-		if result: printerr( "flatc output:", output )
-		else: print( "flatc output:", output )
+	# TODO make the error a popup
+	if result: printerr( "flatc output:", output )
 
 	EditorInterface.get_resource_filesystem().scan()
