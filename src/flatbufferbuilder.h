@@ -35,9 +35,12 @@ public:
 	void Clear() { builder->Clear(); }
 	void Reset() { builder->Reset(); }
 
+	// Inline values are added with add_*
+	void add_offset( uint16_t voffset, uint64_t value );
+
 	// Scalar add functions
 	template<typename in, typename out>
-	void add_scalar( uint16_t voffset, in value ){ builder->AddElement<out>( voffset, value); }
+	void add_scalar( uint16_t voffset, in value ){ builder->AddElement<out>( voffset, value ); }
 
 	uoffset_t StartTable() { return builder->StartTable(); }
 	uoffset_t EndTable(uoffset_t start) { return builder->EndTable(start); }

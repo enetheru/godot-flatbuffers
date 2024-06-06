@@ -14,6 +14,8 @@ void FlatBufferBuilder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("clear"), &FlatBufferBuilder::Clear);
 	ClassDB::bind_method(D_METHOD("reset"), &FlatBufferBuilder::Reset);
 
+	ClassDB::bind_method(D_METHOD("add_offset", "voffset", "value"), &FlatBufferBuilder::add_offset);
+
 	ClassDB::bind_method(D_METHOD("add_element_bool", "voffset", "value"), &FlatBufferBuilder::add_scalar<bool, uint8_t>);
 	ClassDB::bind_method(D_METHOD("add_element_byte", "voffset", "value"), &FlatBufferBuilder::add_scalar<int64_t, int8_t>);
 	ClassDB::bind_method(D_METHOD("add_element_ubyte", "voffset", "value"), &FlatBufferBuilder::add_scalar<uint64_t, uint8_t>);
@@ -67,10 +69,15 @@ godot::PackedByteArray FlatBufferBuilder::GetPackedByteArray() {
 	return bytes;
 }
 
-FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateString(const godot::String &string) {
+FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateString( const godot::String &string ) {
 	//FIXME this creates a copy, dumb.
 	auto str = string.utf8();
-	return builder->CreateString(str.ptr(), str.size()).o;
+	uoffset_t offset = builder->CreateString(str.ptr(), str.size()).o;
+	return offset;
 }
 
+
+void FlatBufferBuilder::add_offset( uint16_t voffset, uint64_t value ) {
+	builder->AddOffset(voffset, Offset(value) );
 }
+} //end namespace
