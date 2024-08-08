@@ -42,6 +42,21 @@ public:
 	template<typename in, typename out>
 	void add_scalar( uint16_t voffset, in value ){ builder->AddElement<out>( voffset, value ); }
 
+	// PackedByteArray
+	// PackedInt32Array
+	// PackedInt64Array
+	// PackedFloat32Array
+	// PackedFloat64Array
+	template<typename T>
+	uoffset_t CreatePackedArray( const godot::Array& v ) {
+		builder->StartVector< T >( v.size() );
+		for (auto i= v.size(); i > 0;) {
+			builder->PushElement( static_cast< T > ( v[--i] ) );
+		}
+		return builder->EndVector( v.size() );
+	}
+
+	// Godot Variant Types
 	// AABB
 	// Array
 	// Basis
@@ -52,12 +67,7 @@ public:
 	// Dictionary
 	// NodePath
 	// Object
-	// PackedByteArray
 	// PackedColorArray
-	// PackedFloat32Array
-	// PackedFloat64Array
-	// PackedInt32Array
-	// PackedInt64Array
 	// PackedStringArray
 	// PackedVector2Array
 	// PackedVector3Array

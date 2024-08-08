@@ -2,7 +2,7 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "godot_native/variant_generated.h"
+#include "godot_native/Variant_generated.h"
 
 /*
  * Flatbuffer Builder wrapper for gdscript
@@ -30,13 +30,18 @@ void FlatBufferBuilder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_element_float", "voffset", "value"), &FlatBufferBuilder::add_scalar<double, float>);
 	ClassDB::bind_method(D_METHOD("add_element_double", "voffset", "value"), &FlatBufferBuilder::add_scalar<double, double>);
 
-
 	ClassDB::bind_method(D_METHOD("start_table"), &FlatBufferBuilder::StartTable);
 	ClassDB::bind_method(D_METHOD("end_table", "start"), &FlatBufferBuilder::EndTable);
 
 	ClassDB::bind_method(D_METHOD("create_color", "color"), &FlatBufferBuilder::CreateColor);
 	ClassDB::bind_method(D_METHOD("create_string", "string"), &FlatBufferBuilder::CreateString);
 	ClassDB::bind_method(D_METHOD("create_vector3", "vector3"), &FlatBufferBuilder::CreateVector3);
+
+	ClassDB::bind_method(D_METHOD("create_packed_byte_array", "array"), &FlatBufferBuilder::CreatePackedArray<uint8_t>);
+	ClassDB::bind_method(D_METHOD("create_packed_int32_array", "array"), &FlatBufferBuilder::CreatePackedArray<uint32_t>);
+	ClassDB::bind_method(D_METHOD("create_packed_int64_array", "array"), &FlatBufferBuilder::CreatePackedArray<uint64_t>);
+	ClassDB::bind_method(D_METHOD("create_packed_float32_array", "array"), &FlatBufferBuilder::CreatePackedArray<float>);
+	ClassDB::bind_method(D_METHOD("create_packed_float64_array", "array"), &FlatBufferBuilder::CreatePackedArray<double>);
 
 	ClassDB::bind_method(D_METHOD("finish", "root"), &FlatBufferBuilder::Finish);
 
