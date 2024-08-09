@@ -1,0 +1,7 @@
+include "variant.fbs";
+
+table RootTable{
+  test_bytes:[ubyte];
+}
+
+root_type RootTable;

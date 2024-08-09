@@ -38,6 +38,7 @@ void FlatBuffer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("decode_color", "start_" ), &FlatBuffer::decode_color );
 	ClassDB::bind_method(D_METHOD("decode_string", "start_" ), &FlatBuffer::decode_string );
 	ClassDB::bind_method(D_METHOD("decode_vector3", "start_" ), &FlatBuffer::decode_vector3 );
+	ClassDB::bind_method(D_METHOD("decode_byte_array", "start_" ), &FlatBuffer::decode_byte_array );
 }
 
 // Returns the field offset relative to 'start'.
@@ -122,6 +123,17 @@ godot::Vector3 FlatBuffer::decode_vector3( int64_t start_) {
 		(real_t)bytes.decode_float(start_ + 4),
 		(real_t)bytes.decode_float(start_ + 8)
 	};
+}
+
+godot::PackedByteArray FlatBuffer::decode_byte_array( int64_t vtable_offset ) {
+	int64_t foffset = get_field_offset( vtable_offset );
+	if( !foffset ) return {};
+	int64_t field_start = get_field_start( foffset );
+	int64_t size = bytes.decode_u32( field_start );
+	int64_t array_start = field_start + 4;
+
+	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
+	return bytes.slice(array_start, array_start + size);
 }
 
 }// end namespace godot_flatbuffers

@@ -50,6 +50,7 @@ public:
 	// NodePath
 	// Object
 	// PackedByteArray
+	godot::PackedByteArray decode_byte_array( int64_t start_ );
 	// PackedColorArray
 	// PackedFloat32Array
 	// PackedFloat64Array
