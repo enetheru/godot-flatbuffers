@@ -141,21 +141,6 @@ godot::Color FlatBuffer::decode_Color( int64_t start_ ) {
 	};
 }
 
-
-godot::String FlatBuffer::decode_String( int64_t start_ ) {
-	return bytes.slice(start_ + 4, start_ + 4 + bytes.decode_u32(start_) ).get_string_from_utf8();
-}
-
-
-godot::Vector3 FlatBuffer::decode_Vector3( int64_t start_) {
-	// FIXME too much munging for what i want.
-	return {
-		(real_t)bytes.decode_float(start_),
-		(real_t)bytes.decode_float(start_ + 4),
-		(real_t)bytes.decode_float(start_ + 8)
-	};
-}
-
 godot::PackedByteArray FlatBuffer::decode_PackedByteArray( int64_t start_ ) {
 	int64_t size = bytes.decode_u32( start_ );
 	int64_t array_start = start_ + 4;
@@ -165,7 +150,7 @@ godot::PackedByteArray FlatBuffer::decode_PackedByteArray( int64_t start_ ) {
 }
 
 godot::PackedFloat32Array FlatBuffer::decode_PackedFloat32Array( int64_t start_) {
-	int64_t length = bytes.decode_u32( start_ ) * sizeof( float );
+	int64_t length = bytes.decode_u32( start_ ) * sizeof( float ); // NOLINT(*-narrowing-conversions)
 	int64_t array_start = start_ + 4;
 
 	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
@@ -173,7 +158,7 @@ godot::PackedFloat32Array FlatBuffer::decode_PackedFloat32Array( int64_t start_)
 }
 
 godot::PackedFloat64Array FlatBuffer::decode_PackedFloat64Array( int64_t start_) {
-	int64_t length = bytes.decode_u32( start_ ) * sizeof( double );
+	int64_t length = bytes.decode_u32( start_ ) * sizeof( double ); // NOLINT(*-narrowing-conversions)
 	int64_t array_start = start_ + 4;
 
 	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
@@ -181,7 +166,7 @@ godot::PackedFloat64Array FlatBuffer::decode_PackedFloat64Array( int64_t start_)
 }
 
 godot::PackedInt32Array FlatBuffer::decode_PackedInt32Array( int64_t start_) {
-	int64_t length = bytes.decode_u32( start_ ) * sizeof( int32_t );
+	int64_t length = bytes.decode_u32( start_ ) * sizeof( int32_t ); // NOLINT(*-narrowing-conversions)
 	int64_t array_start = start_ + 4;
 
 	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
@@ -189,11 +174,24 @@ godot::PackedInt32Array FlatBuffer::decode_PackedInt32Array( int64_t start_) {
 }
 
 godot::PackedInt64Array FlatBuffer::decode_PackedInt64Array( int64_t start_) {
-	int64_t length = bytes.decode_u32( start_ ) * sizeof( int64_t );
+	int64_t length = bytes.decode_u32( start_ ) * sizeof( int64_t ); // NOLINT(*-narrowing-conversions)
 	int64_t array_start = start_ + 4;
 
 	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
 	return bytes.slice(array_start, array_start + length  ).to_int64_array();
+}
+
+godot::String FlatBuffer::decode_String( int64_t start_ ) {
+	return bytes.slice(start_ + 4, start_ + 4 + bytes.decode_u32(start_) ).get_string_from_utf8();
+}
+
+godot::Vector3 FlatBuffer::decode_Vector3( int64_t start_) {
+	// FIXME too much munging for what i want.
+	return {
+		(real_t)bytes.decode_float(start_),
+		(real_t)bytes.decode_float(start_ + 4),
+		(real_t)bytes.decode_float(start_ + 8)
+	};
 }
 
 }// end namespace godot_flatbuffers
