@@ -1,58 +1,35 @@
 {
   "main": {
-    "id": "76c55e448f3f8ae6",
+    "id": "8b56a95c8657a5af",
     "type": "split",
     "children": [
       {
-        "id": "aff549648e4b5098",
+        "id": "bffa76e2133909d6",
         "type": "tabs",
         "children": [
           {
-            "id": "4540d9866ba31c77",
+            "id": "2e3f9f0f85a42694",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Diary/2024-06.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "79cface1f221b2b2",
-            "type": "leaf",
-            "state": {
-              "type": "kanban",
-              "state": {
-                "file": "Tracker.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false
-                  ]
-                }
-              }
+              "type": "empty",
+              "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
   },
   "left": {
-    "id": "20d2fea3c8c988eb",
+    "id": "dc1df54042745ff8",
     "type": "split",
     "children": [
       {
-        "id": "f82839e9bcf7bb35",
+        "id": "a9e4bca12275d4c2",
         "type": "tabs",
         "children": [
           {
-            "id": "0e6f5a4ca17de4ab",
+            "id": "f519920f887c4b2a",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -62,7 +39,7 @@
             }
           },
           {
-            "id": "336c4df011ae7b73",
+            "id": "cc7681a9911cd9f4",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -77,34 +54,34 @@
             }
           },
           {
-            "id": "a40a6f416867e71e",
+            "id": "59fc9940812a1083",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
     "width": 300
   },
   "right": {
-    "id": "103d68ba13ea8bde",
+    "id": "ae89857d93eb8d4f",
     "type": "split",
     "children": [
       {
-        "id": "989431d1a1a22103",
+        "id": "50273dfcddee7463",
         "type": "tabs",
         "children": [
           {
-            "id": "a468ecb05cd34583",
+            "id": "3fae38504fad7c7c",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Tracker.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -116,19 +93,18 @@
             }
           },
           {
-            "id": "f4fa47aa755b5ffa",
+            "id": "99df9cd79afc2274",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Tracker.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
             }
           },
           {
-            "id": "1c3456bb484c929c",
+            "id": "724019d7553fa3ed",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -139,13 +115,11 @@
             }
           },
           {
-            "id": "2c39e84330cabe82",
+            "id": "cb16302e2df14579",
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "Tracker.md"
-              }
+              "state": {}
             }
           }
         ]
@@ -160,29 +134,11 @@
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
-      "obsidian-kanban:Create new board": false,
-      "daily-notes:Open today's daily note": true,
-      "templates:Insert template": true,
-      "command-palette:Open command palette": true
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
     }
   },
-  "active": "79cface1f221b2b2",
-  "lastOpenFiles": [
-    "Older Notes.md",
-    "Diary/2024-06.md",
-    "EditorSettings.md",
-    "FileSystemDock.md",
-    "Godot-FlatBuffers.md",
-    "reflection.fbs.canvas",
-    "ScriptEditor.md",
-    "TODO.canvas",
-    "Tracker.md",
-    "Untitled.canvas",
-    "2024-06-05.md",
-    "Diary/2024-05.md",
-    "Diary/2024-04.md",
-    "Diary/2024-05.md~",
-    "Welcome.md",
-    "Diary"
-  ]
+  "active": "cc7681a9911cd9f4",
+  "lastOpenFiles": []
 }

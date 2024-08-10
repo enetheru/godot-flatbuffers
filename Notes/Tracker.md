@@ -15,18 +15,21 @@ kanban-plugin: board
 - [ ] cleanup source generation so that it is just a copy paste of the addons folder
 - [ ] add fbs files to visible text files for filesytsem dock
 - [ ] add right click generate to code views
+- [ ] Notify user if creation date of fbs file is different to generated file and could use a re-gen
 
 
 ## flatc Generator
 
 - [ ] Check in Get* functions to check buffer size for at least minimum
 - [ ] Create* functions need to be able to take the object, not the offset, ie string instead of int
+- [ ] builder add_* function arguments need to be named with \_offset if they expect an offset instead of a value.
 
 
 ## syntax highlighting
 
 - [ ] check names for collision
 - [ ] parse includes for names
+- [ ] keep track of field names and highlight duplicates
 
 
 ***
@@ -37,6 +40,7 @@ kanban-plugin: board
 - [ ] FlatBuffersBuilder.new() crashes godot
 - [ ] flatbuffers namespace == class name prefix
 - [ ] new GetRoot function in gdscript to get root flatbuffer
+- [ ] GetRoot needs to be a static function
 
 %% kanban:settings
 ```
