@@ -1,5 +1,8 @@
 function(godot_cpp_git_tag)
     message(STATUS  "Using Git:  ${GIT_EXECUTABLE}" )
+    message(STATUS "Git Repository: ${GODOT_CPP_GIT_URL}" )
+    message(STATUS "Git Tag: ${GODOT_CPP_GIT_TAG}" )
+
     execute_process(
             COMMAND ${GIT_EXECUTABLE} ls-remote --tags ${GODOT_CPP_GIT_URL}
             OUTPUT_VARIABLE GODOT_CPP_GIT_TAGS
@@ -18,7 +21,7 @@ function(godot_cpp_git_tag)
     string( REGEX REPLACE "([a-z0-9]+).*$" "\\1" GODOT_CPP_GIT_TAG "${TEMP}")
 
     if (NOT GODOT_CPP_GIT_TAG )
-        message(WARNING "Unable to determine git tag to clone")
+        message("Unable to determine git tag to clone")
         message("Run \"git ls-remote --tags ${GODOT_CPP_GIT_URL}\" ")
         message("Add '-DGODOT_CPP_GIT_TAG=<git-tag>' to your cmake configuration")
         message(FATAL_ERROR "Unable to determine which tag from godot-cpp to clone")
