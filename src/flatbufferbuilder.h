@@ -42,6 +42,9 @@ public:
 	template<typename in, typename out>
 	void add_scalar( uint16_t voffset, in value ){ builder->AddElement<out>( voffset, value ); }
 
+	template<typename in, typename out>
+	void add_scalar_default( uint16_t voffset, in value, in default_ ){ builder->AddElement<out>( voffset, value, default_ ); }
+
 	// PackedByteArray
 	// PackedInt32Array
 	// PackedInt64Array

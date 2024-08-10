@@ -30,6 +30,18 @@ void FlatBufferBuilder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_element_float", "voffset", "value"), &FlatBufferBuilder::add_scalar<double, float>);
 	ClassDB::bind_method(D_METHOD("add_element_double", "voffset", "value"), &FlatBufferBuilder::add_scalar<double, double>);
 
+	ClassDB::bind_method(D_METHOD("add_element_bool_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<bool, uint8_t>);
+	ClassDB::bind_method(D_METHOD("add_element_byte_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<int64_t, int8_t>);
+	ClassDB::bind_method(D_METHOD("add_element_ubyte_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<uint64_t, uint8_t>);
+	ClassDB::bind_method(D_METHOD("add_element_short_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<int64_t, int16_t>);
+	ClassDB::bind_method(D_METHOD("add_element_ushort_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<uint64_t, uint16_t>);
+	ClassDB::bind_method(D_METHOD("add_element_int_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<int64_t, int32_t>);
+	ClassDB::bind_method(D_METHOD("add_element_uint_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<uint64_t, uint32_t>);
+	ClassDB::bind_method(D_METHOD("add_element_long_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<int64_t, int64_t>);
+	ClassDB::bind_method(D_METHOD("add_element_ulong_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<uint64_t, uint64_t>);
+	ClassDB::bind_method(D_METHOD("add_element_float_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<double, float>);
+	ClassDB::bind_method(D_METHOD("add_element_double_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<double, double>);
+
 	ClassDB::bind_method(D_METHOD("start_table"), &FlatBufferBuilder::StartTable);
 	ClassDB::bind_method(D_METHOD("end_table", "start"), &FlatBufferBuilder::EndTable);
 
@@ -37,11 +49,11 @@ void FlatBufferBuilder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("create_string", "string"), &FlatBufferBuilder::CreateString);
 	ClassDB::bind_method(D_METHOD("create_vector3", "vector3"), &FlatBufferBuilder::CreateVector3);
 
-	ClassDB::bind_method(D_METHOD("create_packed_byte_array", "array"), &FlatBufferBuilder::CreatePackedArray<uint8_t>);
-	ClassDB::bind_method(D_METHOD("create_packed_int32_array", "array"), &FlatBufferBuilder::CreatePackedArray<uint32_t>);
-	ClassDB::bind_method(D_METHOD("create_packed_int64_array", "array"), &FlatBufferBuilder::CreatePackedArray<uint64_t>);
-	ClassDB::bind_method(D_METHOD("create_packed_float32_array", "array"), &FlatBufferBuilder::CreatePackedArray<float>);
-	ClassDB::bind_method(D_METHOD("create_packed_float64_array", "array"), &FlatBufferBuilder::CreatePackedArray<double>);
+	ClassDB::bind_method(D_METHOD("create_packedbytearray", "array"), &FlatBufferBuilder::CreatePackedArray<uint8_t>);
+	ClassDB::bind_method(D_METHOD("create_packedint32array", "array"), &FlatBufferBuilder::CreatePackedArray<uint32_t>);
+	ClassDB::bind_method(D_METHOD("create_packedint64array", "array"), &FlatBufferBuilder::CreatePackedArray<uint64_t>);
+	ClassDB::bind_method(D_METHOD("create_packedfloat32array", "array"), &FlatBufferBuilder::CreatePackedArray<float>);
+	ClassDB::bind_method(D_METHOD("create_packedfloat64array", "array"), &FlatBufferBuilder::CreatePackedArray<double>);
 
 	ClassDB::bind_method(D_METHOD("finish", "root"), &FlatBufferBuilder::Finish);
 

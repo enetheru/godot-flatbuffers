@@ -43,19 +43,16 @@ public:
 	// Basis
 	// bool
 	// Callable
-	// Color
-	godot::Color decode_color( int64_t start_ );
-
+	godot::Color decode_Color( int64_t start_ );
 	// Dictionary
 	// NodePath
 	// Object
-	// PackedByteArray
-	godot::PackedByteArray decode_byte_array( int64_t start_ );
+	godot::PackedByteArray decode_PackedByteArray( int64_t start_ );
 	// PackedColorArray
-	// PackedFloat32Array
-	// PackedFloat64Array
-	// PackedInt32Array
-	// PackedInt64Array
+	godot::PackedFloat32Array decode_PackedFloat32Array( int64_t start_ );
+	godot::PackedFloat64Array decode_PackedFloat64Array( int64_t start_ );
+	godot::PackedInt32Array decode_PackedInt32Array( int64_t start_ );
+	godot::PackedInt64Array decode_PackedInt64Array( int64_t start_ );
 	// PackedStringArray
 	// PackedVector2Array
 	// PackedVector3Array
@@ -66,15 +63,13 @@ public:
 	// Rect2i
 	// RID
 	// Signal
-	// String
-	godot::String decode_string( int64_t start_ );
+	godot::String decode_String( int64_t start_ );
 	// StringName
 	// Transform2D
 	// Transform3D
 	// Vector2
 	// Vector2i
-	// Vector3
-	godot::Vector3 decode_vector3( int64_t start_ );
+	godot::Vector3 decode_Vector3( int64_t start_ );
 	// Vector3i
 	// Vector4
 	// Vector4i

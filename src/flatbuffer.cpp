@@ -35,39 +35,70 @@ void FlatBuffer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_array_element_start", "array_start", "idx"), &FlatBuffer::get_array_element_start );
 
 	// Decode Functions
-	ClassDB::bind_method(D_METHOD("decode_color", "start_" ), &FlatBuffer::decode_color );
-	ClassDB::bind_method(D_METHOD("decode_string", "start_" ), &FlatBuffer::decode_string );
-	ClassDB::bind_method(D_METHOD("decode_vector3", "start_" ), &FlatBuffer::decode_vector3 );
-	ClassDB::bind_method(D_METHOD("decode_byte_array", "start_" ), &FlatBuffer::decode_byte_array );
+	// AABB
+	// Array
+	// Basis
+	// bool
+	// Callable
+	ClassDB::bind_method(D_METHOD("decode_Color", "start_" ), &FlatBuffer::decode_Color);
+	// Dictionary
+	// NodePath
+	// Object
+	ClassDB::bind_method(D_METHOD("decode_PackedByteArray", "start_" ), &FlatBuffer::decode_PackedByteArray );
+	// PackedColorArray
+	ClassDB::bind_method(D_METHOD("decode_PackedFloat32Array", "start_" ), &FlatBuffer::decode_PackedFloat32Array );
+	ClassDB::bind_method(D_METHOD("decode_PackedFloat64Array", "start_" ), &FlatBuffer::decode_PackedFloat64Array );
+	ClassDB::bind_method(D_METHOD("decode_PackedInt32Array", "start_" ), &FlatBuffer::decode_PackedInt32Array );
+	ClassDB::bind_method(D_METHOD("decode_PackedInt64Array", "start_" ), &FlatBuffer::decode_PackedInt64Array );
+	// PackedStringArray
+	// PackedVector2Array
+	// PackedVector3Array
+	// Plane
+	// Projection
+	// Quaternion
+	// Rect2
+	// Rect2i
+	// RID
+	// Signal
+	ClassDB::bind_method(D_METHOD("decode_String", "start_" ), &FlatBuffer::decode_String);
+	// StringName
+	// Transform2D
+	// Transform3D
+	// Vector2
+	// Vector2i
+	ClassDB::bind_method(D_METHOD("decode_Vector3", "start_" ), &FlatBuffer::decode_Vector3);
+	// Vector3i
+	// Vector4
+	// Vector4i
 }
 
 // Returns the field offset relative to 'start'.
 // If this is a scalar or a struct, it will be where the data is
 // If this is a table, or an array, it will be a relative offset to the position of the field.
-int64_t FlatBuffer::get_field_offset(int64_t vtable_offset) {
+int64_t FlatBuffer::get_field_offset( int64_t vtable_offset ) {
 	// get vtable
 	int64_t vtable_pos = start - bytes.decode_s32(start);
 	int64_t vtable_size = bytes.decode_s16( vtable_pos );
 	//int64_t table_size = bytes.decode_s16( vtable_pos + 2 ); Unnecessary
 
-	//The vtable_pos being outside the range is not an error,
+	// The vtable_pos being outside the range is not an error,
 	// it simply means that the element is not present in the table.
 	if( vtable_offset >= vtable_size) {
 		return 0;
 	}
 
-	//decoding zero means that the field is not present.
+	// decoding zero means that the field is not present.
 	return bytes.decode_s16(vtable_pos + vtable_offset );
 }
 
 // returns offset from the zero of the bytes(PackedByteArray)
 // This isn't necessary with structs and scalars, as the data is inline
-int64_t FlatBuffer::get_field_start(int64_t field_offset) {
+int64_t FlatBuffer::get_field_start( int64_t field_offset) {
 	return start + field_offset + bytes.decode_u32(start + field_offset);
 }
 
-FlatBufferArray *FlatBuffer::get_array(int64_t start_, godot::Callable constructor_) {
-	auto new_array = memnew( FlatBufferArray( start_, bytes, std::move(constructor_) ) );
+FlatBufferArray *FlatBuffer::get_array( int64_t start_, godot::Callable constructor_) {
+	auto new_array = memnew( FlatBufferArray( start_, bytes, std::move( constructor_ ) ) );
 	return new_array;
 }
 
@@ -101,7 +132,7 @@ int64_t FlatBuffer::get_start() const {
 
 // Decode Functions
 
-godot::Color FlatBuffer::decode_color( int64_t start_ ) {
+godot::Color FlatBuffer::decode_Color( int64_t start_ ) {
 	return {
 		(real_t)bytes.decode_float(start_),
 		(real_t)bytes.decode_float(start_ + 4),
@@ -111,12 +142,12 @@ godot::Color FlatBuffer::decode_color( int64_t start_ ) {
 }
 
 
-godot::String FlatBuffer::decode_string( int64_t start_ ) {
+godot::String FlatBuffer::decode_String( int64_t start_ ) {
 	return bytes.slice(start_ + 4, start_ + 4 + bytes.decode_u32(start_) ).get_string_from_utf8();
 }
 
 
-godot::Vector3 FlatBuffer::decode_vector3( int64_t start_) {
+godot::Vector3 FlatBuffer::decode_Vector3( int64_t start_) {
 	// FIXME too much munging for what i want.
 	return {
 		(real_t)bytes.decode_float(start_),
@@ -125,15 +156,44 @@ godot::Vector3 FlatBuffer::decode_vector3( int64_t start_) {
 	};
 }
 
-godot::PackedByteArray FlatBuffer::decode_byte_array( int64_t vtable_offset ) {
-	int64_t foffset = get_field_offset( vtable_offset );
-	if( !foffset ) return {};
-	int64_t field_start = get_field_start( foffset );
-	int64_t size = bytes.decode_u32( field_start );
-	int64_t array_start = field_start + 4;
+godot::PackedByteArray FlatBuffer::decode_PackedByteArray( int64_t start_ ) {
+	int64_t size = bytes.decode_u32( start_ );
+	int64_t array_start = start_ + 4;
 
 	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
 	return bytes.slice(array_start, array_start + size);
+}
+
+godot::PackedFloat32Array FlatBuffer::decode_PackedFloat32Array( int64_t start_) {
+	int64_t length = bytes.decode_u32( start_ ) * sizeof( float );
+	int64_t array_start = start_ + 4;
+
+	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
+	return bytes.slice(array_start, array_start + length  ).to_float32_array();
+}
+
+godot::PackedFloat64Array FlatBuffer::decode_PackedFloat64Array( int64_t start_) {
+	int64_t length = bytes.decode_u32( start_ ) * sizeof( double );
+	int64_t array_start = start_ + 4;
+
+	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
+	return bytes.slice(array_start, array_start + length  ).to_float64_array();
+}
+
+godot::PackedInt32Array FlatBuffer::decode_PackedInt32Array( int64_t start_) {
+	int64_t length = bytes.decode_u32( start_ ) * sizeof( int32_t );
+	int64_t array_start = start_ + 4;
+
+	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
+	return bytes.slice(array_start, array_start + length  ).to_int32_array();
+}
+
+godot::PackedInt64Array FlatBuffer::decode_PackedInt64Array( int64_t start_) {
+	int64_t length = bytes.decode_u32( start_ ) * sizeof( int64_t );
+	int64_t array_start = start_ + 4;
+
+	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
+	return bytes.slice(array_start, array_start + length  ).to_int64_array();
 }
 
 }// end namespace godot_flatbuffers
