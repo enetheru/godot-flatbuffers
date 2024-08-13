@@ -66,17 +66,17 @@ void FlatBufferBuilder::_bind_methods() {
 //  to add a custom allocator so that we can create directly into a PackedByteArray
 //  This will make the need to copy the data after construction unnecessary
 FlatBufferBuilder::FlatBufferBuilder() {
-	godot::UtilityFunctions::print("FlatBufferBuilder(): Constructor");
+//	godot::UtilityFunctions::print("FlatBufferBuilder(): Constructor");
 	builder = std::make_unique<flatbuffers::FlatBufferBuilder>();
 }
 
 FlatBufferBuilder::FlatBufferBuilder( int size ) {
-	godot::UtilityFunctions::print("FlatBufferBuilder(): Constructor");
+//	godot::UtilityFunctions::print("FlatBufferBuilder(): Constructor");
 	builder = std::make_unique<flatbuffers::FlatBufferBuilder>(size );
 }
 
 FlatBufferBuilder::~FlatBufferBuilder() {
-	godot::UtilityFunctions::print("~FlatBufferBuilder(): Destructor");
+//	godot::UtilityFunctions::print("~FlatBufferBuilder(): Destructor");
 }
 
 void FlatBufferBuilder::Finish(uint32_t root) {

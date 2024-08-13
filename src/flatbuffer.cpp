@@ -6,11 +6,11 @@
 namespace godot_flatbuffers {
 
 FlatBuffer::FlatBuffer() {
-	godot::UtilityFunctions::print("FlatBuffer(): Constructor");
+//	godot::UtilityFunctions::print("FlatBuffer(): Constructor");
 
 }
 FlatBuffer::~FlatBuffer() {
-	godot::UtilityFunctions::print("~FlatBuffer(): Destructor");
+//	godot::UtilityFunctions::print("~FlatBuffer(): Destructor");
 }
 
 void FlatBuffer::_bind_methods() {
@@ -20,6 +20,7 @@ void FlatBuffer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_start", "start"), &FlatBuffer::set_start );
 	ClassDB::bind_method(D_METHOD("get_start"), &FlatBuffer::get_start );
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "start"), "set_start", "get_start");
+
 
 	ClassDB::bind_method(D_METHOD("set_bytes", "bytes"), &FlatBuffer::set_bytes );
 	ClassDB::bind_method(D_METHOD("get_bytes"), &FlatBuffer::get_bytes );
@@ -150,40 +151,30 @@ godot::Color FlatBuffer::decode_Color( int64_t start_ ) {
 godot::PackedByteArray FlatBuffer::decode_PackedByteArray( int64_t start_ ) {
 	int64_t size = bytes.decode_u32( start_ );
 	int64_t array_start = start_ + 4;
-
-	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
 	return bytes.slice(array_start, array_start + size);
 }
 
 godot::PackedFloat32Array FlatBuffer::decode_PackedFloat32Array( int64_t start_) {
 	int64_t length = bytes.decode_u32( start_ ) * sizeof( float ); // NOLINT(*-narrowing-conversions)
 	int64_t array_start = start_ + 4;
-
-	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
 	return bytes.slice(array_start, array_start + length  ).to_float32_array();
 }
 
 godot::PackedFloat64Array FlatBuffer::decode_PackedFloat64Array( int64_t start_) {
 	int64_t length = bytes.decode_u32( start_ ) * sizeof( double ); // NOLINT(*-narrowing-conversions)
 	int64_t array_start = start_ + 4;
-
-	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
 	return bytes.slice(array_start, array_start + length  ).to_float64_array();
 }
 
 godot::PackedInt32Array FlatBuffer::decode_PackedInt32Array( int64_t start_) {
 	int64_t length = bytes.decode_u32( start_ ) * sizeof( int32_t ); // NOLINT(*-narrowing-conversions)
 	int64_t array_start = start_ + 4;
-
-	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
 	return bytes.slice(array_start, array_start + length  ).to_int32_array();
 }
 
 godot::PackedInt64Array FlatBuffer::decode_PackedInt64Array( int64_t start_) {
 	int64_t length = bytes.decode_u32( start_ ) * sizeof( int64_t ); // NOLINT(*-narrowing-conversions)
 	int64_t array_start = start_ + 4;
-
-	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
 	return bytes.slice(array_start, array_start + length  ).to_int64_array();
 }
 
