@@ -1,0 +1,18 @@
+table RootTable {
+	bytes:[byte];
+	ubytes:[ubyte];
+
+ 	shorts:[short];
+ 	ushorts:[ushort];
+
+ 	ints:[int];
+ 	uints:[uint];
+
+ 	int64s:[int64];
+ 	uint64s:[uint64];
+
+	floats:[float];
+	doubles:[double];
+}
+
+root_type RootTable;

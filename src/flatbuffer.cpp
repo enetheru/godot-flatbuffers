@@ -32,7 +32,7 @@ void FlatBuffer::_bind_methods() {
 
 	//Array Access Helpers
 	ClassDB::bind_method(D_METHOD("get_array", "start_", "constructor_"), &FlatBuffer::get_array );
-	ClassDB::bind_method(D_METHOD("get_array_count", "vtable_offset"), &FlatBuffer::get_array_count );
+	ClassDB::bind_method(D_METHOD("get_array_size", "vtable_offset"), &FlatBuffer::get_array_size );
 	ClassDB::bind_method(D_METHOD("get_array_element_start", "array_start", "idx"), &FlatBuffer::get_array_element_start );
 
 	// Decode Functions
@@ -94,7 +94,9 @@ int64_t FlatBuffer::get_field_offset( int64_t vtable_offset ) {
 
 // returns offset from the zero of the bytes(PackedByteArray)
 // This isn't necessary with structs and scalars, as the data is inline
-int64_t FlatBuffer::get_field_start( int64_t field_offset) {
+int64_t FlatBuffer::get_field_start( int64_t vtable_offset ) {
+	int field_offset = get_field_offset( vtable_offset );
+	if( ! field_offset ) return 0;
 	return start + field_offset + bytes.decode_u32(start + field_offset);
 }
 
@@ -103,7 +105,7 @@ FlatBufferArray *FlatBuffer::get_array( int64_t start_, godot::Callable construc
 	return new_array;
 }
 
-int64_t FlatBuffer::get_array_count( int64_t vtable_offset ) {
+int64_t FlatBuffer::get_array_size( int64_t vtable_offset ) {
 	int64_t foffset = get_field_offset( vtable_offset );
 	if( !foffset )return 0;
 	int64_t field_start = get_field_start( foffset );
@@ -111,8 +113,8 @@ int64_t FlatBuffer::get_array_count( int64_t vtable_offset ) {
 }
 
 int64_t FlatBuffer::get_array_element_start(int64_t array_start, int64_t idx) {
-	int64_t array_size = bytes.decode_u32( array_start );
 	// TODO we could check for out of bounds here.
+	//	int64_t array_size = bytes.decode_u32( array_start );
 
 	int64_t data = array_start + 4;
 	int64_t element = data + idx * 4;

@@ -1,5 +1,5 @@
 table RootTable{
-	my_strings : [string];
+	my_string : string;
 }
 
 root_type RootTable;

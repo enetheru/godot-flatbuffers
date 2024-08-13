@@ -30,11 +30,11 @@ public:
 
 	// Field offset and position
 	int64_t get_field_offset( int64_t vtable_offset );
-	int64_t get_field_start( int64_t field_offset );
+	int64_t get_field_start( int64_t vtable_offset );
 
 	// Array/Vector offset and position
 	FlatBufferArray *get_array( int64_t start_, godot::Callable constructor_ );
-	int64_t get_array_count( int64_t vtable_offset );
+	int64_t get_array_size( int64_t vtable_offset );
 	int64_t get_array_element_start( int64_t array_start, int64_t idx  );
 
 	// Decode Functions
@@ -73,7 +73,6 @@ public:
 	// Vector3i
 	// Vector4
 	// Vector4i
-
 };
 
 } //namespace godot_flatbuffers

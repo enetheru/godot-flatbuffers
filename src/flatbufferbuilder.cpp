@@ -45,16 +45,28 @@ void FlatBufferBuilder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("start_table"), &FlatBufferBuilder::StartTable);
 	ClassDB::bind_method(D_METHOD("end_table", "start"), &FlatBufferBuilder::EndTable);
 
-	ClassDB::bind_method(D_METHOD("create_color", "color"), &FlatBufferBuilder::CreateColor);
-	ClassDB::bind_method(D_METHOD("create_string", "string"), &FlatBufferBuilder::CreateString);
-	ClassDB::bind_method(D_METHOD("create_vector3", "vector3"), &FlatBufferBuilder::CreateVector3);
+	ClassDB::bind_method(D_METHOD("create_Color", "color"), &FlatBufferBuilder::CreateColor);
+	ClassDB::bind_method(D_METHOD("create_String", "string"), &FlatBufferBuilder::CreateString);
+	ClassDB::bind_method(D_METHOD("create_Vector3", "vector3"), &FlatBufferBuilder::CreateVector3);
 
-	ClassDB::bind_method(D_METHOD("create_packedbytearray", "array"), &FlatBufferBuilder::CreatePackedArray<uint8_t>);
-	ClassDB::bind_method(D_METHOD("create_packedint32array", "array"), &FlatBufferBuilder::CreatePackedArray<uint32_t>);
-	ClassDB::bind_method(D_METHOD("create_packedint64array", "array"), &FlatBufferBuilder::CreatePackedArray<uint64_t>);
-	ClassDB::bind_method(D_METHOD("create_packedfloat32array", "array"), &FlatBufferBuilder::CreatePackedArray<float>);
-	ClassDB::bind_method(D_METHOD("create_packedfloat64array", "array"), &FlatBufferBuilder::CreatePackedArray<double>);
+	ClassDB::bind_method(D_METHOD("create_PackedByteArray", "array"), &FlatBufferBuilder::CreatePackedArray<uint8_t>);
+	ClassDB::bind_method(D_METHOD("create_PackedInt32Array", "array"), &FlatBufferBuilder::CreatePackedArray<uint32_t>);
+	ClassDB::bind_method(D_METHOD("create_PackedInt64Array", "array"), &FlatBufferBuilder::CreatePackedArray<uint64_t>);
+	ClassDB::bind_method(D_METHOD("create_PackedFloat32Array", "array"), &FlatBufferBuilder::CreatePackedArray<float>);
+	ClassDB::bind_method(D_METHOD("create_PackedFloat64Array", "array"), &FlatBufferBuilder::CreatePackedArray<double>);
 	ClassDB::bind_method(D_METHOD("create_PackedStringArray", "array"), &FlatBufferBuilder::CreatePackedStringArray);
+
+	ClassDB::bind_method(D_METHOD("create_Vector_int8", "array"), &FlatBufferBuilder::CreatePackedArray<int8_t>);
+	ClassDB::bind_method(D_METHOD("create_Vector_uint8", "array"), &FlatBufferBuilder::CreatePackedArray<uint8_t>);
+	ClassDB::bind_method(D_METHOD("create_Vector_int16", "array"), &FlatBufferBuilder::CreatePackedArray<int16_t>);
+	ClassDB::bind_method(D_METHOD("create_Vector_uint16", "array"), &FlatBufferBuilder::CreatePackedArray<uint16_t>);
+	ClassDB::bind_method(D_METHOD("create_Vector_int32", "array"), &FlatBufferBuilder::CreatePackedArray<int32_t>);
+	ClassDB::bind_method(D_METHOD("create_Vector_uint32", "array"), &FlatBufferBuilder::CreatePackedArray<uint32_t>);
+	ClassDB::bind_method(D_METHOD("create_Vector_int64", "array"), &FlatBufferBuilder::CreatePackedArray<int64_t>);
+	ClassDB::bind_method(D_METHOD("create_Vector_uint64", "array"), &FlatBufferBuilder::CreatePackedArray<uint64_t>);
+
+	ClassDB::bind_method(D_METHOD("create_Vector_float32", "array"), &FlatBufferBuilder::CreatePackedArray<float>);
+	ClassDB::bind_method(D_METHOD("create_Vector_float64", "array"), &FlatBufferBuilder::CreatePackedArray<double>);
 
 	ClassDB::bind_method(D_METHOD("finish", "root"), &FlatBufferBuilder::Finish);
 
@@ -111,10 +123,9 @@ FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreatePackedStringArray( const g
 }
 
 FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateString( const godot::String &string ) {
-	//FIXME this creates a copy, dumb.
-	auto str = string.utf8();
-	uoffset_t offset = builder->CreateString(str.ptr(), str.size()).o;
-	return offset;
+	auto str = string.utf8(); //FIXME this creates a copy, dumb.
+	auto offset = builder->CreateString( str.ptr(), str.size());
+	return offset.o;
 }
 
 FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVector3(const godot::Vector3 &value) {
