@@ -11,34 +11,18 @@
             "id": "4540d9866ba31c77",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "canvas",
               "state": {
-                "file": "Diary/2024-06.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "79cface1f221b2b2",
-            "type": "leaf",
-            "state": {
-              "type": "kanban",
-              "state": {
-                "file": "Tracker.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false
-                  ]
+                "file": "reflection.fbs.canvas",
+                "viewState": {
+                  "x": -396.2038464607057,
+                  "y": 159.482903482272,
+                  "zoom": 0.09669119920387692
                 }
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -104,7 +88,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Tracker.md",
+                "file": "reflection.fbs.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -121,7 +105,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Tracker.md",
+                "file": "reflection.fbs.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -144,7 +128,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Tracker.md"
+                "file": "reflection.fbs.canvas"
               }
             }
           }
@@ -166,18 +150,19 @@
       "command-palette:Open command palette": true
     }
   },
-  "active": "79cface1f221b2b2",
+  "active": "4540d9866ba31c77",
   "lastOpenFiles": [
-    "Older Notes.md",
-    "Diary/2024-06.md",
+    "FeatureCanvas.canvas",
+    "DataFlow.canvas",
+    "reflection.fbs.canvas",
     "EditorSettings.md",
     "FileSystemDock.md",
     "Godot-FlatBuffers.md",
-    "reflection.fbs.canvas",
+    "Older Notes.md",
     "ScriptEditor.md",
-    "TODO.canvas",
     "Tracker.md",
-    "Untitled.canvas",
+    "Diary/2024-06.md",
+    "Untitled.md",
     "2024-06-05.md",
     "Diary/2024-05.md",
     "Diary/2024-04.md",
