@@ -22,7 +22,7 @@ target_sources( ${GDE_NAME}
 )
 
 configure_file( gdextension.in
-        ${CMAKE_SOURCE_DIR}/project/${GDE_NAME}.gdextension)
+        ${CMAKE_SOURCE_DIR}/project/addons/${GDE_NAME}/${GDE_NAME}.gdextension)
 
 target_include_directories( ${GDE_NAME} SYSTEM PUBLIC godot-cpp FlatBuffers::FlatBuffers )
 target_link_libraries( ${GDE_NAME} PUBLIC godot-cpp FlatBuffers::FlatBuffers )

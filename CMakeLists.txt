@@ -21,14 +21,15 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 # Output Directory
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${GODOT_PROJECT_PATH}/bin )
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${GODOT_PROJECT_PATH}/addons/${GDE_NAME}/bin )
 
 ### Generate target name
 include(cmake/naming.cmake)
-message(STATUS "Target Platform: ${GDE_TARGET_PLATFORM}")
-message(STATUS "Target Architecture: ${GDE_TARGET_ARCH}")
-message(STATUS "Tools Enabled: ${GODOT_CPP_TOOLS_ENABLED}")
-message(STATUS "Output Filename: ${GDE_OUTPUT_NAME}")
+message( STATUS "Configuration:" )
+message( "\tTarget Platform: ${GDE_TARGET_PLATFORM}")
+message( "\tTarget Architecture: ${GDE_TARGET_ARCH}")
+message( "\tTools Enabled: ${GODOT_CPP_TOOLS_ENABLED}")
+message( "\tOutput Filename: ${GDE_OUTPUT_NAME}\n")
 
 ### Verify contents of GDExtension Directory
 # TODO if the gdextension directory is specified then we dont need to dump-api
@@ -180,8 +181,7 @@ endif ()
 ### Add Flatbuffers as a sub project
 FetchContent_Declare( FlatBuffers
         GIT_REPOSITORY "https://github.com/enetheru/flatbuffers.git"
-        GIT_BRANCH origin/gdscript
-        GIT_SHALLOW ON
+        GIT_TAG "gdscript"
         SOURCE_DIR "${PROJECT_SOURCE_DIR}/flatbuffers"
         UPDATE_DISCONNECTED ON
 )

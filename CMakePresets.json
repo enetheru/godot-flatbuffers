@@ -21,7 +21,7 @@
     {
       "name": "editor",
       "inherits": "default",
-      "description": "Build GDExtension for the Editor",
+      "description": "Build extension for the editor",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "GODOT_CPP_TOOLS_ENABLED": "ON",
@@ -30,7 +30,7 @@
     },
     {
       "name": "editor_debug",
-      "description": "Build GDExtension for the Editor with debug symbols",
+      "description": "Build extension for the editor with debug symbols",
       "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
@@ -40,7 +40,7 @@
     },
     {
       "name": "template",
-      "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
+      "description": "Build extension for the editor with debug symbols and dev_tools",
       "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
@@ -49,7 +49,7 @@
     },
     {
       "name": "template_debug",
-      "description": "Build GDExtension for the Editor with debug symbols and dev_tools",
+      "description": "Build extension for the editor with debug symbols and dev_tools",
       "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",

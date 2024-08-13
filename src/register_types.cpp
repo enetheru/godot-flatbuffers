@@ -20,10 +20,12 @@ void initialize_module(godot::ModuleInitializationLevel p_level) {
 	godot::ClassDB::register_class<FlatBuffer>();
 	godot::ClassDB::register_class<FlatBufferBuilder>();
 	godot::ClassDB::register_class<FlatBufferArray>();
+	godot::UtilityFunctions::print("gdflatbuffers initialised");
 }
 
-void uninitialize_module(godot::ModuleInitializationLevel p_level) {
+void terminate_module(godot::ModuleInitializationLevel p_level) {
 	if (p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
+	godot::UtilityFunctions::print("gdflatbuffers terminated");
 }

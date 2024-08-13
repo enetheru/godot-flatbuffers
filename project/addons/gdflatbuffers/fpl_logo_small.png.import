@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://djn0qm2ewvf7d"
-path="res://.godot/imported/fpl_logo_small.png-55c548c7d927bd06b86bb116f8065957.ctex"
+path="res://.godot/imported/fpl_logo_small.png-09b8be63c02c925ad98853033f6b327b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/flatbuffers/fpl_logo_small.png"
-dest_files=["res://.godot/imported/fpl_logo_small.png-55c548c7d927bd06b86bb116f8065957.ctex"]
+source_file="res://addons/gdflatbuffers/fpl_logo_small.png"
+dest_files=["res://.godot/imported/fpl_logo_small.png-09b8be63c02c925ad98853033f6b327b.ctex"]
 
 [params]
 

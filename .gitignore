@@ -16,6 +16,7 @@ cmake-build*
 # FetchContent and generated files
 gdextension/
 godot-cpp/
+flatbuffers/
 
 # Prerequisites
 *.d
@@ -60,12 +61,12 @@ export_presets.cfg
 
 # jetbrains IDE
 .idea/
+
+# Our generated files
 src/entry_point.cpp
 
-project/godot-flatbuffers.gdextension
-
-/flatbuffers/
-/project/bin/
+project/addons/gdflatbuffers/gdflatbuffers.gdextension
+project/addons/gdflatbuffers/bin
 
 *_generated.h
 *_generated.gd

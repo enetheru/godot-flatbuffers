@@ -108,7 +108,9 @@ func get_token() -> Dictionary:
 			break
 		if peek_char() == '"': token = get_string(); break
 		token = get_word(); break
-	if print_debug: print( "%s:%s | %s | '%s'" % [token.line, token.col, TokenType.keys()[token.type], token.t] )
+	if print_debug:
+		if token.type == TokenType.EOF: print( "EOF" )
+		else: print( "%s:%s | %s | '%s'" % [token.line, token.col, TokenType.keys()[token.type], token.t] )
 
 	return token
 
@@ -377,7 +379,7 @@ func parse_schema():
 
 		# skip comments
 		if token.type == TokenType.COMMENT: continue
-		
+
 		if token.type != TokenType.KEYWORD:
 			syntax_error( token )
 			next_line()
@@ -457,7 +459,7 @@ func parse_union_decl():
 	token = get_token()
 	#enumval_decl = ident [ = integer_constant ]
 	while token.t != '}':
-		if not is_type(token.t): syntax_error(token, "wanted type")
+		if not is_type(token.t): syntax_error(token, "wanted type(highligher:464)")
 		color_default()
 		token = get_token()
 
@@ -472,7 +474,7 @@ func parse_enum_decl():
 
 	if token.t != ':': syntax_error(token, "wanted ':'")
 	token = get_token()
-	if not token.t in types: syntax_error(token, "wanted type")
+	if not token.t in types: syntax_error(token, "wanted type(highligher:479)")
 	color_default()
 	token = get_token()
 
@@ -542,11 +544,11 @@ func get_field() -> Dictionary:
 	if token.type == TokenType.TYPE: pass
 	elif token.t == '[':
 		token = get_token()
-		if not is_type( token.t ): syntax_error(token, "wanted type")
+		if not is_type( token.t ): syntax_error(token, "wanted type(highligher:549) %s " )
 		color_default()
 		token = get_token()
 		if token.t != ']': syntax_error(token, "wanted ']'")
-	else: syntax_error(token, "wanted type")
+	else: syntax_error(token, "wanted type(highligher:553)")
 	color_default()
 
 	# Optional scalar value

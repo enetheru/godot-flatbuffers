@@ -44,7 +44,7 @@ func change_editor_settings():
 			"hint_string": "flatc.exe" # This will the filter string in the file dialog
 		}
 		settings.add_property_info(property_info)
-		
+
 	if not settings.get( EDITOR_SETTINGS_BASE + &"fbs_debug_print" ):
 		settings.set(EDITOR_SETTINGS_BASE + &"fbs_debug_print", false )
 		var property_info = {
@@ -107,7 +107,13 @@ func rcm_generate( id ):
 
 	var output = []
 	var result = OS.execute( flatc_path, args, output, true )
-	# TODO make the error a popup
-	if result: printerr( "flatc output:", output )
+	if result:
+		# TODO make the error a popup
+		printerr( "flatc output:", output )
+	else:
+		print("Flatbuffer Generation for '%s' Completed" % source_path.get_file() )
 
+	# This line refreshes the filesystem dock.
 	EditorInterface.get_resource_filesystem().scan()
+
+	#TODO Figure out a way to get the script in the editor to reload.
