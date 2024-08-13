@@ -50,7 +50,7 @@ void FlatBuffer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("decode_PackedFloat64Array", "start_" ), &FlatBuffer::decode_PackedFloat64Array );
 	ClassDB::bind_method(D_METHOD("decode_PackedInt32Array", "start_" ), &FlatBuffer::decode_PackedInt32Array );
 	ClassDB::bind_method(D_METHOD("decode_PackedInt64Array", "start_" ), &FlatBuffer::decode_PackedInt64Array );
-	// PackedStringArray
+	ClassDB::bind_method(D_METHOD("decode_PackedStringArray", "start_" ), &FlatBuffer::decode_PackedStringArray );
 	// PackedVector2Array
 	// PackedVector3Array
 	// Plane
@@ -110,8 +110,14 @@ int64_t FlatBuffer::get_array_count( int64_t vtable_offset ) {
 }
 
 int64_t FlatBuffer::get_array_element_start(int64_t array_start, int64_t idx) {
-	int64_t offset = array_start + 4 + (idx * 4);
-	return offset + bytes.decode_u32( offset );
+	int64_t array_size = bytes.decode_u32( array_start );
+	// TODO we could check for out of bounds here.
+
+	int64_t data = array_start + 4;
+	int64_t element = data + idx * 4;
+	int64_t value = bytes.decode_u32( element );
+
+	return element + value;
 }
 
 // Property Get and Set Functions
@@ -179,6 +185,19 @@ godot::PackedInt64Array FlatBuffer::decode_PackedInt64Array( int64_t start_) {
 
 	// Since we aare dealing with bytearrays for the source and the destination, I can do a slice.
 	return bytes.slice(array_start, array_start + length  ).to_int64_array();
+}
+
+godot::PackedStringArray FlatBuffer::decode_PackedStringArray( int64_t start_) {
+	int64_t size = bytes.decode_u32( start_ );
+	int64_t data = start_ + sizeof( uint32_t ); // NOLINT(*-narrowing-conversions)
+
+	godot::PackedStringArray string_array;
+	for( int i = 0; i < size; ++i ){
+		int64_t element = data + i * sizeof(uint32_t); // NOLINT(*-narrowing-conversions)
+		uint32_t offset = bytes.decode_u32( element );
+		string_array.append(decode_String( element + offset ) );
+	}
+	return string_array;
 }
 
 godot::String FlatBuffer::decode_String( int64_t start_ ) {

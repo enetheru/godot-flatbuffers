@@ -72,6 +72,7 @@ public:
 	// Object
 	// PackedColorArray
 	// PackedStringArray
+	uoffset_t CreatePackedStringArray( const godot::PackedStringArray& value );
 	// PackedVector2Array
 	// PackedVector3Array
 	// Plane

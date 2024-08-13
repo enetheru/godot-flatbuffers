@@ -54,6 +54,7 @@ void FlatBufferBuilder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("create_packedint64array", "array"), &FlatBufferBuilder::CreatePackedArray<uint64_t>);
 	ClassDB::bind_method(D_METHOD("create_packedfloat32array", "array"), &FlatBufferBuilder::CreatePackedArray<float>);
 	ClassDB::bind_method(D_METHOD("create_packedfloat64array", "array"), &FlatBufferBuilder::CreatePackedArray<double>);
+	ClassDB::bind_method(D_METHOD("create_PackedStringArray", "array"), &FlatBufferBuilder::CreatePackedStringArray);
 
 	ClassDB::bind_method(D_METHOD("finish", "root"), &FlatBufferBuilder::Finish);
 
@@ -95,6 +96,18 @@ FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateColor( const godot::Color 
 	//FIXME this creates a copy, dumb.
 	Color col( value.r, value.g, value.b, value.a );
 	return builder->CreateStruct( col ).o;
+}
+
+FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreatePackedStringArray( const godot::PackedStringArray &value ) {
+	std::vector<flatbuffers::Offset<>> offsets(value.size() );
+
+	uint32_t index = 0;
+	for( const auto &string : value ){
+		offsets[index] = CreateString( string );
+		index++;
+	}
+	uoffset_t offset = builder->CreateVector( offsets ).o;
+	return offset;
 }
 
 FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateString( const godot::String &string ) {

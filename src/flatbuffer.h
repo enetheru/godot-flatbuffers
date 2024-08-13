@@ -53,7 +53,7 @@ public:
 	godot::PackedFloat64Array decode_PackedFloat64Array( int64_t start_ );
 	godot::PackedInt32Array decode_PackedInt32Array( int64_t start_ );
 	godot::PackedInt64Array decode_PackedInt64Array( int64_t start_ );
-	// PackedStringArray
+	godot::PackedStringArray decode_PackedStringArray( int64_t start_ );
 	// PackedVector2Array
 	// PackedVector3Array
 	// Plane
