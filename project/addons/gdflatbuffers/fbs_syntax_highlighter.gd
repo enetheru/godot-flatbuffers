@@ -274,6 +274,7 @@ var types : Array = [
 var variant_included : bool = false
 var variant_types : Array = [
 	"Vector3",
+	"Vector3i",
 	"Color"
 ]
 

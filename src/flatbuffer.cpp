@@ -1,17 +1,21 @@
 #include "flatbuffer.h"
+#include "builtin/godot_generated.h"
+#include "utils.h"
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <utility>
 
 namespace godot_flatbuffers {
 
-FlatBuffer::FlatBuffer() {
-//	godot::UtilityFunctions::print("FlatBuffer(): Constructor");
+//FlatBuffer::FlatBuffer() {
+////	godot::UtilityFunctions::print("FlatBuffer(): Constructor");
+//enetheru::print("decode_Vector3( {0} )", start_ );
 
-}
-FlatBuffer::~FlatBuffer() {
-//	godot::UtilityFunctions::print("~FlatBuffer(): Destructor");
-}
+//
+//}
+//FlatBuffer::~FlatBuffer() {
+////	godot::UtilityFunctions::print("~FlatBuffer(): Destructor");
+//}
 
 void FlatBuffer::_bind_methods() {
 	using namespace godot;
@@ -68,7 +72,7 @@ void FlatBuffer::_bind_methods() {
 	// Vector2
 	// Vector2i
 	ClassDB::bind_method(D_METHOD("decode_Vector3", "start_" ), &FlatBuffer::decode_Vector3);
-	// Vector3i
+	ClassDB::bind_method(D_METHOD("decode_Vector3i", "start_" ), &FlatBuffer::decode_Vector3i);
 	// Vector4
 	// Vector4i
 }
@@ -197,13 +201,18 @@ godot::String FlatBuffer::decode_String( int64_t start_ ) {
 	return bytes.slice(start_ + 4, start_ + 4 + bytes.decode_u32(start_) ).get_string_from_utf8();
 }
 
-godot::Vector3 FlatBuffer::decode_Vector3( int64_t start_) {
-	// FIXME too much munging for what i want.
-	return {
-		(real_t)bytes.decode_float(start_),
-		(real_t)bytes.decode_float(start_ + 4),
-		(real_t)bytes.decode_float(start_ + 8)
-	};
+godot::Vector3 FlatBuffer::decode_Vector3( int64_t start_ ) {
+	auto p = const_cast<uint8_t *>(bytes.ptr() + start_);
+	auto q = reinterpret_cast< Vector3 *>(p);
+
+	return {q->x(), q->y(), q->z() };
+}
+
+godot::Vector3i FlatBuffer::decode_Vector3i( int64_t start_ ) {
+	auto p = const_cast<uint8_t *>(bytes.ptr() + start_);
+	auto q = reinterpret_cast< Vector3i *>(p);
+
+	return {q->x(), q->y(), q->z() };
 }
 
 }// end namespace godot_flatbuffers

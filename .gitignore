@@ -70,3 +70,4 @@ project/addons/gdflatbuffers/bin
 
 *_generated.h
 *_generated.gd
+project/addons/gdflatbuffers/godot.fbs

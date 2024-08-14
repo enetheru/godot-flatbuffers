@@ -19,8 +19,8 @@ protected:
 	static void _bind_methods();
 
 public:
-	explicit FlatBuffer();
-	~FlatBuffer() override;
+//	explicit FlatBuffer();
+//	~FlatBuffer() override;
 
 	// Get and Set of properties
 	void set_bytes( godot::PackedByteArray bytes_ );
@@ -70,7 +70,7 @@ public:
 	// Vector2
 	// Vector2i
 	godot::Vector3 decode_Vector3( int64_t start_ );
-	// Vector3i
+	godot::Vector3i decode_Vector3i( int64_t start_ );
 	// Vector4
 	// Vector4i
 };

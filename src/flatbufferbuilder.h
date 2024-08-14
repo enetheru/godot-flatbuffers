@@ -14,7 +14,7 @@ class FlatBufferBuilder : public godot::RefCounted {
 	std::unique_ptr<flatbuffers::FlatBufferBuilder> builder;
 
 protected:
-	static FlatBufferBuilder *Create(int size) {
+	static FlatBufferBuilder *Create( int size ) {
 		auto fbb = memnew( FlatBufferBuilder( size ) );
 		fbb->builder = std::make_unique<flatbuffers::FlatBufferBuilder>( size );
 		// TODO Use this 'flatbuffers::FlatBufferBuilderImpl(...)' to add a custom allocator so that we can create directly into a PackedByteArray
@@ -44,6 +44,9 @@ public:
 
 	template<typename in, typename out>
 	void add_scalar_default( uint16_t voffset, in value, in default_ ){ builder->AddElement<out>( voffset, value, default_ ); }
+
+	void add_Vector3( uint16_t voffset, godot::Vector3 );
+	void add_Vector3i( uint16_t voffset, godot::Vector3i );
 
 	// PackedByteArray
 	// PackedInt32Array
@@ -91,6 +94,7 @@ public:
 	// Vector2i
 	// Vector3
 	uoffset_t CreateVector3( const godot::Vector3& value );
+	uoffset_t CreateVector3i( const godot::Vector3i& value );
 	// Vector3i
 	// Vector4
 	// Vector4i

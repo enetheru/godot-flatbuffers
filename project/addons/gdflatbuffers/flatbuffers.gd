@@ -93,10 +93,9 @@ func rcm_generate( id ):
 	var settings = EditorInterface.get_editor_settings()
 	var flatc_path : String = settings.get( &"plugin/FlatBuffers/flatc_path")
 	if flatc_path.is_empty():
-		printerr( " Please specify the location of flatc in EditorSettings->Plugins->FlatBuffers")
-		return
+		flatc_path = ProjectSettings.globalize_path("res://addons/gdflatbuffers/bin/flatc.exe")
 
-	var include_path = ProjectSettings.globalize_path( "res://addons/flatbuffers/" )
+	var include_path = ProjectSettings.globalize_path( "res://addons/gdflatbuffers/" )
 	var source_path = ProjectSettings.globalize_path(EditorInterface.get_current_path())
 	var output_path = ProjectSettings.globalize_path(EditorInterface.get_current_directory())
 

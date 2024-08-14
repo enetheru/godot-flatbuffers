@@ -1,9 +1,13 @@
-namespace godot_flatbuffers;
-
 struct Vector3 {
   x:float;
   y:float;
   z:float;
+}
+
+struct Vector3i {
+  x:int;
+  y:int;
+  z:int;
 }
 
 struct Color {

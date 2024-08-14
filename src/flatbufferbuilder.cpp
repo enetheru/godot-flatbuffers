@@ -1,13 +1,14 @@
 #include "flatbufferbuilder.h"
+#include "builtin/godot_generated.h"
+#include "utils.h"
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
-
-#include "godot_native/Variant_generated.h"
 
 /*
  * Flatbuffer Builder wrapper for gdscript
  */
 namespace godot_flatbuffers {
+
 void FlatBufferBuilder::_bind_methods() {
 	using namespace godot;
 
@@ -41,6 +42,9 @@ void FlatBufferBuilder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_element_ulong_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<uint64_t, uint64_t>);
 	ClassDB::bind_method(D_METHOD("add_element_float_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<double, float>);
 	ClassDB::bind_method(D_METHOD("add_element_double_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<double, double>);
+
+	ClassDB::bind_method(D_METHOD("add_Vector3", "voffset", "value" ), &FlatBufferBuilder::add_Vector3 );
+	ClassDB::bind_method(D_METHOD("add_Vector3i", "voffset", "value" ), &FlatBufferBuilder::add_Vector3i );
 
 	ClassDB::bind_method(D_METHOD("start_table"), &FlatBufferBuilder::StartTable);
 	ClassDB::bind_method(D_METHOD("end_table", "start"), &FlatBufferBuilder::EndTable);
@@ -136,6 +140,18 @@ FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVector3(const godot::Vecto
 
 void FlatBufferBuilder::add_offset( uint16_t voffset, uint64_t value ) {
 	builder->AddOffset(voffset, Offset(value) );
+}
+
+void FlatBufferBuilder::add_Vector3( uint16_t voffset, godot::Vector3 vector3 ) {
+	auto builtin = Vector3(vector3.x, vector3.y, vector3.z);
+	builder->AddStruct( voffset, &builtin );
+}
+
+void FlatBufferBuilder::add_Vector3i( uint16_t voffset, godot::Vector3i vector3i ) {
+	auto builtin = Vector3i(vector3i.x, vector3i.y, vector3i.z);
+
+	// This appears to do nothing.
+	builder->AddStruct( voffset, &builtin );
 }
 
 } //end namespace
