@@ -1,0 +1,5 @@
+table RootTable{
+	my_strings : [string];
+}
+
+root_type RootTable;
