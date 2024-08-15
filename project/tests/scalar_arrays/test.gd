@@ -24,10 +24,11 @@ const DBL_MAX = 1.7976931348623158e+308
 const FLT_MIN = 1.175494351e-38
 const DBL_MIN = 2.2250738585072014e-308
 
-const fb = preload('res://fbs_files/tests/FBTestScalarArrays_generated.gd')
+const fb = preload('./FBTestScalarArrays_generated.gd')
 
 var pp := FlatBufferPrinter.new()
 
+var result = "Success"
 
 func _run() -> void:
 	print("== Test String ==")

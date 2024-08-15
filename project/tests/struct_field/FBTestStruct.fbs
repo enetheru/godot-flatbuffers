@@ -1,0 +1,7 @@
+include "godot.fbs";
+
+table RootTable{
+	my_struct : Vector3i;
+}
+
+root_type RootTable;

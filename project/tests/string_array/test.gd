@@ -1,11 +1,13 @@
 @tool
 extends EditorScript
 
-const fb = preload('res://fbs_files/tests/FBTestStringArray_generated.gd')
+const fb = preload('./FBTestStringArray_generated.gd')
 
 var pp := FlatBufferPrinter.new()
 
 var string_array : PackedStringArray = []
+
+var result = "Success"
 
 func _run() -> void:
 	print("== Test Table Arrays ==")
