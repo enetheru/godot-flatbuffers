@@ -16,7 +16,13 @@ void FlatBufferBuilder::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("clear"), &FlatBufferBuilder::Clear);
 	ClassDB::bind_method(D_METHOD("reset"), &FlatBufferBuilder::Reset);
+	ClassDB::bind_method(D_METHOD("finish", "root"), &FlatBufferBuilder::Finish);
+	ClassDB::bind_method(D_METHOD("start_table"), &FlatBufferBuilder::StartTable);
+	ClassDB::bind_method(D_METHOD("end_table", "start"), &FlatBufferBuilder::EndTable);
+	ClassDB::bind_method(D_METHOD("get_size"), &FlatBufferBuilder::GetSize);
+	ClassDB::bind_method(D_METHOD("to_packed_byte_array"), &FlatBufferBuilder::GetPackedByteArray);
 
+	// == Add functions ==
 	ClassDB::bind_method(D_METHOD("add_offset", "voffset", "value"), &FlatBufferBuilder::add_offset);
 
 	ClassDB::bind_method(D_METHOD("add_element_bool", "voffset", "value"), &FlatBufferBuilder::add_scalar<bool, uint8_t>);
@@ -46,12 +52,11 @@ void FlatBufferBuilder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_Vector3", "voffset", "value" ), &FlatBufferBuilder::add_Vector3 );
 	ClassDB::bind_method(D_METHOD("add_Vector3i", "voffset", "value" ), &FlatBufferBuilder::add_Vector3i );
 
-	ClassDB::bind_method(D_METHOD("start_table"), &FlatBufferBuilder::StartTable);
-	ClassDB::bind_method(D_METHOD("end_table", "start"), &FlatBufferBuilder::EndTable);
-
+	// == Create Functions ==
 	ClassDB::bind_method(D_METHOD("create_Color", "color"), &FlatBufferBuilder::CreateColor);
 	ClassDB::bind_method(D_METHOD("create_String", "string"), &FlatBufferBuilder::CreateString);
 	ClassDB::bind_method(D_METHOD("create_Vector3", "vector3"), &FlatBufferBuilder::CreateVector3);
+	ClassDB::bind_method(D_METHOD("create_Vector3i", "vector3i"), &FlatBufferBuilder::CreateVector3i);
 
 	ClassDB::bind_method(D_METHOD("create_PackedByteArray", "array"), &FlatBufferBuilder::CreatePackedArray<uint8_t>);
 	ClassDB::bind_method(D_METHOD("create_PackedInt32Array", "array"), &FlatBufferBuilder::CreatePackedArray<uint32_t>);
@@ -72,27 +77,21 @@ void FlatBufferBuilder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("create_Vector_float32", "array"), &FlatBufferBuilder::CreatePackedArray<float>);
 	ClassDB::bind_method(D_METHOD("create_Vector_float64", "array"), &FlatBufferBuilder::CreatePackedArray<double>);
 
-	ClassDB::bind_method(D_METHOD("finish", "root"), &FlatBufferBuilder::Finish);
+	ClassDB::bind_method(D_METHOD("create_vector_offset", "array"), &FlatBufferBuilder::create_vector_offset);
 
-	ClassDB::bind_method(D_METHOD("get_size"), &FlatBufferBuilder::GetSize);
-	ClassDB::bind_method(D_METHOD("to_packed_byte_array"), &FlatBufferBuilder::GetPackedByteArray);
+	// Custom Table Creation
+	ClassDB::bind_method(D_METHOD("create_TableArray", "array", "constructor"), &FlatBufferBuilder::CreateTableArray );
 }
 
 // TODO Use this 'flatbuffers::FlatBufferBuilder(size, allocator, ...)'
 //  to add a custom allocator so that we can create directly into a PackedByteArray
 //  This will make the need to copy the data after construction unnecessary
 FlatBufferBuilder::FlatBufferBuilder() {
-//	godot::UtilityFunctions::print("FlatBufferBuilder(): Constructor");
 	builder = std::make_unique<flatbuffers::FlatBufferBuilder>();
 }
 
 FlatBufferBuilder::FlatBufferBuilder( int size ) {
-//	godot::UtilityFunctions::print("FlatBufferBuilder(): Constructor");
 	builder = std::make_unique<flatbuffers::FlatBufferBuilder>(size );
-}
-
-FlatBufferBuilder::~FlatBufferBuilder() {
-//	godot::UtilityFunctions::print("~FlatBufferBuilder(): Destructor");
 }
 
 void FlatBufferBuilder::Finish(uint32_t root) {
@@ -106,6 +105,32 @@ godot::PackedByteArray FlatBufferBuilder::GetPackedByteArray() {
 	bytes.resize(size);
 	std::memcpy(bytes.ptrw(), builder->GetBufferPointer(), size);
 	return bytes;
+}
+
+// == Add Functions ==
+void FlatBufferBuilder::add_offset( uint16_t voffset, uint64_t value ) {
+	builder->AddOffset(voffset, Offset(value) );
+}
+
+void FlatBufferBuilder::add_Vector3( uint16_t voffset, godot::Vector3 vector3 ) {
+	auto builtin = Vector3(vector3.x, vector3.y, vector3.z);
+	builder->AddStruct( voffset, &builtin );
+}
+
+void FlatBufferBuilder::add_Vector3i( uint16_t voffset, godot::Vector3i vector3i ) {
+	auto builtin = Vector3i(vector3i.x, vector3i.y, vector3i.z);
+
+	// This appears to do nothing.
+	builder->AddStruct( voffset, &builtin );
+}
+
+// == Create Functions
+FlatBufferBuilder::uoffset_t FlatBufferBuilder::create_vector_offset( const godot::PackedInt32Array &array ) {
+	builder->StartVector< Offset >( array.size() );
+	for( auto i = array.size(); i > 0; ) {
+		builder->PushElement( static_cast< Offset > ( array[--i] ) );
+	}
+	return builder->EndVector( array.size() );
 }
 
 FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateColor( const godot::Color &value ) {
@@ -138,20 +163,26 @@ FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVector3(const godot::Vecto
 	return builder->CreateStruct( vec ).o;
 }
 
-void FlatBufferBuilder::add_offset( uint16_t voffset, uint64_t value ) {
-	builder->AddOffset(voffset, Offset(value) );
+FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVector3i(const godot::Vector3i &value) {
+	return 0;
 }
 
-void FlatBufferBuilder::add_Vector3( uint16_t voffset, godot::Vector3 vector3 ) {
-	auto builtin = Vector3(vector3.x, vector3.y, vector3.z);
-	builder->AddStruct( voffset, &builtin );
+FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateTableArray(const godot::Array &array, const godot::Callable& constructor) {
+	std::vector<flatbuffers::Offset<>> offsets(array.size() );
+
+	enetheru::print("Do we even get to this pont?");
+	/*
+	 * Is this where I have to go and call a function defined in godot? I wonder if I can do that at all.
+	 */
+	for( int i = 0; i < array.size(); ++i ) {
+		uoffset_t offset = constructor.call( array[i] );
+		enetheru::print("c++: constructor.call = {0}", offset );
+	}
+	return 0;
+
+	uoffset_t offset = builder->CreateVector( offsets ).o;
+	return offset;
 }
 
-void FlatBufferBuilder::add_Vector3i( uint16_t voffset, godot::Vector3i vector3i ) {
-	auto builtin = Vector3i(vector3i.x, vector3i.y, vector3i.z);
-
-	// This appears to do nothing.
-	builder->AddStruct( voffset, &builtin );
-}
 
 } //end namespace

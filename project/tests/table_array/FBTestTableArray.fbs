@@ -1,0 +1,12 @@
+// This is a test
+include "godot.fbs";
+
+table SubTable {
+	item : int;
+}
+
+table RootTable{
+	table_array : [SubTable];
+}
+
+root_type RootTable;

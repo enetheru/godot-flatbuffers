@@ -101,17 +101,17 @@ func rcm_generate( id ):
 		var dir = fs.get_filesystem_path( current_path )
 		for i in dir.get_file_count():
 			var file = dir.get_file_path(i)
-			#FIXME detect teh filetype rather than the extension when the Resource Loader is created
+			#TODO detect teh filetype rather than the extension when the Resource Loader is created
 			if file.ends_with('.fbs'):
-				results = flatc( file )
-				if results.return_code: print( results )
+				results = flatc_generate( file )
+				if results.return_code: print_results( results )
 
 	else:
-		results = flatc( current_path )
-		if results.return_code: print( results )
+		results = flatc_generate( current_path )
+		if results.return_code: print_results( results )
 
 
-func flatc( path : String ) -> Variant:
+func flatc_generate( path : String ) -> Variant:
 	# Make sure we have the flac compiler
 	var flatc_path : String = settings.get( &"plugin/FlatBuffers/flatc_path")
 	if flatc_path.is_empty():
@@ -135,10 +135,13 @@ func flatc( path : String ) -> Variant:
 
 	var output = []
 	var result = OS.execute( flatc_path, args, output, true )
-	#output = output.map(func(item : String): return item.c_unescape() )
 
 	# This line refreshes the filesystem dock.
 	EditorInterface.get_resource_filesystem().scan()
 
 	#TODO Figure out a way to get the script in the editor to reload.
-	return { 'return_code':result, 'output':output }
+	return { 'file_path': path, 'return_code':result, 'output':output }
+
+func print_results( results : Dictionary ):
+	var output : String = results.output.front().strip_escapes()
+	printerr( "flac.exe - %s" % [output] )

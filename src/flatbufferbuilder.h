@@ -27,26 +27,35 @@ protected:
 public:
 	explicit FlatBufferBuilder();
 	explicit FlatBufferBuilder( int size );
-	~FlatBufferBuilder() override;
 
 	using uoffset_t = flatbuffers::uoffset_t;
 	using Offset = flatbuffers::Offset<>;
 
+	int64_t GetSize() { return builder->GetSize(); }
+	godot::PackedByteArray GetPackedByteArray();
+
 	void Clear() { builder->Clear(); }
 	void Reset() { builder->Reset(); }
+	void Finish( uint32_t root );
 
-	// Inline values are added with add_*
+	uoffset_t StartTable() { return builder->StartTable(); }
+	uoffset_t EndTable(uoffset_t start) { return builder->EndTable(start); }
+
+	// == Add functions for scalars ==
 	void add_offset( uint16_t voffset, uint64_t value );
 
-	// Scalar add functions
 	template<typename in, typename out>
 	void add_scalar( uint16_t voffset, in value ){ builder->AddElement<out>( voffset, value ); }
 
 	template<typename in, typename out>
 	void add_scalar_default( uint16_t voffset, in value, in default_ ){ builder->AddElement<out>( voffset, value, default_ ); }
 
+	// == Add functions for builtin structs ==
 	void add_Vector3( uint16_t voffset, godot::Vector3 );
 	void add_Vector3i( uint16_t voffset, godot::Vector3i );
+
+	// == Create functions ==
+	uoffset_t create_vector_offset( const godot::PackedInt32Array &array );
 
 	// PackedByteArray
 	// PackedInt32Array
@@ -99,13 +108,8 @@ public:
 	// Vector4
 	// Vector4i
 
-	uoffset_t StartTable() { return builder->StartTable(); }
-	uoffset_t EndTable(uoffset_t start) { return builder->EndTable(start); }
-
-	void Finish( uint32_t root );
-
-	int64_t GetSize() { return builder->GetSize(); }
-	godot::PackedByteArray GetPackedByteArray();
+	// Custom Class to Table Creators
+	uoffset_t CreateTableArray( const godot::Array&array, const godot::Callable& constructor );
 };
 
 }
