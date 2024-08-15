@@ -12,12 +12,12 @@ config_version=5
 
 config/name="FlatBuffers Extension Project"
 run/main_scene="res://main.tscn"
-config/features=PackedStringArray("4.2")
+config/features=PackedStringArray("4.3")
 config/icon="res://addons/flatbuffers/fpl_logo_small.png"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/flatbuffers/plugin.cfg", "res://addons/zylann.editor_debugger/plugin.cfg")
+enabled=PackedStringArray("res://addons/Todo_Manager/plugin.cfg", "res://addons/gdflatbuffers/plugin.cfg", "res://addons/zylann.editor_debugger/plugin.cfg")
 
 [native_extensions]
 

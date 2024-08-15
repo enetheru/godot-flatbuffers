@@ -427,8 +427,8 @@ func parse_schema():
 			'rpc_service':
 				color_default()
 				next_line()
-			#object = { commasep( ident : value ) }
-			# FIXME, what is this???
+			#TODO object = { commasep( ident : value ) }
+
 
 
 func parse_include():
@@ -603,5 +603,8 @@ func parse_included_file( filename : String ):
 		builtin_included = true
 		return
 
-	# FIXME, there is currently no known way to know which file I am parsing.
+	# NOTE, there is currently no known way to know which file I am parsing.
 	# So that means its impossible to know which files to load and parse
+	# if this were a game script compiled with debug, then I could use
+	# get_stack(), however it is not available in a thread, and that appears to
+	# be where the syntax highliter lives.
