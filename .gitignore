@@ -65,9 +65,13 @@ export_presets.cfg
 # Our generated files
 src/entry_point.cpp
 
-project/addons/gdflatbuffers/gdflatbuffers.gdextension
-project/addons/gdflatbuffers/bin
-
 *_generated.h
 *_generated.gd
+
+project/addons/gdflatbuffers/gdflatbuffers.gdextension
+project/addons/gdflatbuffers/bin
 project/addons/gdflatbuffers/godot.fbs
+
+# Other Unnecessary Files
+project/scratch.gd
+project/addons/Todo_Manager

@@ -1,5 +1,0 @@
-table MyTable {
-    value : int;
-}
-
-root_type MyTable;

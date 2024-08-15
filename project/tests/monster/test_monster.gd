@@ -21,18 +21,18 @@ func _run() -> void:
 	var axe = Monster.CreateWeapon( builder, weapon_two_name, weapon_two_damage )
 
 	# Serialize a name for our monster, called "Orc".
-	var name = builder.create_string("Orc")
+	var _name = builder.create_string("Orc")
 
 	# Create a `vector` representing the inventory of the Orc. Each number
 	# could correspond to an item that can be claimed after he is slain.
 	var treasure : Array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-	var inventory = builder.create_vector( treasure, 10 )
+	var _inventory = builder.create_vector( treasure, 10 )
 
 	# Place the weapons into a `std::vector`, then convert that into a FlatBuffer `vector`.
 	var weapons_vector : Array
 	weapons_vector.push_back( sword )
 	weapons_vector.push_back( axe )
-	var weapons = builder.create_vector( weapons_vector )
+	var _weapons = builder.create_vector( weapons_vector )
 
 	#FIXME var points : Array[Monster.Vec3] = [ Monster.Vec3(1.0, 2.0, 3.0), Monster.Vec3(4.0, 5.0, 6.0) ]
 	#FIXME var path = builder.CreateVectorOfStructs( points, 2 )
@@ -42,8 +42,8 @@ func _run() -> void:
 	#FIXME var position = Vec3(1.0, 2.0, 3.0)
 
 	# Set his hit points to 300 and his mana to 150.
-	var hp : int = 300
-	var mana : int = 150
+	var _hp : int = 300
+	var _mana : int = 150
 
 	# Finally, create the monster using the `CreateMonster` helper function
 	# to set all fields.
@@ -64,7 +64,7 @@ func _run() -> void:
 	# Alternate creation method
 	# You can use this code instead of `CreateMonster()`, to create our orc
 	# manually.
-	#var monster_builder := MonsterBuilder.new( builder )
+	var monster_builder := Monster_Builder.new( builder )
 	#monster_builder.add_pos( position )
 	#monster_builder.add_hp( hp )
 	#monster_builder.add_name( name )
@@ -79,4 +79,3 @@ func _run() -> void:
 	# Note: Regardless of how you created the `orc`, you still need to call
 	# `Finish()` on the `FlatBufferBuilder`.
 	#FIXME builder.finish( orc ) # You could also call `FinishMonsterBuffer(builder, orc);`.
-
