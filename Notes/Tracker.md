@@ -13,9 +13,9 @@ kanban-plugin: board
 - [ ] create custom allocator backed by PackedByteArray
 - [ ] add filename to debug print
 - [ ] cleanup source generation so that it is just a copy paste of the addons folder
-- [ ] add fbs files to visible text files for filesytsem dock
 - [ ] add right click generate to code views
 - [ ] Notify user if creation date of fbs file is different to generated file and could use a re-gen
+- [ ] To get file extension recognition working I need to create a ResourceFormatLoader https://docs.godotengine.org/en/stable/classes/class_resourceformatloader.html
 
 
 ## flatc Generator
