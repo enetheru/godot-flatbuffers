@@ -23,37 +23,53 @@ void FlatBufferBuilder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("to_packed_byte_array"), &FlatBufferBuilder::GetPackedByteArray);
 
 	// == Add functions ==
-	ClassDB::bind_method(D_METHOD("add_offset", "voffset", "value"), &FlatBufferBuilder::add_offset);
+	ClassDB::bind_method(D_METHOD("add_offset", "voffset", "value"), &FlatBufferBuilder::AddOffset);
 
-	ClassDB::bind_method(D_METHOD("add_element_bool", "voffset", "value"), &FlatBufferBuilder::add_scalar<bool, uint8_t>);
-	ClassDB::bind_method(D_METHOD("add_element_byte", "voffset", "value"), &FlatBufferBuilder::add_scalar<int64_t, int8_t>);
-	ClassDB::bind_method(D_METHOD("add_element_ubyte", "voffset", "value"), &FlatBufferBuilder::add_scalar<uint64_t, uint8_t>);
-	ClassDB::bind_method(D_METHOD("add_element_short", "voffset", "value"), &FlatBufferBuilder::add_scalar<int64_t, int16_t>);
-	ClassDB::bind_method(D_METHOD("add_element_ushort", "voffset", "value"), &FlatBufferBuilder::add_scalar<uint64_t, uint16_t>);
-	ClassDB::bind_method(D_METHOD("add_element_int", "voffset", "value"), &FlatBufferBuilder::add_scalar<int64_t, int32_t>);
-	ClassDB::bind_method(D_METHOD("add_element_uint", "voffset", "value"), &FlatBufferBuilder::add_scalar<uint64_t, uint32_t>);
-	ClassDB::bind_method(D_METHOD("add_element_long", "voffset", "value"), &FlatBufferBuilder::add_scalar<int64_t, int64_t>);
-	ClassDB::bind_method(D_METHOD("add_element_ulong", "voffset", "value"), &FlatBufferBuilder::add_scalar<uint64_t, uint64_t>);
-	ClassDB::bind_method(D_METHOD("add_element_float", "voffset", "value"), &FlatBufferBuilder::add_scalar<double, float>);
-	ClassDB::bind_method(D_METHOD("add_element_double", "voffset", "value"), &FlatBufferBuilder::add_scalar<double, double>);
+	ClassDB::bind_method(D_METHOD("add_element_bool", "voffset", "value"), &FlatBufferBuilder::AddScalar<bool, uint8_t>);
+	ClassDB::bind_method(D_METHOD("add_element_byte", "voffset", "value"), &FlatBufferBuilder::AddScalar<int64_t, int8_t>);
+	ClassDB::bind_method(D_METHOD("add_element_ubyte", "voffset", "value"), &FlatBufferBuilder::AddScalar<uint64_t, uint8_t>);
+	ClassDB::bind_method(D_METHOD("add_element_short", "voffset", "value"), &FlatBufferBuilder::AddScalar<int64_t, int16_t>);
+	ClassDB::bind_method(D_METHOD("add_element_ushort", "voffset", "value"), &FlatBufferBuilder::AddScalar<uint64_t, uint16_t>);
+	ClassDB::bind_method(D_METHOD("add_element_int", "voffset", "value"), &FlatBufferBuilder::AddScalar<int64_t, int32_t>);
+	ClassDB::bind_method(D_METHOD("add_element_uint", "voffset", "value"), &FlatBufferBuilder::AddScalar<uint64_t, uint32_t>);
+	ClassDB::bind_method(D_METHOD("add_element_long", "voffset", "value"), &FlatBufferBuilder::AddScalar<int64_t, int64_t>);
+	ClassDB::bind_method(D_METHOD("add_element_ulong", "voffset", "value"), &FlatBufferBuilder::AddScalar<uint64_t, uint64_t>);
+	ClassDB::bind_method(D_METHOD("add_element_float", "voffset", "value"), &FlatBufferBuilder::AddScalar<double, float>);
+	ClassDB::bind_method(D_METHOD("add_element_double", "voffset", "value"), &FlatBufferBuilder::AddScalar<double, double>);
 
-	ClassDB::bind_method(D_METHOD("add_element_bool_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<bool, uint8_t>);
-	ClassDB::bind_method(D_METHOD("add_element_byte_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<int64_t, int8_t>);
-	ClassDB::bind_method(D_METHOD("add_element_ubyte_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<uint64_t, uint8_t>);
-	ClassDB::bind_method(D_METHOD("add_element_short_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<int64_t, int16_t>);
-	ClassDB::bind_method(D_METHOD("add_element_ushort_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<uint64_t, uint16_t>);
-	ClassDB::bind_method(D_METHOD("add_element_int_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<int64_t, int32_t>);
-	ClassDB::bind_method(D_METHOD("add_element_uint_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<uint64_t, uint32_t>);
-	ClassDB::bind_method(D_METHOD("add_element_long_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<int64_t, int64_t>);
-	ClassDB::bind_method(D_METHOD("add_element_ulong_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<uint64_t, uint64_t>);
-	ClassDB::bind_method(D_METHOD("add_element_float_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<double, float>);
-	ClassDB::bind_method(D_METHOD("add_element_double_default", "voffset", "value", "default"), &FlatBufferBuilder::add_scalar_default<double, double>);
+	ClassDB::bind_method(D_METHOD("add_element_bool_default", "voffset", "value", "default"), &FlatBufferBuilder::AddScalarDefault<bool, uint8_t>);
+	ClassDB::bind_method(D_METHOD("add_element_byte_default", "voffset", "value", "default"), &FlatBufferBuilder::AddScalarDefault<int64_t, int8_t>);
+	ClassDB::bind_method(D_METHOD("add_element_ubyte_default", "voffset", "value", "default"), &FlatBufferBuilder::AddScalarDefault<uint64_t, uint8_t>);
+	ClassDB::bind_method(D_METHOD("add_element_short_default", "voffset", "value", "default"), &FlatBufferBuilder::AddScalarDefault<int64_t, int16_t>);
+	ClassDB::bind_method(D_METHOD("add_element_ushort_default", "voffset", "value", "default"), &FlatBufferBuilder::AddScalarDefault<uint64_t, uint16_t>);
+	ClassDB::bind_method(D_METHOD("add_element_int_default", "voffset", "value", "default"), &FlatBufferBuilder::AddScalarDefault<int64_t, int32_t>);
+	ClassDB::bind_method(D_METHOD("add_element_uint_default", "voffset", "value", "default"), &FlatBufferBuilder::AddScalarDefault<uint64_t, uint32_t>);
+	ClassDB::bind_method(D_METHOD("add_element_long_default", "voffset", "value", "default"), &FlatBufferBuilder::AddScalarDefault<int64_t, int64_t>);
+	ClassDB::bind_method(D_METHOD("add_element_ulong_default", "voffset", "value", "default"), &FlatBufferBuilder::AddScalarDefault<uint64_t, uint64_t>);
+	ClassDB::bind_method(D_METHOD("add_element_float_default", "voffset", "value", "default"), &FlatBufferBuilder::AddScalarDefault<double, float>);
+	ClassDB::bind_method(D_METHOD("add_element_double_default", "voffset", "value", "default"), &FlatBufferBuilder::AddScalarDefault<double, double>);
 
-	ClassDB::bind_method(D_METHOD("add_Vector3", "voffset", "value" ), &FlatBufferBuilder::add_Vector3 );
-	ClassDB::bind_method(D_METHOD("add_Vector3i", "voffset", "value" ), &FlatBufferBuilder::add_Vector3i );
+	ClassDB::bind_method(D_METHOD("add_Vector3", "voffset", "value" ), &FlatBufferBuilder::AddVector3);
+	ClassDB::bind_method(D_METHOD("add_Vector3i", "voffset", "value" ), &FlatBufferBuilder::AddVector3i);
 
 	// == Create Functions ==
+	ClassDB::bind_method(D_METHOD("create_vector_offset", "array"), &FlatBufferBuilder::CreateVectorOffset);
+	ClassDB::bind_method(D_METHOD("create_vector_table", "array", "constructor"), &FlatBufferBuilder::CreateVectorTable);
+
+	ClassDB::bind_method(D_METHOD("create_vector_int8", "array"), &FlatBufferBuilder::CreatePackedArray<int8_t>);
+	ClassDB::bind_method(D_METHOD("create_vector_uint8", "array"), &FlatBufferBuilder::CreatePackedArray<uint8_t>);
+	ClassDB::bind_method(D_METHOD("create_vector_int16", "array"), &FlatBufferBuilder::CreatePackedArray<int16_t>);
+	ClassDB::bind_method(D_METHOD("create_vector_uint16", "array"), &FlatBufferBuilder::CreatePackedArray<uint16_t>);
+	ClassDB::bind_method(D_METHOD("create_vector_int32", "array"), &FlatBufferBuilder::CreatePackedArray<int32_t>);
+	ClassDB::bind_method(D_METHOD("create_vector_uint32", "array"), &FlatBufferBuilder::CreatePackedArray<uint32_t>);
+	ClassDB::bind_method(D_METHOD("create_vector_int64", "array"), &FlatBufferBuilder::CreatePackedArray<int64_t>);
+	ClassDB::bind_method(D_METHOD("create_vector_uint64", "array"), &FlatBufferBuilder::CreatePackedArray<uint64_t>);
+	ClassDB::bind_method(D_METHOD("create_vector_float32", "array"), &FlatBufferBuilder::CreatePackedArray<float>);
+	ClassDB::bind_method(D_METHOD("create_vector_float64", "array"), &FlatBufferBuilder::CreatePackedArray<double>);
+
+	// Create methods for Builtin Classes
 	ClassDB::bind_method(D_METHOD("create_Color", "color"), &FlatBufferBuilder::CreateColor);
+	ClassDB::bind_method(D_METHOD("create_PackedStringArray", "array"), &FlatBufferBuilder::CreatePackedStringArray);
 	ClassDB::bind_method(D_METHOD("create_String", "string"), &FlatBufferBuilder::CreateString);
 	ClassDB::bind_method(D_METHOD("create_Vector3", "vector3"), &FlatBufferBuilder::CreateVector3);
 	ClassDB::bind_method(D_METHOD("create_Vector3i", "vector3i"), &FlatBufferBuilder::CreateVector3i);
@@ -63,24 +79,8 @@ void FlatBufferBuilder::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("create_PackedInt64Array", "array"), &FlatBufferBuilder::CreatePackedArray<uint64_t>);
 	ClassDB::bind_method(D_METHOD("create_PackedFloat32Array", "array"), &FlatBufferBuilder::CreatePackedArray<float>);
 	ClassDB::bind_method(D_METHOD("create_PackedFloat64Array", "array"), &FlatBufferBuilder::CreatePackedArray<double>);
-	ClassDB::bind_method(D_METHOD("create_PackedStringArray", "array"), &FlatBufferBuilder::CreatePackedStringArray);
 
-	ClassDB::bind_method(D_METHOD("create_Vector_int8", "array"), &FlatBufferBuilder::CreatePackedArray<int8_t>);
-	ClassDB::bind_method(D_METHOD("create_Vector_uint8", "array"), &FlatBufferBuilder::CreatePackedArray<uint8_t>);
-	ClassDB::bind_method(D_METHOD("create_Vector_int16", "array"), &FlatBufferBuilder::CreatePackedArray<int16_t>);
-	ClassDB::bind_method(D_METHOD("create_Vector_uint16", "array"), &FlatBufferBuilder::CreatePackedArray<uint16_t>);
-	ClassDB::bind_method(D_METHOD("create_Vector_int32", "array"), &FlatBufferBuilder::CreatePackedArray<int32_t>);
-	ClassDB::bind_method(D_METHOD("create_Vector_uint32", "array"), &FlatBufferBuilder::CreatePackedArray<uint32_t>);
-	ClassDB::bind_method(D_METHOD("create_Vector_int64", "array"), &FlatBufferBuilder::CreatePackedArray<int64_t>);
-	ClassDB::bind_method(D_METHOD("create_Vector_uint64", "array"), &FlatBufferBuilder::CreatePackedArray<uint64_t>);
 
-	ClassDB::bind_method(D_METHOD("create_Vector_float32", "array"), &FlatBufferBuilder::CreatePackedArray<float>);
-	ClassDB::bind_method(D_METHOD("create_Vector_float64", "array"), &FlatBufferBuilder::CreatePackedArray<double>);
-
-	ClassDB::bind_method(D_METHOD("create_vector_offset", "array"), &FlatBufferBuilder::create_vector_offset);
-
-	// Custom Table Creation
-	ClassDB::bind_method(D_METHOD("create_TableArray", "array", "constructor"), &FlatBufferBuilder::CreateTableArray );
 }
 
 // TODO Use this 'flatbuffers::FlatBufferBuilder(size, allocator, ...)'
@@ -108,16 +108,16 @@ godot::PackedByteArray FlatBufferBuilder::GetPackedByteArray() {
 }
 
 // == Add Functions ==
-void FlatBufferBuilder::add_offset( uint16_t voffset, uint64_t value ) {
+void FlatBufferBuilder::AddOffset( uint16_t voffset, uint64_t value ) {
 	builder->AddOffset(voffset, Offset(value) );
 }
 
-void FlatBufferBuilder::add_Vector3( uint16_t voffset, godot::Vector3 vector3 ) {
+void FlatBufferBuilder::AddVector3( uint16_t voffset, godot::Vector3 vector3 ) {
 	auto builtin = Vector3(vector3.x, vector3.y, vector3.z);
 	builder->AddStruct( voffset, &builtin );
 }
 
-void FlatBufferBuilder::add_Vector3i( uint16_t voffset, godot::Vector3i vector3i ) {
+void FlatBufferBuilder::AddVector3i( uint16_t voffset, godot::Vector3i vector3i ) {
 	auto builtin = Vector3i(vector3i.x, vector3i.y, vector3i.z);
 
 	// This appears to do nothing.
@@ -125,10 +125,20 @@ void FlatBufferBuilder::add_Vector3i( uint16_t voffset, godot::Vector3i vector3i
 }
 
 // == Create Functions
-FlatBufferBuilder::uoffset_t FlatBufferBuilder::create_vector_offset( const godot::PackedInt32Array &array ) {
+FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVectorOffset( const godot::PackedInt32Array &array ) {
 	builder->StartVector< Offset >( array.size() );
-	for( auto i = array.size(); i > 0; ) {
+	for( auto i= array.size(); i > 0; ) {
 		builder->PushElement( static_cast< Offset > ( array[--i] ) );
+	}
+	return builder->EndVector( array.size() );
+}
+
+FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVectorTable(const godot::Array &array, const godot::Callable& constructor) {
+	builder->StartVector< Offset >( array.size() );
+	for( auto i= array.size(); i > 0; ) {
+		uoffset_t offset = constructor.call( array[--i] );
+		enetheru::print("c++: constructor.call = {0}", offset );
+		builder->PushElement( static_cast< Offset > ( offset ) );
 	}
 	return builder->EndVector( array.size() );
 }
@@ -164,24 +174,8 @@ FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVector3(const godot::Vecto
 }
 
 FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVector3i(const godot::Vector3i &value) {
-	return 0;
-}
-
-FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateTableArray(const godot::Array &array, const godot::Callable& constructor) {
-	std::vector<flatbuffers::Offset<>> offsets(array.size() );
-
-	enetheru::print("Do we even get to this pont?");
-	/*
-	 * Is this where I have to go and call a function defined in godot? I wonder if I can do that at all.
-	 */
-	for( int i = 0; i < array.size(); ++i ) {
-		uoffset_t offset = constructor.call( array[i] );
-		enetheru::print("c++: constructor.call = {0}", offset );
-	}
-	return 0;
-
-	uoffset_t offset = builder->CreateVector( offsets ).o;
-	return offset;
+	Vector3i vec( value.x, value.y, value.z );
+	return builder->CreateStruct( vec ).o;
 }
 
 

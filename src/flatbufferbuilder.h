@@ -42,20 +42,20 @@ public:
 	uoffset_t EndTable(uoffset_t start) { return builder->EndTable(start); }
 
 	// == Add functions for scalars ==
-	void add_offset( uint16_t voffset, uint64_t value );
+	void AddOffset( uint16_t voffset, uint64_t value );
 
 	template<typename in, typename out>
-	void add_scalar( uint16_t voffset, in value ){ builder->AddElement<out>( voffset, value ); }
+	void AddScalar( uint16_t voffset, in value ){ builder->AddElement<out>( voffset, value ); }
 
 	template<typename in, typename out>
-	void add_scalar_default( uint16_t voffset, in value, in default_ ){ builder->AddElement<out>( voffset, value, default_ ); }
+	void AddScalarDefault( uint16_t voffset, in value, in default_ ){ builder->AddElement<out>( voffset, value, default_ ); }
 
 	// == Add functions for builtin structs ==
-	void add_Vector3( uint16_t voffset, godot::Vector3 );
-	void add_Vector3i( uint16_t voffset, godot::Vector3i );
+	void AddVector3( uint16_t voffset, godot::Vector3 );
+	void AddVector3i( uint16_t voffset, godot::Vector3i );
 
 	// == Create functions ==
-	uoffset_t create_vector_offset( const godot::PackedInt32Array &array );
+	uoffset_t CreateVectorOffset( const godot::PackedInt32Array &array );
 
 	// PackedByteArray
 	// PackedInt32Array
@@ -109,7 +109,7 @@ public:
 	// Vector4i
 
 	// Custom Class to Table Creators
-	uoffset_t CreateTableArray( const godot::Array&array, const godot::Callable& constructor );
+	uoffset_t CreateVectorTable( const godot::Array&array, const godot::Callable& constructor );
 };
 
 }
