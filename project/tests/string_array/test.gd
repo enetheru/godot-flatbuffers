@@ -7,12 +7,10 @@ var pp := FlatBufferPrinter.new()
 
 var string_array : PackedStringArray = []
 
-var result = "Success"
+var retcode : int = OK
 
 func _run() -> void:
-	print("== Test Table Arrays ==")
 	# Setup
-
 	var incrementing : String = ""
 	for i in range(8):
 		#string_offsets.append( builder.create_string( "ABCDEFG%s" % i ) )
@@ -23,7 +21,6 @@ func _run() -> void:
 	long_way()
 
 func short_way():
-	print("# Short Way")
 
 	var builder = FlatBufferBuilder.new()
 	var offset = fb.CreateRootTable(builder, string_array )
@@ -31,14 +28,13 @@ func short_way():
 
 	## This must be called after `Finish()`.
 	var buf = builder.to_packed_byte_array()
-	print( " - size:%s\n - data: %s" % [ builder.get_size(), buf] )
 
 	reconstruction( buf )
 
 func long_way():
-	print( "# Long Way")
 	var builder = FlatBufferBuilder.new()
 
+	# Creation of the string array needs to come before creation of the table
 	var string_array_offset = builder.create_PackedStringArray( string_array )
 
 	var root_builder = fb.RootTableBuilder.new( builder )
@@ -46,57 +42,26 @@ func long_way():
 	builder.finish( root_builder.finish() )
 
 	## This must be called after `Finish()`.
-	#print("# Final Buffer")
 	var buf = builder.to_packed_byte_array()
-	print( " - size:%s\n - data: %s" % [ builder.get_size(), buf] )
-	for i in buf.size():
-		print("byte %s: " %i, buf[i])
-
-	var table : Dictionary = {}
-	var vtable : Dictionary = {}
-	var my_strings : Dictionary = {}
-	var strings : Array = []
-	print("# Reconstruction")
-	table['start'] = buf.decode_u32(0)
-	table['vtable'] = buf.decode_s32( table.start )
-	vtable['start'] = table.start - buf.decode_s32( table.start )
-	vtable['size'] = buf.decode_u16( vtable.start )
-	vtable['table_size'] = buf.decode_u16( vtable.start + 2 )
-	vtable['VT_MY_STRINGS'] = buf.decode_u16( vtable.start + 4 )
-	table['my_strings'] = buf.decode_u32(table.start + vtable.VT_MY_STRINGS)
-	my_strings['start'] = table.start + table.my_strings + buf.decode_u32( table.start + table.my_strings )
-	my_strings['size'] = buf.decode_u32( my_strings.start )
-	my_strings['bytes'] = my_strings.size * 4 + 4
-
-	var offsets : Array
-	offsets.resize( my_strings.size )
-	for i in range( my_strings.size ):
-		var position = my_strings.start + 4 + i * 4
-		offsets[i] = position + buf.decode_u32( position )
-	my_strings['values'] = offsets
-
-	for i in range( my_strings.size ):
-		#var string_start = my_strings.start + my_strings.bytes + offsets[i]
-		var string_start = offsets[i]
-		var string_size = buf.decode_u32( string_start )
-		strings.append( buf.slice( string_start + 4, string_start + 4 + string_size ).get_string_from_ascii() )
-
-
-	print( "table: ", table )
-	print( "vtable: ", vtable )
-	print( "my_strings: ", my_strings )
-	print( "strings: ", strings )
-
-	var root_table := fb.GetRoot( buf )
-
-	var strings_size = root_table.my_strings_size()
-	print( "my_strings_size(): ", strings_size )
-	print( "my_strings_at( 0->%s ): " % strings_size )
-	for i in strings_size:
-		print( "\t%s: " % i, root_table.my_strings_at(i) )
-
+	reconstruction( buf )
 
 func reconstruction( buffer : PackedByteArray ):
-	print("# Reconstruction")
 	var root_table := fb.GetRoot( buffer )
 	pp.print( root_table )
+
+	# Size of arrays should match
+	if root_table.my_strings_size() != string_array.size(): retcode |= FAILED
+
+	# strings retrieved with the *_at( int ) method should match
+	for index in string_array.size():
+		if root_table.my_strings_at(index) != string_array[index]: retcode |= FAILED
+
+	# retrieve the whole array
+	var my_strings = root_table.my_strings()
+
+	# size should match
+	if my_strings.size() != string_array.size(): retcode |= FAILED
+
+	# strings should match
+	for index in string_array.size():
+		if my_strings[index] != string_array[index]: retcode |= FAILED
