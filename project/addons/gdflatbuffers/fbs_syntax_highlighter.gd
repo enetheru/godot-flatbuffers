@@ -176,7 +176,7 @@ func is_type( word : String )-> bool:
 	# | [ type ] | ident
 	if word in types: return true
 	if word in user_types: return true
-	if variant_included and word in variant_types: return true
+	if builtin_included and word in builtin_types: return true
 	return false
 
 func is_keyword( word : String ) -> bool:
@@ -271,8 +271,8 @@ var types : Array = [
 	"string"
 	]
 
-var variant_included : bool = false
-var variant_types : Array = [
+var builtin_included : bool = false
+var builtin_types : Array = [
 	"Vector3",
 	"Vector3i",
 	"Color"
@@ -549,7 +549,8 @@ func get_field() -> Dictionary:
 		color_default()
 		token = get_token()
 		if token.t != ']': syntax_error(token, "wanted ']'")
-	else: syntax_error(token, "wanted type(highligher:553)")
+	else: syntax_error(token, "wanted type(highligher:552)" )
+
 	color_default()
 
 	# Optional scalar value
@@ -598,8 +599,8 @@ func parse_metadata():
 		token = get_token()
 
 func parse_included_file( filename : String ):
-	if filename == 'variant.fbs':
-		variant_included = true
+	if filename == 'godot.fbs':
+		builtin_included = true
 		return
 
 	# FIXME, there is currently no known way to know which file I am parsing.
