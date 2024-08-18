@@ -115,15 +115,19 @@ func flatc_generate( path : String ) -> Variant:
 	# Make sure we have the flac compiler
 	var flatc_path : String = settings.get( &"plugin/FlatBuffers/flatc_path")
 	if flatc_path.is_empty():
-		flatc_path = ProjectSettings.globalize_path("res://addons/gdflatbuffers/bin/flatc.exe")
+		flatc_path = "res://addons/gdflatbuffers/bin/flatc.exe"
+
+	flatc_path = flatc_path.replace('res://', './')
 
 	if not FileAccess.file_exists(flatc_path):
 		return {'return_code':ERR_FILE_BAD_PATH, 'output': "Missing flatc compiler"}
 
 	# TODO make this an editor setting that can be added to.
-	var include_paths : Array = [ProjectSettings.globalize_path( "res://addons/gdflatbuffers/" )]
+	var include_paths : Array = ["res://addons/gdflatbuffers/"]
+	for i in include_paths.size():
+		include_paths[i] = include_paths[i].replace('res://', './')
 
-	var source_path = ProjectSettings.globalize_path( path )
+	var source_path = path.replace('res://', './')
 	if not FileAccess.file_exists(source_path):
 		return {'return_code':ERR_FILE_BAD_PATH, 'output': "Missing Schema File: %s" % source_path }
 
@@ -143,5 +147,5 @@ func flatc_generate( path : String ) -> Variant:
 	return { 'file_path': path, 'return_code':result, 'output':output }
 
 func print_results( results : Dictionary ):
-	var output : String = results.output.front().strip_escapes()
+	var output : String = results.output.pop_front()
 	printerr( "flac.exe - %s" % [output] )
