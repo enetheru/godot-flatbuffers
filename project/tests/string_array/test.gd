@@ -44,7 +44,7 @@ func long_way():
 
 func reconstruction( buffer : PackedByteArray ):
 	var root_table := fb.GetRoot( buffer )
-	print( "root_table: ", JSON.stringify( root_table.debug(), '\t', false ) )
+	output.append( "root_table: " + JSON.stringify( root_table.debug(), '\t', false ) )
 
 	# Size of arrays should match
 	TEST_EQ( root_table.my_strings_size(), string_array.size(), "my_strings_size()")
@@ -65,6 +65,7 @@ func reconstruction( buffer : PackedByteArray ):
 
 #region == Test Results ==
 var retcode : int = OK
+var output : PackedStringArray = []
 func TEST_EQ( value1, value2, msg : String = "" ):
 	if value1 == value2: return
 	retcode |= FAILED

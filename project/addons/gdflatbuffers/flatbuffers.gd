@@ -95,7 +95,7 @@ func rcm_generate( id ):
 	var meta = fbs_rcm.get_item_metadata( id )
 	if meta != "fbs": return
 
-	var results : Dictionary = {'return_code':0}
+	var results : Dictionary = {'retcode':OK}
 	var current_path = EditorInterface.get_current_path()
 	if DirAccess.dir_exists_absolute( current_path ):
 		var dir = fs.get_filesystem_path( current_path )
@@ -104,14 +104,14 @@ func rcm_generate( id ):
 			#TODO detect teh filetype rather than the extension when the Resource Loader is created
 			if file.ends_with('.fbs'):
 				results = flatc_generate( file )
-				if results.return_code: print_results( results )
-
 	else:
 		results = flatc_generate( current_path )
-		if results.return_code: print_results( results )
+
+	if results.retcode: print_results( results )
 
 
-func flatc_generate( path : String ) -> Variant:
+static func flatc_generate( path : String ) -> Variant:
+	var settings = EditorInterface.get_editor_settings()
 	# Make sure we have the flac compiler
 	var flatc_path : String = settings.get( &"plugin/FlatBuffers/flatc_path")
 	if flatc_path.is_empty():
@@ -137,15 +137,25 @@ func flatc_generate( path : String ) -> Variant:
 	for include in include_paths: args.append_array(["-I", include])
 	args.append_array([ "--gdscript",  "-o", output_path, source_path, ])
 
+	var result : Dictionary = {
+		'flatc_path':flatc_path,
+		'args':args,
+	}
 	var output = []
-	var result = OS.execute( flatc_path, args, output, true )
+	result['retcode'] = OS.execute( flatc_path, args, output, true )
+	result['output'] = output
+
+	#TODO Figure out a way to get the script in the editor to reload.
+	#  the only reliable way I have found to refresh the script in the editor
+	#  is to change the focus away from Godot and back again.
 
 	# This line refreshes the filesystem dock.
 	EditorInterface.get_resource_filesystem().scan()
+	return result
 
-	#TODO Figure out a way to get the script in the editor to reload.
-	return { 'file_path': path, 'return_code':result, 'output':output }
-
-func print_results( results : Dictionary ):
-	var output : String = results.output.pop_front()
-	printerr( "flac.exe - %s" % [output] )
+func print_results( result : Dictionary ):
+	if result.retcode:
+		var output = result.get('output')
+		result.erase('output')
+		printerr( "flatc_generate result: ", JSON.stringify( result, '\t', false ) )
+		for o in output: print( o )
