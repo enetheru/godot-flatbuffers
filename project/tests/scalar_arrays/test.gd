@@ -27,15 +27,6 @@ const DBL_MIN = 2.2250738585072014e-308
 
 const fb = preload('./FBTestScalarArrays_generated.gd')
 
-var pp := FlatBufferPrinter.new()
-
-var retcode : int = OK
-
-func TEST_EQ( value1, value2, msg : String = "" ):
-	if value1 == value2: return
-	retcode |= FAILED
-	printerr( "%s | got '%s' wanted '%s'" % [msg, value1, value2 ] )
-
 func _run() -> void:
 	short_way()
 	long_way()
@@ -43,19 +34,24 @@ func _run() -> void:
 
 func short_way():
 	var builder = FlatBufferBuilder.new()
+
+	var bytes_offset = builder.create_vector_int8( [INT8_MIN, INT8_MAX] )
+	var ubytes_offset = builder.create_vector_uint8( [0, UINT8_MAX] )
+	var shorts_offset = builder.create_vector_int16( [INT16_MIN, INT16_MAX] )
+	var ushorts_offset = builder.create_vector_uint16( [0, UINT16_MAX] )
+	var ints_offset = builder.create_vector_int32( [INT32_MIN, INT32_MAX] )
+	var uints_offset = builder.create_vector_uint32( [0, UINT32_MAX] )
+	var int64s_offset = builder.create_vector_int64( [INT64_MIN, INT64_MAX] )
+	var uint64s_offset = builder.create_vector_uint64( [0, UINT64_MAX] )
+	var floats_offset = builder.create_vector_float32( [FLT_MIN, FLT_MAX] )
+	var doubles_offset = builder.create_vector_float64( [DBL_MIN, DBL_MAX] )
+
 	var offset = fb.CreateRootTable(builder,
-		[INT8_MIN, INT8_MAX],
-		[0, UINT8_MAX],
-		[INT16_MIN,
-		INT16_MAX],
-		[0, UINT16_MAX],
-		[INT32_MIN, INT32_MAX],
-		[0, UINT32_MAX],
-		[INT64_MIN, INT64_MAX],
-		[0, UINT64_MAX],
-		[FLT_MIN, FLT_MAX],
-		[DBL_MIN, DBL_MAX],
-		)
+		bytes_offset, ubytes_offset,
+		shorts_offset, ushorts_offset,
+		ints_offset, uints_offset,
+		int64s_offset, uint64s_offset,
+		floats_offset, doubles_offset )
 	builder.finish( offset )
 
 	## This must be called after `Finish()`.
@@ -67,16 +63,16 @@ func short_way():
 func long_way():
 	var builder = FlatBufferBuilder.new()
 
-	var bytes_offset = builder.create_Vector_int8( [INT8_MIN, INT8_MAX] )
-	var ubytes_offset = builder.create_Vector_uint8( [0, UINT8_MAX] )
-	var shorts_offset = builder.create_Vector_int16( [INT16_MIN, INT16_MAX] )
-	var ushorts_offset = builder.create_Vector_uint16( [0, UINT16_MAX] )
-	var ints_offset = builder.create_Vector_int32( [INT32_MIN, INT32_MAX] )
-	var uints_offset = builder.create_Vector_uint32( [0, UINT32_MAX] )
-	var int64s_offset = builder.create_Vector_int64( [INT64_MIN, INT64_MAX] )
-	var uint64s_offset = builder.create_Vector_uint64( [0, UINT64_MAX] )
-	var floats_offset = builder.create_Vector_float32( [FLT_MIN, FLT_MAX] )
-	var doubles_offset = builder.create_Vector_float64( [DBL_MIN, DBL_MAX] )
+	var bytes_offset = builder.create_vector_int8( [INT8_MIN, INT8_MAX] )
+	var ubytes_offset = builder.create_vector_uint8( [0, UINT8_MAX] )
+	var shorts_offset = builder.create_vector_int16( [INT16_MIN, INT16_MAX] )
+	var ushorts_offset = builder.create_vector_uint16( [0, UINT16_MAX] )
+	var ints_offset = builder.create_vector_int32( [INT32_MIN, INT32_MAX] )
+	var uints_offset = builder.create_vector_uint32( [0, UINT32_MAX] )
+	var int64s_offset = builder.create_vector_int64( [INT64_MIN, INT64_MAX] )
+	var uint64s_offset = builder.create_vector_uint64( [0, UINT64_MAX] )
+	var floats_offset = builder.create_vector_float32( [FLT_MIN, FLT_MAX] )
+	var doubles_offset = builder.create_vector_float64( [DBL_MIN, DBL_MAX] )
 
 
 	var root_builder = fb.RootTableBuilder.new( builder )
@@ -101,7 +97,7 @@ func long_way():
 
 func reconstruction( buffer : PackedByteArray ):
 	var root_table := fb.GetRoot( buffer )
-	pp.print( root_table )
+	print( "root_table: ", JSON.stringify( root_table.debug(), '\t', false ) )
 
 	# bytes
 	TEST_EQ( root_table.bytes__size(), 2, "bytes__size()")
@@ -192,3 +188,12 @@ func reconstruction( buffer : PackedByteArray ):
 	TEST_EQ( doubles.size(), 2, "doubles.size()" )
 	TEST_EQ( doubles[0], DBL_MIN, "doubles[0]" )
 	TEST_EQ( doubles[1], DBL_MAX, "doubles[1]" )
+
+
+#region == Test Results ==
+var retcode : int = OK
+func TEST_EQ( value1, value2, msg : String = "" ):
+	if value1 == value2: return
+	retcode |= FAILED
+	printerr( "%s | got '%s' wanted '%s'" % [msg, value1, value2 ] )
+#endregion

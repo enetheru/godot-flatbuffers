@@ -5,8 +5,6 @@
 
 #include "flatbuffers/flatbuffers.h"
 
-#include "flatbufferarray.h"
-
 namespace godot_flatbuffers {
 
 class FlatBuffer : public godot::RefCounted {
@@ -33,7 +31,6 @@ public:
 	int64_t get_field_start( int64_t vtable_offset );
 
 	// Array/Vector offset and position
-	FlatBufferArray *get_array( int64_t start_, godot::Callable constructor_ );
 	int64_t get_array_size( int64_t vtable_offset );
 	int64_t get_array_element_start( int64_t array_start, int64_t idx  );
 

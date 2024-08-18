@@ -3,15 +3,6 @@ extends EditorScript
 
 const fb = preload('./FBTestStruct_generated.gd')
 
-var pp := FlatBufferPrinter.new()
-
-var retcode : int = OK
-
-func TEST_EQ( value1, value2, msg : String = "" ):
-	if value1 == value2: return
-	retcode |= FAILED
-	printerr( "%s | got '%s' wanted '%s'" % [msg, value1, value2 ] )
-
 var test_vector := Vector3i(1,2,3)
 
 func _run() -> void:
@@ -43,6 +34,15 @@ func long_way():
 
 func reconstruction( buffer : PackedByteArray ):
 	var root_table := fb.GetRoot( buffer )
-	pp.print( root_table )
+	print( "root_table: ", JSON.stringify( root_table.debug(), '\t', false ) )
 
 	TEST_EQ( root_table.my_struct(), test_vector, "my_struct()" )
+
+
+#region == Test Results ==
+var retcode : int = OK
+func TEST_EQ( value1, value2, msg : String = "" ):
+	if value1 == value2: return
+	retcode |= FAILED
+	printerr( "%s | got '%s' wanted '%s'" % [msg, value1, value2 ] )
+#endregion

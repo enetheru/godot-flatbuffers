@@ -6,6 +6,7 @@ table SubTable {
 }
 
 table RootTable{
+	subtable : SubTable;
 	table_array : [SubTable];
 }
 

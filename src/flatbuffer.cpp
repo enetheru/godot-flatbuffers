@@ -35,7 +35,6 @@ void FlatBuffer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_field_start", "field_offset"), &FlatBuffer::get_field_start );
 
 	//Array Access Helpers
-	ClassDB::bind_method(D_METHOD("get_array", "start_", "constructor_"), &FlatBuffer::get_array );
 	ClassDB::bind_method(D_METHOD("get_array_size", "vtable_offset"), &FlatBuffer::get_array_size );
 	ClassDB::bind_method(D_METHOD("get_array_element_start", "array_start", "idx"), &FlatBuffer::get_array_element_start );
 
@@ -102,11 +101,6 @@ int64_t FlatBuffer::get_field_start( int64_t vtable_offset ) {
 	int field_offset = get_field_offset( vtable_offset );
 	if( ! field_offset ) return 0;
 	return start + field_offset + bytes.decode_u32(start + field_offset);
-}
-
-FlatBufferArray *FlatBuffer::get_array( int64_t start_, godot::Callable constructor_) {
-	auto new_array = memnew( FlatBufferArray( start_, bytes, std::move( constructor_ ) ) );
-	return new_array;
 }
 
 int64_t FlatBuffer::get_array_size( int64_t vtable_offset ) {
