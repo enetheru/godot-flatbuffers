@@ -2,32 +2,32 @@
 
 namespace MyGame.Sample;
 
-enum ColorEnum:byte { Red = 0, Green, Blue = 2 }
+enum Color:byte { Red = 0, Green, Blue = 2 }
 
-struct Vec3{
+union Equipment { Weapon } // Optionally add more tables.
+
+struct Vec3 {
   x:float;
   y:float;
   z:float;
 }
 
-table Weapon {
-  name:string;
-  damage:short;
-}
-
-union Equipment { Weapon } // Optionally add more tables.
-
-table Monster{
-  pos:Vec3;
+table Monster {
+  pos:Vec3; // Struct.
   mana:short = 150;
   hp:short = 100;
   name:string;
   friendly:bool = false (deprecated);
-  inventory:[ubyte];
-  color:ColorEnum = Blue;
-  weapons:[Weapon];
-  equipped:Equipment;
-  path:[Vec3];
+  inventory:[ubyte];  // Vector of scalars.
+  color:Color = Blue; // Enum.
+  weapons:[Weapon];   // Vector of tables.
+  equipped:Equipment; // Union.
+  path:[Vec3];        // Vector of structs.
+}
+
+table Weapon {
+  name:string;
+  damage:short;
 }
 
 root_type Monster;
