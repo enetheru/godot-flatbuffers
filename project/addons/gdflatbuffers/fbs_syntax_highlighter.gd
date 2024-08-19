@@ -239,9 +239,10 @@ func is_float( word : String ) -> bool:
 
 func syntax_error( token : Dictionary, reason = "" ):
 	append( token, Color.RED )
-	if print_debug: print( token )
-	printerr( "Syntax error at line: %s, column: %s is '%s'%s" %
-		[token.line, token.col, token.t, "" if reason.is_empty() else " | %s" % reason] )
+	if print_debug:
+		print( token )
+		printerr( "Syntax error at line: %s, column: %s is '%s'%s" %
+			[token.line, token.col, token.t, "" if reason.is_empty() else " | %s" % reason] )
 
 var word_separation : Array = [' ', '\t', '\n', '{','}', ':', ';', ',', '(', ')', '[', ']']
 var whitespace : Array = [' ', '\t', '\n']
