@@ -1,0 +1,22 @@
+include "other.fbs";
+
+union TestUnion { OtherTable, OtherStruct }
+
+struct LocalStruct {
+	var : int;
+}
+
+table LocalTable {
+	var : int;
+}
+
+table RootTable {
+	local_struct : LocalStruct;
+	local_table : LocalTable;
+	other_struct : OtherStruct;
+	other_table : OtherTable;
+	other_array_struct : [OtherStruct];
+	other_array_table : [OtherTable];
+}
+
+root_type RootTable;
