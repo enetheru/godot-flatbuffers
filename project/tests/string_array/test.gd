@@ -2,6 +2,8 @@
 extends EditorScript
 
 const fb = preload('./FBTestStringArray_generated.gd')
+var silent : bool = false
+
 
 var string_array : PackedStringArray = []
 
@@ -15,6 +17,9 @@ func _run() -> void:
 
 	short_way()
 	long_way()
+	if not silent:
+		print_rich( "\n[b]== String Arrays ==[/b]\n" )
+		for o in output: print( o )
 
 func short_way():
 

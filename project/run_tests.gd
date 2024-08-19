@@ -5,6 +5,7 @@ var fs := EditorInterface.get_resource_filesystem()
 var test_dir : EditorFileSystemDirectory = fs.get_filesystem_path( 'res://tests/' )
 var fbs_dir : EditorFileSystemDirectory = fs.get_filesystem_path( 'res://fbs_files/tests/' )
 
+
 func _run() -> void:
 	print_rich( "\n[b]== GDFlatbuffer Plugin Testing ==[/b]\n" )
 	var schemas = []
@@ -39,10 +40,12 @@ func _run() -> void:
 	print_rich( "\n[b]... Running %s Tests[/b]\n" % tests.size() )
 	var test_results : Dictionary = {}
 	for test : String in tests:
+		var thread := Thread.new()
 		var category = test.get_base_dir().get_file().to_pascal_case()
 		var file = test.get_file()
 		var key = "/".join( [category, file] )
-		var result = run_test( test )
+		thread.start( run_test.bind( test ) )
+		var result = thread.wait_to_finish()
 		test_results[key] = result
 		if result['retcode']:
 			print_rich("[b]# Error running test %s[/b]" % key )
@@ -59,6 +62,7 @@ func run_test( file_path : String ):
 		result['output'] = ["Cannot instantiate '%s'" % file_path ]
 		return result
 	var instance = script.new()
+	instance.silent = true
 	instance._run()
 	result['retcode'] = instance.retcode
 	result['output'] = instance.output

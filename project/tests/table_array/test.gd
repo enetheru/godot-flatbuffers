@@ -2,6 +2,8 @@
 extends EditorScript
 
 const fb = preload('./FBTestTableArray_generated.gd')
+var silent : bool = false
+
 
 #region == Testing Setup ==
 
@@ -27,6 +29,9 @@ func _run() -> void:
 
 	short_way()
 	long_way()
+	if not silent:
+		print_rich( "\n[b]== Table Array ==[/b]\n" )
+		for o in output: print( o )
 
 
 func short_way():

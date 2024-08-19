@@ -26,10 +26,14 @@ const FLT_MIN = 1.175494351e-38
 const DBL_MIN = 2.2250738585072014e-308
 
 const fb = preload('./FBTestScalarArrays_generated.gd')
+var silent : bool = false
 
 func _run() -> void:
 	short_way()
 	long_way()
+	if not silent:
+		print_rich( "\n[b]== Scalar Arrays ==[/b]\n" )
+		for o in output: print( o )
 
 
 func short_way():

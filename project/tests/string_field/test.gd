@@ -2,10 +2,15 @@
 extends EditorScript
 
 const fb = preload('./FBTestString_generated.gd')
+var silent : bool = false
+
 
 func _run() -> void:
 	short_way()
 	long_way()
+	if not silent:
+		print_rich( "\n[b]== String ==[/b]\n" )
+		for o in output: print( o )
 
 var test_string : String = "This is a string that I am adding to te flatbuffer"
 
