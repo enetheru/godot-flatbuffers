@@ -12,8 +12,10 @@ namespace enetheru {
 
 template <typename... Args>
 static inline void print(const godot::String &fmt_string, Args &&...args) {
-	godot::UtilityFunctions::print(fmt_string.format(godot::Array::make(std::forward<Args>(args)...)));
+  auto msg = godot::vformat( "FlatBufferBuilder::PrintMemoryAddress: %X",  std::forward<Args>(args)... );
+	godot::UtilityFunctions::print(msg );
 }
+
 }
 
 #endif //GODOT_FLATBUFFERS_EXTENSION_UTILS_H
