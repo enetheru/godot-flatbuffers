@@ -1,5 +1,5 @@
 @tool
-extends EditorScript
+extends TestBase
 
 const INT8_MIN  = -128
 const INT8_MAX = 127
@@ -26,7 +26,6 @@ const FLT_MIN = 1.175494351e-38
 const DBL_MIN = 2.2250738585072014e-308
 
 const fb = preload('./FBTestScalarArrays_generated.gd')
-var silent : bool = false
 
 func _run() -> void:
 	short_way()
@@ -192,13 +191,3 @@ func reconstruction( buffer : PackedByteArray ):
 	TEST_EQ( doubles.size(), 2, "doubles.size()" )
 	TEST_EQ( doubles[0], DBL_MIN, "doubles[0]" )
 	TEST_EQ( doubles[1], DBL_MAX, "doubles[1]" )
-
-
-#region == Test Results ==
-var retcode : int = OK
-var output : PackedStringArray = []
-func TEST_EQ( value1, value2, msg : String = "" ):
-	if value1 == value2: return
-	retcode |= FAILED
-	output.append( "TEST_EQ: %s | got '%s' wanted '%s'" % [msg, value1, value2 ] )
-#endregion

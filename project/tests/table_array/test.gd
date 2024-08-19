@@ -1,9 +1,7 @@
 @tool
-extends EditorScript
+extends TestBase
 
 const fb = preload('./FBTestTableArray_generated.gd')
-var silent : bool = false
-
 
 #region == Testing Setup ==
 
@@ -70,13 +68,3 @@ func reconstruction( buffer : PackedByteArray ):
 	output.append( "root_table: " + JSON.stringify( rt.debug(), '\t', false ) )
 
 	TEST_EQ( rt.subtable().item(), root_table.subtable.item, "result == input")
-
-
-#region == Test Results ==
-var retcode : int = OK
-var output : PackedStringArray = []
-func TEST_EQ( value1, value2, msg : String = "" ):
-	if value1 == value2: return
-	retcode |= FAILED
-	printerr( "%s | got '%s' wanted '%s'" % [msg, value1, value2 ] )
-#endregion

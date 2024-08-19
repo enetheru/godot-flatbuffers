@@ -86,5 +86,5 @@ func print_result_error( result : Dictionary ):
 	result.erase('output')
 	printerr( "result: ", JSON.stringify( result, '\t', false ) )
 	if output:
-		for o in output: print( o.indent('\t') )
+		for o in output: print_rich( o.indent('\t') )
 	print("")

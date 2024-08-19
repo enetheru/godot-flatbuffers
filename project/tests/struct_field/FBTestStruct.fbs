@@ -1,7 +1,13 @@
 include "godot.fbs";
 
+struct MyStruct{
+	x : int;
+	y : float;
+}
+
 table RootTable{
-	my_struct : Vector3i;
+	my_struct : MyStruct;
+	builtin_struct : Vector3i;
 }
 
 root_type RootTable;

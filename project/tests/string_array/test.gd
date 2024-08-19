@@ -1,9 +1,7 @@
 @tool
-extends EditorScript
+extends TestBase
 
 const fb = preload('./FBTestStringArray_generated.gd')
-var silent : bool = false
-
 
 var string_array : PackedStringArray = []
 
@@ -67,12 +65,3 @@ func reconstruction( buffer : PackedByteArray ):
 	# strings should match
 	for index in string_array.size():
 		TEST_EQ( my_strings[index], string_array[index], "my_strings[%s] != string_array[%s]" % [index,index])
-
-#region == Test Results ==
-var retcode : int = OK
-var output : PackedStringArray = []
-func TEST_EQ( value1, value2, msg : String = "" ):
-	if value1 == value2: return
-	retcode |= FAILED
-	printerr( "%s | got '%s' wanted '%s'" % [msg, value1, value2 ] )
-#endregion
