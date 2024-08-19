@@ -122,7 +122,7 @@ func example_creating() -> PackedByteArray:
 # structs are stored in-line in the vector. For example, to create a vector for
 # the path field above:
 # Vec3 points[] = { Vec3(1.0f, 2.0f, 3.0f), Vec3(4.0f, 5.0f, 6.0f) };
-	var points : Array # FIXME, I havent figured this part out yet
+	var _points : Array # FIXME, I havent figured this part out yet
 
 # auto path = builder.CreateVectorOfStructs(points, 2);
 	var path = 0# FIXME  = builder.create_vector_ ??
@@ -132,9 +132,9 @@ func example_creating() -> PackedByteArray:
 # // Create the position struct
 # auto position = Vec3(1.0f, 2.0f, 3.0f);
 	var position = schema.Vec3.new()
-	position.x_set(1.0)
-	position.y_set(2.0)
-	position.z_set(3.0)
+	position.x = 1.0
+	position.y = 2.0
+	position.z = 3.0
 #
 # // Set his hit points to 300 and his mana to 150.
 # int hp = 300;
@@ -229,7 +229,7 @@ func example_creating() -> PackedByteArray:
 	var buf = builder.to_packed_byte_array()
 # int size = builder.GetSize(); // Returns the size of the buffer that
 #                               // `GetBufferPointer()` points to.
-	var size = builder.get_size()
+	var _size = builder.get_size()
 #
 # Now you can write the bytes to a file or send them over the network. Make
 # sure your file mode (or transfer protocol) is set to BINARY, not text. If you
@@ -239,7 +239,6 @@ func example_creating() -> PackedByteArray:
 	return buf
 
 func example_reading( buffer : PackedByteArray ):
-
 
 # ██████  ███████  █████  ██████  ██ ███    ██  ██████
 # ██   ██ ██      ██   ██ ██   ██ ██ ████   ██ ██
@@ -296,11 +295,11 @@ func example_reading( buffer : PackedByteArray ):
 # auto pos = monster->pos();
 	var pos : schema.Vec3 = monster.pos()
 # auto x = pos->x();
-	var x = pos.x()
+	var x = pos.x
 # auto y = pos->y();
-	var y = pos.y()
+	var y = pos.y
 # auto z = pos->z();
-	var z = pos.z()
+	var z = pos.z
 #
 # x, y, and z will contain 1.0, 2.0, and 3.0, respectively.
 	TEST_EQ( x, 1.0, "monster.pos.x()" )
@@ -315,24 +314,22 @@ func example_reading( buffer : PackedByteArray ):
 # auto inv = monster->inventory(); // A pointer to a `flatbuffers::Vector<>`.
 	var inv = monster.inventory()
 # auto inv_len = inv->size();
-	var inv_len = inv.size()
+	var _inv_len = inv.size()
 	# NOTE: monster.inventory_size()
 # auto third_item = inv->Get(2);
-	var third_item = inv[2]
+	var _third_item = inv[2]
 	# NOTE: monster.inventory_at(2)
-
 #
 # For vectors of tables, you can access the elements like any other vector,
 # except you need to handle the result as a FlatBuffer table:
 # auto weapons = monster->weapons(); // A pointer to a `flatbuffers::Vector<>`.
 	var weapons = monster.weapons()
 # auto weapon_len = weapons->size();
-	var weapon_len = weapons.size()
+	var _weapon_len = weapons.size()
 # auto second_weapon_name = weapons->Get(1)->name()->str();
-	var second_weapon_name = weapons[1].name()
+	var _second_weapon_name = weapons[1].name()
 # auto second_weapon_damage = weapons->Get(1)->damage()
-	var second_weapon_damage = weapons[1].damage()
-
+	var _second_weapon_damage = weapons[1].damage()
 #
 # Last, we can access our Equipped FlatBuffer union. Just like when we created
 # the union, we need to get both parts of the union: the type and the data.
@@ -341,7 +338,6 @@ func example_reading( buffer : PackedByteArray ):
 # union only stores a FlatBuffer table).
 # auto union_type = monster.equipped_type();
 	var union_type : schema.Equipment = monster.equipped_type()
-
 #
 # if (union_type == Equipment_Weapon) {
 #   auto weapon = static_cast<const Weapon*>(monster->equipped()); // Requires `static_cast`
@@ -357,7 +353,6 @@ func example_reading( buffer : PackedByteArray ):
 			var weapon_damage = weapon.damage()
 			TEST_EQ( weapon_name, "Axe", "weapon_name" )
 			TEST_EQ( weapon_damage, 5, "weapon_damage" )
-
 	#NOTE, output of monster.equipped is a Variant, so it can be checked.
 	#var equipment = monster.equipped()
 	#if equipment is schema.Weapon:
