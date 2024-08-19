@@ -10,19 +10,20 @@ namespace godot_flatbuffers {
 class FlatBuffer : public godot::RefCounted {
 	GDCLASS(FlatBuffer, RefCounted) // NOLINT(*-use-auto)
 
-	godot::PackedByteArray bytes;
+  godot::PackedByteArray bytes; // I need to make this a reference somehow
 	int64_t start{};
 
 protected:
 	static void _bind_methods();
 
 public:
-//	explicit FlatBuffer();
-//	~FlatBuffer() override;
+  //Debug
+  godot::String get_memory_address();
 
 	// Get and Set of properties
 	void set_bytes( godot::PackedByteArray bytes_ );
-	godot::PackedByteArray get_bytes();
+	const godot::PackedByteArray & get_bytes();
+
 	void set_start( int64_t start_);
 	[[nodiscard]] int64_t get_start() const;
 

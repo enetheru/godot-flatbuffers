@@ -4,27 +4,20 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <utility>
+#include <format>
 
 namespace godot_flatbuffers {
 
-//FlatBuffer::FlatBuffer() {
-////	godot::UtilityFunctions::print("FlatBuffer(): Constructor");
-//enetheru::print("decode_Vector3( {0} )", start_ );
-
-//
-//}
-//FlatBuffer::~FlatBuffer() {
-////	godot::UtilityFunctions::print("~FlatBuffer(): Destructor");
-//}
-
 void FlatBuffer::_bind_methods() {
 	using namespace godot;
+
+  //Debug
+  ClassDB::bind_method(D_METHOD("get_memory_address"), &FlatBuffer::get_memory_address );
 
 	//Properties
 	ClassDB::bind_method(D_METHOD("set_start", "start"), &FlatBuffer::set_start );
 	ClassDB::bind_method(D_METHOD("get_start"), &FlatBuffer::get_start );
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "start"), "set_start", "get_start");
-
 
 	ClassDB::bind_method(D_METHOD("set_bytes", "bytes"), &FlatBuffer::set_bytes );
 	ClassDB::bind_method(D_METHOD("get_bytes"), &FlatBuffer::get_bytes );
@@ -76,6 +69,11 @@ void FlatBuffer::_bind_methods() {
 	// Vector4i
 }
 
+godot::String FlatBuffer::get_memory_address() {
+  auto i = reinterpret_cast<std::uintptr_t>( bytes.ptr() );
+  return godot::vformat( "%X",  i );
+}
+
 // Returns the field offset relative to 'start'.
 // If this is a scalar or a struct, it will be where the data is
 // If this is a table, or an array, it will be a relative offset to the position of the field.
@@ -123,10 +121,10 @@ int64_t FlatBuffer::get_array_element_start(int64_t array_start, int64_t idx) {
 
 // Property Get and Set Functions
 void FlatBuffer::set_bytes( godot::PackedByteArray bytes_) {
-	bytes = std::move(bytes_);
+	bytes = std::move( bytes_ );
 }
 
-godot::PackedByteArray FlatBuffer::get_bytes() {
+const godot::PackedByteArray & FlatBuffer::get_bytes() {
 	return bytes;
 }
 

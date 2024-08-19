@@ -44,6 +44,8 @@ public:
 	// == Add functions for scalars ==
 	void AddOffset( uint16_t voffset, uint64_t value );
 
+  void AddBytes( uint16_t voffset, const godot::PackedByteArray& bytes );
+
 	template<typename in, typename out>
 	void AddScalar( uint16_t voffset, in value ){ builder->AddElement<out>( voffset, value ); }
 

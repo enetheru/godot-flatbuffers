@@ -16,7 +16,7 @@ void FlatBufferBuilder::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("clear"), &FlatBufferBuilder::Clear);
 	ClassDB::bind_method(D_METHOD("reset"), &FlatBufferBuilder::Reset);
-	ClassDB::bind_method(D_METHOD("finish", "root"), &FlatBufferBuilder::Finish);
+	ClassDB::bind_method(D_METHOD("finish", "table_offset"), &FlatBufferBuilder::Finish);
 	ClassDB::bind_method(D_METHOD("start_table"), &FlatBufferBuilder::StartTable);
 	ClassDB::bind_method(D_METHOD("end_table", "start"), &FlatBufferBuilder::EndTable);
 	ClassDB::bind_method(D_METHOD("get_size"), &FlatBufferBuilder::GetSize);
@@ -24,6 +24,7 @@ void FlatBufferBuilder::_bind_methods() {
 
 	// == Add functions ==
 	ClassDB::bind_method(D_METHOD("add_offset", "voffset", "value"), &FlatBufferBuilder::AddOffset);
+  ClassDB::bind_method(D_METHOD("add_bytes", "voffset", "value"), &FlatBufferBuilder::AddBytes);
 
 	ClassDB::bind_method(D_METHOD("add_element_bool", "voffset", "value"), &FlatBufferBuilder::AddScalar<bool, uint8_t>);
 	ClassDB::bind_method(D_METHOD("add_element_byte", "voffset", "value"), &FlatBufferBuilder::AddScalar<int64_t, int8_t>);
@@ -112,6 +113,14 @@ void FlatBufferBuilder::AddOffset( uint16_t voffset, uint64_t value ) {
 	builder->AddOffset(voffset, Offset(value) );
 }
 
+
+void FlatBufferBuilder::AddBytes( uint16_t voffset, const godot::PackedByteArray& bytes ) {
+  if( bytes.is_empty() ) return;  // Default, don't store.
+  builder->Align(bytes.size() );
+  builder->PushBytes( bytes.ptr(), bytes.size());
+  builder->TrackField(voffset, builder->GetSize() );
+}
+
 void FlatBufferBuilder::AddVector3( uint16_t voffset, godot::Vector3 vector3 ) {
 	auto builtin = Vector3(vector3.x, vector3.y, vector3.z);
 	builder->AddStruct( voffset, &builtin );
@@ -177,6 +186,5 @@ FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVector3i(const godot::Vect
 	Vector3i vec( value.x, value.y, value.z );
 	return builder->CreateStruct( vec ).o;
 }
-
 
 } //end namespace
