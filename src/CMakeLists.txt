@@ -7,16 +7,18 @@ message( "Found These Flatbuffer Generated Headers: \n${FBHEADERS}" )
 configure_file( entry_point.cpp.in ${CMAKE_CURRENT_SOURCE_DIR}/entry_point.cpp )
 
 add_library( ${GDE_NAME} SHARED
-        utils.h)
+        utils.hpp)
 
 target_sources( ${GDE_NAME}
     PRIVATE
         entry_point.cpp
-        register_types.cpp register_types.h
+        register_types.cpp
+        register_types.hpp
         flatbuffer.cpp
-        flatbuffer.h
+        flatbuffer.hpp
         flatbufferbuilder.cpp
-        flatbufferbuilder.h
+        flatbufferbuilder.hpp
+        utils.hpp
         ${FBHEADERS}
 )
 

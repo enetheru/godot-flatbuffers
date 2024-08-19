@@ -1,6 +1,6 @@
-#include "flatbufferbuilder.h"
+#include "flatbufferbuilder.hpp"
 #include "builtin/godot_generated.h"
-#include "utils.h"
+#include "utils.hpp"
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 

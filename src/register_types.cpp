@@ -3,12 +3,12 @@
  * This is free and unencumbered software released into the public domain.
  */
 
-#include "register_types.h"
+#include "register_types.hpp"
 
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/godot.hpp>
 
-#include "flatbuffer.h"
+#include "flatbuffer.hpp"
 #include "flatbufferbuilder.h"
 
 void initialize_module(godot::ModuleInitializationLevel p_level) {

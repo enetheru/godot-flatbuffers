@@ -2,8 +2,8 @@
 // Created by nicho on 25/05/2024.
 //
 
-#ifndef GODOT_FLATBUFFERS_EXTENSION_UTILS_H
-#define GODOT_FLATBUFFERS_EXTENSION_UTILS_H
+#ifndef GODOT_FLATBUFFERS_EXTENSION_UTILS_HPP
+#define GODOT_FLATBUFFERS_EXTENSION_UTILS_HPP
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
@@ -18,4 +18,4 @@ static inline void print(const godot::String &fmt_string, Args &&...args) {
 
 }
 
-#endif //GODOT_FLATBUFFERS_EXTENSION_UTILS_H
+#endif //GODOT_FLATBUFFERS_EXTENSION_UTILS_HPP
