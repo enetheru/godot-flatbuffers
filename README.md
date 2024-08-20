@@ -12,3 +12,7 @@ Idealistically there should be CI/CD, test coverage, performance metrics, etc, b
 ### Upstream
 * https://flatbuffers.dev/index.html
 * https://github.com/google/flatbuffers
+
+### Looks like I have some research to do
+* https://github.com/V-Sekai-archive/godot-flatbuffers
+* https://gitlab.com/JudGenie/flatbuffersgdscript
