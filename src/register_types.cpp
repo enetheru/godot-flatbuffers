@@ -9,7 +9,7 @@
 #include <godot_cpp/godot.hpp>
 
 #include "flatbuffer.hpp"
-#include "flatbufferbuilder.h"
+#include "flatbufferbuilder.hpp"
 
 void initialize_module(godot::ModuleInitializationLevel p_level) {
 	if (p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE) {
