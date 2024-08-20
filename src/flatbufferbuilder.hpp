@@ -13,6 +13,9 @@ class FlatBufferBuilder : public godot::RefCounted {
 
 	std::unique_ptr<flatbuffers::FlatBufferBuilder> builder;
 
+  using uoffset_t = flatbuffers::uoffset_t;
+  using Offset = flatbuffers::Offset<>;
+
 protected:
 	static FlatBufferBuilder *Create( int size ) {
 		auto fbb = memnew( FlatBufferBuilder( size ) );
@@ -28,8 +31,7 @@ public:
 	explicit FlatBufferBuilder();
 	explicit FlatBufferBuilder( int size );
 
-	using uoffset_t = flatbuffers::uoffset_t;
-	using Offset = flatbuffers::Offset<>;
+
 
 	int64_t GetSize() { return builder->GetSize(); }
 	godot::PackedByteArray GetPackedByteArray();
@@ -41,20 +43,22 @@ public:
 	uoffset_t StartTable() { return builder->StartTable(); }
 	uoffset_t EndTable(uoffset_t start) { return builder->EndTable(start); }
 
-	// == Add functions for scalars ==
 	void AddOffset( uint16_t voffset, uint64_t value );
-
   void AddBytes( uint16_t voffset, const godot::PackedByteArray& bytes );
 
+  // Add or Create Scalars
 	template<typename in, typename out>
 	void AddScalar( uint16_t voffset, in value ){ builder->AddElement<out>( voffset, value ); }
 
 	template<typename in, typename out>
-	void AddScalarDefault( uint16_t voffset, in value, in default_ ){ builder->AddElement<out>( voffset, value, default_ ); }
+	void AddScalarDefault( uint16_t voffset, in value, in def ){ builder->AddElement<out>( voffset, value, def ); }
 
-	// == Add functions for builtin structs ==
-	void AddVector3( uint16_t voffset, godot::Vector3 );
-	void AddVector3i( uint16_t voffset, godot::Vector3i );
+  // Add or Create struct like objects
+  template<typename godot_type>
+  void AddGodotStruct( uint16_t voffset, const godot_type &value ){ builder->AddStruct( voffset, &value ); }
+
+  template<typename godot_type>
+  uoffset_t CreateGodotStruct( const godot_type &value ){ return builder->CreateStruct( &value ).o; }
 
 	// == Create functions ==
 	uoffset_t CreateVectorOffset( const godot::PackedInt32Array &array );
@@ -80,7 +84,6 @@ public:
 	// bool
 	// Callable
 	// Color
-	uoffset_t CreateColor( const godot::Color& value );
 	// Dictionary
 	// NodePath
 	// Object
@@ -104,14 +107,12 @@ public:
 	// Vector2
 	// Vector2i
 	// Vector3
-	uoffset_t CreateVector3( const godot::Vector3& value );
-	uoffset_t CreateVector3i( const godot::Vector3i& value );
-	// Vector3i
+  // Vector3i
 	// Vector4
 	// Vector4i
 
 	// Custom Class to Table Creators
-	uoffset_t CreateVectorTable( const godot::Array&array, const godot::Callable& constructor );
+	uoffset_t CreateVectorTable( const godot::Array &array, const godot::Callable& constructor );
 };
 
 }
