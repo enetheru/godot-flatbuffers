@@ -23,6 +23,7 @@ kanban-plugin: board
 - [ ] Check in Get* functions to check buffer size for at least minimum
 - [ ] Create* functions need to be able to take the object, not the offset, ie string instead of int
 - [ ] builder add_* function arguments need to be named with \_offset if they expect an offset instead of a value.
+- [ ] Add an option to the settings to auto generate after a fbs file is changed.
 
 
 ## syntax highlighting
