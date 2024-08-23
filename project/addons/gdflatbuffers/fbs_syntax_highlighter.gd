@@ -33,6 +33,9 @@ var dict : Dictionary
 var line_dict : Dictionary
 var error_flag : bool = false
 
+var user_types : Dictionary = {}
+var user_enum_vals : Dictionary = {}
+
 func _init():
 	editor_settings = EditorInterface.get_editor_settings()
 	error_color = Color.RED
@@ -47,6 +50,43 @@ func _init():
 	colours[TokenType.SCALAR] = editor_settings.get_setting("text_editor/theme/highlighting/number_color")
 	colours[TokenType.META] = editor_settings.get_setting("text_editor/theme/highlighting/text_color")
 
+	#Regex Compilation
+	# STRING_CONSTANT = \".*?\\"
+	regex_string_constant = RegEx.new()
+	regex_string_constant.compile("^\\\".*?\\\\\"$")
+
+	# IDENT = [a-zA-Z_][a-zA-Z0-9_]*
+	regex_ident = RegEx.new()
+	regex_ident.compile("^[a-zA-Z_][a-zA-Z0-9_]*$")
+
+	# DIGIT [:digit:] = [0-9]
+	regex_digit = RegEx.new()
+	regex_digit.compile("^[0-9]$")
+
+	# XDIGIT [:xdigit:] = [0-9a-fA-F]
+	regex_xdigit = RegEx.new()
+	regex_xdigit.compile("^[0-9a-fA-F]$")
+
+	# DEC_INTEGER_CONSTANT = [-+]?[:digit:]+
+	regex_dec_integer_constant = RegEx.new()
+	regex_dec_integer_constant.compile("^[-+]?[0-9]+$")
+
+	# HEX_INTEGER_CONSTANT = [-+]?0[xX][:xdigit:]+
+	regex_hex_integer_constant = RegEx.new()
+	regex_hex_integer_constant.compile("^[-+]?0[xX][0-9a-fA-F]+$")
+
+	# DEC_FLOAT_CONSTANT = [-+]?(([.][:digit:]+)|([:digit:]+[.][:digit:]*)|([:digit:]+))([eE][-+]?[:digit:]+)?
+	regex_dec_float_constant = RegEx.new()
+	regex_dec_float_constant.compile("^[-+]?(([.][0-9]+)|([0-9]+[.][0-9]*)|([0-9]+))([eE][-+]?[0-9]+)?$")
+
+	# HEX_FLOAT_CONSTANT = [-+]?0[xX](([.][:xdigit:]+)|([:xdigit:]+[.][:xdigit:]*)|([:xdigit:]+))([pP][-+]?[:digit:]+)
+	regex_hex_float_constant = RegEx.new()
+	regex_hex_float_constant.compile("^[-+]?0[xX](([.][[+-]?[0-9a-fA-F]+]+)|([[+-]?[0-9a-fA-F]+]+[.][[+-]?[0-9a-fA-F]+]*)|([[+-]?[0-9a-fA-F]+]+))([pP][+-]?[0-9]+)$")
+
+	# SPECIAL_FLOAT_CONSTANT = [-+]?(nan|inf|infinity)
+	regex_special_float_constant = RegEx.new()
+	regex_special_float_constant.compile("^[-+]?(nan|inf|infinity)$")
+
 # Override methods for EditorSyntaxHighlighter
 func _get_name ( ) -> String:
 	return "FlatBuffersSchema"
@@ -58,6 +98,8 @@ func _get_supported_languages ( ) -> PackedStringArray:
 
 # Override methods for Syntax Highlighter
 func _clear_highlighting_cache ( ):
+	user_enum_vals.clear()
+	user_types.clear()
 	dict = {}
 	error_flag = false
 
@@ -86,6 +128,7 @@ func _get_line_syntax_highlighting ( line_num : int ) -> Dictionary:
 		return line_dict
 
 	reader = Reader.new( line, line_num )
+	reader.user_types = user_types.keys()
 	reader.new_token.connect(func( token ):
 		if verbose > 1:
 			var padding = "".lpad(stack.size(), '\t')
@@ -116,7 +159,7 @@ func _get_line_syntax_highlighting ( line_num : int ) -> Dictionary:
 
 
 func _update_cache ( ):
-	verbose = 1 # FIXME set the option better
+	verbose = 2 # FIXME set the option better
 	error_color = Color.RED
 	if verbose > 2: print( "dict", JSON.stringify( dict, '\t') )
 
@@ -125,13 +168,15 @@ func highlight( token : Dictionary ):
 	line_dict[token.col] = { 'color':colours[token.type] }
 
 func syntax_error( token : Dictionary, reason = "" ):
+
 	error_flag = true
 	line_dict[token.col] = { 'color':error_color }
 	if verbose > 0:
-		var padding = "".lpad(stack.size(), '\t')
-		var colour : Color = error_color
-		if verbose > 1: print_rich( padding + "[color=%s]Error: %s - %s[/color]" % [colour.to_html(), tstring( token ), reason] )
-		printerr( sstring() )
+		var padding = "".lpad(stack.size(), '\t') if verbose > 1 else ""
+		var colour = error_color.to_html()
+		var frame_type = FrameType.keys()[stack.back().type] if stack.size() else '#'
+		print_rich( padding + "[color=%s]%s:Error in: %s - %s[/color]" % [colour, frame_type, tstring( token ), reason] )
+		if verbose > 1: print_rich( "[color=%s]%s[/color]\n" % [colour,sstring()] )
 
 #endregion
 
@@ -175,16 +220,16 @@ enum FrameType {
 	FILE_IDENTIFIER_DECL, # = file_identifier string_constant ;
 	STRING_CONSTANT, # = \".*?\\"
 	IDENT, # = [a-zA-Z_][a-zA-Z0-9_]*
-	DIGIT, # [:digit:] = [0-9]
-	XDIGIT, # [:xdigit:] = [0-9a-fA-F]
-	DEC_INTEGER_CONSTANT, # = [-+]?[:digit:]+
-	HEX_INTEGER_CONSTANT, # = [-+]?0[xX][:xdigit:]+
+	#DIGIT, # [:digit:] = [0-9]
+	#XDIGIT, # [:xdigit:] = [0-9a-fA-F]
+	#DEC_INTEGER_CONSTANT, # = [-+]?[:digit:]+
+	#HEX_INTEGER_CONSTANT, # = [-+]?0[xX][:xdigit:]+
 	INTEGER_CONSTANT, # = dec_integer_constant | hex_integer_constant
-	DEC_FLOAT_CONSTANT, # = [-+]?(([.][:digit:]+)|([:digit:]+[.][:digit:]*)|([:digit:]+))([eE][-+]?[:digit:]+)?
-	HEX_FLOAT_CONSTANT, # = [-+]?0[xX](([.][:xdigit:]+)|([:xdigit:]+[.][:xdigit:]*)|([:xdigit:]+))([pP][-+]?[:digit:]+)
-	SPECIAL_FLOAT_CONSTANT, # = [-+]?(nan|inf|infinity)
-	FLOAT_CONSTANT, # = dec_float_constant | hex_float_constant | special_float_constant
-	BOOLEAN_CONSTANT, # = true | false
+	#DEC_FLOAT_CONSTANT, # = [-+]?(([.][:digit:]+)|([:digit:]+[.][:digit:]*)|([:digit:]+))([eE][-+]?[:digit:]+)?
+	#HEX_FLOAT_CONSTANT, # = [-+]?0[xX](([.][:xdigit:]+)|([:xdigit:]+[.][:xdigit:]*)|([:xdigit:]+))([pP][-+]?[:digit:]+)
+	#SPECIAL_FLOAT_CONSTANT, # = [-+]?(nan|inf|infinity)
+	#FLOAT_CONSTANT, # = dec_float_constant | hex_float_constant | special_float_constant
+	#BOOLEAN_CONSTANT, # = true | false
 }
 #endregion
 
@@ -246,6 +291,7 @@ class Reader:
 		line_n = line_start
 		line_index = [0]
 		cursor_lp = 0
+		user_types = []
 
 	func at_end() -> bool:
 		if cursor_p >= text.length(): return true
@@ -273,6 +319,7 @@ class Reader:
 
 	func next_line():
 		adv( text.length() ) # adv automatically stops on a line break.
+		next_token()
 
 	func get_string() -> Dictionary:
 		var start := cursor_p
@@ -474,6 +521,26 @@ var keywords : Dictionary = {
 	'rpc_service' : FrameType.RPC_DECL,
 }
 
+#region Regex
+# ██████  ███████  ██████  ███████ ██   ██
+# ██   ██ ██      ██       ██       ██ ██
+# ██████  █████   ██   ███ █████     ███
+# ██   ██ ██      ██    ██ ██       ██ ██
+# ██   ██ ███████  ██████  ███████ ██   ██
+var regex_string_constant : RegEx # = \".*?\\"
+var regex_ident : RegEx # = [a-zA-Z_][a-zA-Z0-9_]*
+var regex_digit : RegEx # [:digit:] = [0-9]
+var regex_xdigit : RegEx # [:xdigit:] = [0-9a-fA-F]
+var regex_dec_integer_constant : RegEx # = [-+]?[:digit:]+
+var regex_hex_integer_constant : RegEx # = [-+]?0[xX][:xdigit:]+
+var regex_integer_constant : RegEx # = dec_integer_constant | hex_integer_constant
+var regex_dec_float_constant : RegEx # = [-+]?(([.][:digit:]+)|([:digit:]+[.][:digit:]*)|([:digit:]+))([eE][-+]?[:digit:]+)?
+var regex_hex_float_constant : RegEx # = [-+]?0[xX](([.][:xdigit:]+)|([:xdigit:]+[.][:xdigit:]*)|([:xdigit:]+))([pP][-+]?[:digit:]+)
+var regex_special_float_constant : RegEx # = [-+]?(nan|inf|infinity)
+var regex_float_constant : RegEx # = dec_float_constant | hex_float_constant | special_float_constant
+var regex_boolean_constant : RegEx # = true | false
+#endregion
+
 class StackFrame:
 	func _init( t : FrameType, d : Dictionary = {}) -> void: type = t; data = d.duplicate(true)
 	var type : FrameType
@@ -532,6 +599,12 @@ func sstring( _stack : Array = stack ):
 		stack_string += "/%s%s" % [ FrameType.keys()[frame.type], data ]
 	return stack_string
 
+func check_token_t( token : Dictionary, t : String, msg : String = "" ) -> bool:
+	if token.get('t') == t:
+		reader.next_token()
+		return true
+	if not msg.is_empty(): syntax_error( token, "wanted '%s'" % t )
+	return false
 
 var loop_detection : int = 0
 func parse():
@@ -559,8 +632,6 @@ func parse_schema( token : Dictionary ):
 	#					 | file_extension_decl | file_identifier_decl
 	#					 | attribute_decl | rpc_decl | object )*
 	var frame : StackFrame = stack.back()
-
-	if token.is_empty(): printerr("I have no idea why this is happening right now"); return false
 
 	if token.type == TokenType.EOF: return end_frame()
 
@@ -604,10 +675,7 @@ func parse_include( token : Dictionary ):
 		frame.data['next'] = ';'
 		return
 	if frame.data.get('next') == ';':
-		if token.get('t') == ';':
-			reader.next_token()
-			return end_frame()
-		syntax_error( token, "wanted semicolon" )
+		check_token_t(token, ';', "wanted semicolon" )
 		return end_frame()
 
 	# what else?
@@ -627,17 +695,13 @@ func parse_namespace_decl( token : Dictionary ):
 	if frame.data.get('next') == null:
 		if token.t != 'namespace':
 			syntax_error(token, "wanted 'namespace'")
-			end_frame()
+			return end_frame()
 		frame.data['next'] = '.'
 		reader.next_token()
 		return push_stack( FrameType.IDENT )
 	if frame.data.get('next') == '.':
-		if token.t == ';':
-			reader.next_token()
-			return end_frame()
-		if token.t == '.':
-			reader.next_token()
-			return push_stack( FrameType.IDENT )
+		if check_token_t(token, ';'): return end_frame()
+		if check_token_t(token, '.'): return push_stack( FrameType.IDENT )
 
 	syntax_error(token)
 	return end_frame()
@@ -655,7 +719,7 @@ func parse_attribute_decl( token : Dictionary ):
 	if frame.data.get('next') == null:
 		if token.t != 'attribute':
 			syntax_error(token, "wanted 'attribute'")
-			end_frame()
+			return end_frame()
 		reader.next_token()
 		token = reader.get_token()
 		if token.type == TokenType.IDENT: push_stack( FrameType.IDENT )
@@ -663,11 +727,10 @@ func parse_attribute_decl( token : Dictionary ):
 		frame.data['next'] = ';'
 		return
 	if frame.data.get('next') == ';':
-		if token.t == ';':
-			reader.next_token()
-			return end_frame()
+		check_token_t(token, ';', "wanted semicolon")
+		return end_frame()
 
-	syntax_error(token)
+	syntax_error(token, "reached end of parse_attribute_decl( ... )")
 	return end_frame()
 
 # ████████ ██    ██ ██████  ███████         ██████  ███████  ██████ ██
@@ -683,9 +746,16 @@ func parse_type_decl( token : Dictionary ):
 	if frame.data.get('next') == null:
 		if token.t not in ['table','struct']:
 			syntax_error(token, "wanted ( table | struct )")
-			end_frame()
+			return end_frame()
 		reader.next_token()
 		push_stack( FrameType.IDENT )
+		frame.data['next'] = 'add_ident'
+		return
+	if frame.data.get('next') == 'add_ident':
+		var type_name = frame.data.get('return')
+		if type_name:
+			user_types[(frame.data.get('return'))] = OK
+			frame.data.erase('return')
 		frame.data['next'] = 'meta'
 		return
 	if frame.data.get('next') == 'meta':
@@ -693,18 +763,16 @@ func parse_type_decl( token : Dictionary ):
 		frame.data['next'] = '{'
 		return
 	if frame.data.get('next') == '{':
-		if token.t != '{':
-			syntax_error(token, "wanted '{'")
-			return end_frame()
-		frame.data['next'] = 'fields'
-		push_stack( FrameType.FIELD_DECL )
-		return
+		if check_token_t(token, '{', "wanted '{'"):
+			frame.data['next'] = 'fields'
+			return
+		return end_frame()
 	if frame.data.get('next') == 'fields':
-		if token.t == '}': return end_frame()
-		push_stack( FrameType.FIELD_DECL )
-		return
+		if token.type == TokenType.EOF: return
+		if check_token_t(token, '}'): return end_frame()
+		return push_stack( FrameType.FIELD_DECL )
 
-	syntax_error(token)
+	syntax_error(token, "reached end of parse_type_decl(...)")
 	return end_frame()
 
 # ███████ ███    ██ ██    ██ ███    ███         ██████  ███████  ██████ ██
@@ -720,32 +788,39 @@ func parse_enum_decl( token : Dictionary ):
 	if frame.data.get('next') == null:
 		if token.t not in ['enum','union']:
 			syntax_error(token, "wanted ( enum | union )")
-			end_frame()
+			return end_frame()
+		frame.data['type'] = token.t
 		reader.next_token()
 		push_stack( FrameType.IDENT )
-		if token.t == 'enum':
-			frame.data['next'] = 'union'
+		frame.data['next'] = 'add_ident'
+		return
+	if frame.data.get('next') == 'add_ident':
+		var new_type = frame.data.get('return')
+		if new_type:
+			user_types[ new_type ] = OK
+			frame.data.erase('return')
+		if frame.data['type'] == 'enum': frame.data['next'] = 'enum'
 		else: frame.data['next'] = 'meta'
+		frame.data.erase('type')
 		return
-	if frame.data.get('next') == 'union':
-		frame.data.erase('return') # erase return 'ident'
-		if token.t != ':':
-			syntax_error(token, "wanted ':'")
-			return end_frame()
-		reader.next_token()
-		push_stack( FrameType.TYPE )
-		frame.data['next'] = 'meta'
-		return
+	if frame.data.get('next') == 'enum':
+		if check_token_t(token, ':', "wanted ':'"):
+			frame.data['next'] = 'meta'
+			return push_stack( FrameType.TYPE )
+		return end_frame()
 	if frame.data.get('next') == 'meta':
 		frame.data.erase('return') # erase return 'type'
 		push_stack( FrameType.METADATA )
 		frame.data['next'] = '{'
 		return
 	if frame.data.get('next') == '{':
-		if token.t != '{':
-			syntax_error(token, "wanted '{'")
-			return end_frame()
-		reader.next_token()
+		if check_token_t(token, '{', "wanted '{'" ): pass
+		else: return end_frame()
+
+		#if token.t != '{':
+			#syntax_error(token, "wanted '{'")
+			#return end_frame()
+		#reader.next_token()
 		frame.data['next'] = '}'
 		push_stack( FrameType.COMMASEP, FrameType.ENUMVAL_DECL )
 		return
@@ -771,18 +846,16 @@ func parse_root_decl( token : Dictionary ):
 	var frame = stack.back()
 
 	if frame.data.get('next') == null:
+
 		if token.get('t') != 'root_type':
 			syntax_error( token, "wanted root_type" )
 			return end_frame()
-		push_stack( FrameType.IDENT )
+		push_stack( FrameType.TYPE )
 		frame.data['next'] = ';'
 		reader.next_token();
 		return
 	if frame.data.get('next') == ';':
-		if token.get('t') == ';':
-			reader.next_token()
-			return end_frame()
-		syntax_error( token, "wanted semicolon" )
+		check_token_t(token, ';', "wanted semicolon" )
 		return end_frame()
 
 	# what else?
@@ -795,34 +868,34 @@ func parse_root_decl( token : Dictionary ):
 # ██      ██ ██      ██      ██   ██         ██   ██ ██      ██      ██
 # ██      ██ ███████ ███████ ██████  ███████ ██████  ███████  ██████ ███████
 
-func parse_field_decl( token : Dictionary ) -> bool:
+func parse_field_decl( token : Dictionary ):
 	# field_decl = ident : type [ = scalar ] metadata ;
-	var this_frame = stack.back()
+	var frame : StackFrame = stack.back()
 
-	#ident
-	if not parse_ident( token ): return end_frame()
-
-	token = reader.get_token()
-	if token.t != ':':
-		syntax_error( token, "missing colon separator" )
-		reader.next_line()
+	if frame.data.get('next') == null:
+		push_stack(FrameType.IDENT)
+		frame.data['next'] = ':'
+		return
+	if frame.data.get('next') == ':':
+		if token.t != ':':
+			syntax_error(token, "wanted ':'")
+			reader.next_line()
+			return end_frame()
+		reader.next_token()
+		push_stack( FrameType.TYPE )
+		frame.data['next'] = '='
+		return
+	if frame.data.get('next') == '=':
+		if check_token_t(token, '='):
+			return push_stack( FrameType.SCALAR )
+		push_stack( FrameType.METADATA )
+		frame.data['next'] = ';'
+		return
+	if frame.data.get('next') == ';':
+		check_token_t(token, ';', "wanted semicolon")
 		return end_frame()
 
-	if not parse_type( reader.get_token()): return end_frame()
-
-	token = reader.get_token()
-	if token.t == ';': return end_frame()
-	if token.t == '=':
-		if not parse_scalar( reader.get_token() ): return end_frame()
-		token = reader.get_token()
-
-	if token.t == ';': return end_frame()
-	parse_metadata( token )
-
-	reader.get_token()
-	if token.t == ';': return end_frame()
-	syntax_error( token, "wanted semicolon" )
-	reader.next_line()
+	syntax_error(token, "reached end of parse_type_decl(...)")
 	return end_frame()
 
 
@@ -839,11 +912,43 @@ func parse_rpc_method( token : Dictionary ):
 	return end_frame()
 
 func parse_type( token : Dictionary ):
-	var frame = stack.back()
-	if token.type == TokenType.TYPE:
+	# TYPE = bool | byte | ubyte | short | ushort | int | uint | float |
+	# long | ulong | double | int8 | uint8 | int16 | uint16 | int32 |
+	# uint32| int64 | uint64 | float32 | float64 | string
+	# | [ type ]
+	# | ident
+	var types: Array = [ "bool", "byte", "ubyte", "short", "ushort", "int",
+	"uint", "float", "long", "ulong", "double", "int8", "uint8", "int16",
+	"uint16", "int32", "uint32", "int64", "uint64", "float32", "float64",
+	"string" ]
+
+	var start = token
+	var typename
+	var end
+	if start.t == '[':
+		typename = reader.next_token()
+	else: typename = start
+
+	var is_type = true
+
+	while true:
+		if typename.t in types: break
+		if typename.t in user_types: break
+		is_type = false;
+		break
+
+	if start.t == '[':
+		end = reader.next_token()
+		if end.t != ']':
+			syntax_error(start, "missing end ']'")
+			syntax_error(end, " wanted end '['")
+
+	if is_type:
+		typename.type = TokenType.TYPE
 		reader.next_token()
-		return end_frame(token.t)
-	syntax_error( token, "Wanted TokenType.TYPE" )
+		return end_frame(typename.t)
+
+	syntax_error( typename, "Unknown Type" )
 	return end_frame()
 
 # ███████ ███    ██ ██    ██ ███    ███ ██    ██  █████  ██
@@ -857,21 +962,20 @@ func parse_enumval_decl( token : Dictionary ):
 	var frame = stack.back()
 
 	if frame.data.get('next') == null:
-		if token.type != TokenType.IDENT:
-			syntax_error(token, "wanted 'TokenType.IDENT'")
-			return end_frame()
+		push_stack( FrameType.IDENT )
+		frame.data['next'] = 'add_ident'
+		return
+	if frame.data.get('next') == 'add_ident':
+		var ident = frame.data.get('return')
+		if not ident: return end_frame()
+		user_enum_vals[ ident ] = OK
 		frame.data['next'] = '='
-		reader.next_token()
 		return
 	if frame.data.get('next') == '=':
-		if token.t != '=': return end_frame()
-		frame.data['next'] = 'end'
-		reader.next_token()
-		end_frame()
-		push_stack( FrameType.INTEGER_CONSTANT )
-		return
-	#if frame.data.get('next') == 'end':
-		#return end_frame()
+		if check_token_t(token, '='):
+			end_frame()
+			return push_stack( FrameType.INTEGER_CONSTANT )
+		return end_frame()
 
 	syntax_error(token)
 	return end_frame()
@@ -887,89 +991,30 @@ func parse_metadata( token : Dictionary ):
 	var frame : StackFrame = stack.back()
 
 	if frame.data.get('next') == null:
-		if token.t != '(':
-			return end_frame()
+		if check_token_t( token, '(' ):
+			frame.data['next'] = 'ok'
+			return
 		return end_frame()
-		if token.t not in ['enum','union']:
-			syntax_error(token, "wanted ( enum | union )")
-			end_frame()
-		reader.next_token()
-		push_stack( FrameType.IDENT )
-		if token.t == 'enum':
-			frame.data['next'] = 'union'
-		else: frame.data['next'] = 'meta'
-		return
-	if frame.data.get('next') == 'union':
-		if token.t != ':':
-			syntax_error(token, "wanted ':'")
-			return end_frame()
-		reader.next_token()
-		push_stack( FrameType.TYPE )
-		frame.data['next'] = 'meta'
-		return
-	if frame.data.get('next') == 'meta':
-		push_stack( FrameType.METADATA )
-		frame.data['next'] = '{'
-		return
-	if frame.data.get('next') == '{':
-		if token.t != '{':
-			syntax_error(token, "wanted '{'")
-			return end_frame()
-		frame.data['next'] = 'decl'
-		push_stack( FrameType.FIELD_DECL )
-		return
-	if frame.data.get('next') == 'decl':
-		if token.t == '}': return end_frame()
-		push_stack( FrameType.COMMASEP, FrameType.ENUMVAL_DECL )
+	if frame.data.get('next') == 'ok':
+		if check_token_t(token, ')'): return end_frame()
+		return push_stack( FrameType.COMMASEP, FrameType.IDENT )
+		# FIXME this doesnt handle the '[ : single_value ]' part
 
-		return
-
-	syntax_error(token)
+	syntax_error(token, "reached end of parse_metadata(...)")
 	return end_frame()
 
-	var this_frame = stack.back()
-
-
-
-	#if not parse_commasep( reader.get_token(),
-	#func( token ):
-		#while true:
-			#if not parse_ident( token ): return false
-			#if reader.get_token().t != ':': break
-			#reader.get_token() # discard colon
-			#if not parse_single_value( reader.get_token() ): return false
-		#return true
-	#):
-		#syntax_error( token, "expected '(")
-		#return end_frame()
-
-	reader.next_line()
-	return end_frame()
-
-	#token =  reader.get_token()
-	#while not token['t'] == ')' and not reader.at_end():
-		##ident
-		#if token.get('type') != TokenType.IDENT: syntax_error(token, "wanted identity")
-		#token =  reader.get_token()
-#
-		## optional value
-		#if token['t'] == ':':
-			#token =  reader.get_token() # Single Value
-			#match token.get('type'):
-				#TokenType.STRING: pass
-				#TokenType.SCALAR: pass
-				#_: syntax_error(token, "wanted 'string' or 'scalar'")
-			#token =  reader.get_token()
-#
-		## end or continue
-		#if token['t'] == ')': return
-		#if token.get('t') != ',': syntax_error( token, "expected ','")
-		#token =  reader.get_token()
-	#stack.pop_back()
 
 func parse_scalar( token : Dictionary ):
+	# SCALAR = boolean_constant | integer_constant | float_constant
 	var this_frame = stack.back()
-	if token.type == TokenType.SCALAR: return end_frame()
+	if token.type == TokenType.SCALAR:
+		reader.next_token()
+		return end_frame()
+	if token.t in user_enum_vals:
+		token.type = TokenType.SCALAR
+		highlight( token )
+		reader.next_token()
+		return end_frame()
 	syntax_error( token, "Wanted TokenType.SCALAR" )
 	reader.next_line()
 	end_frame()
@@ -1046,66 +1091,44 @@ func parse_string_constant( token : Dictionary ):
 	end_frame()
 
 func parse_ident( token : Dictionary ):
-	var frame = stack.back()
-	if token.type == TokenType.IDENT:
+	#ident = [a-zA-Z_][a-zA-Z0-9_]*
+	#FIXME use regex?
+	var ident_start : String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"
+	var ident_end : String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+
+	var word : String = token.get('t', ' ')
+	var is_ident : bool = true
+	while is_ident:
+		# verify first character
+		if not ident_start.contains(word[0]) : is_ident = false; break
+		# verify the remaining
+		for i in range( 1, word.length() ):
+			if not ident_end.contains(word[i]): is_ident = false; break
+		break
+
+	if is_ident:
+		token.type == TokenType.IDENT
 		reader.next_token()
 		return end_frame( token.t )
-	syntax_error( token, "Wanted TokenType.IDENT" )
-	return end_frame()
 
+	syntax_error( token, "ident = [a-zA-Z_][a-zA-Z0-9_]*" )
+	end_frame()
 
-#func parse_digit( token : Dictionary ):
-	#current_frame = StackFrame.new( FrameType.DIGIT )
-	#stack.push_back( current_frame )
-	#stack.pop_back()
-#
-#func parse_xdigit( token : Dictionary ):
-	#current_frame = StackFrame.new( FrameType.XDIGIT )
-	#stack.push_back( current_frame )
-	#stack.pop_back()
-#
-#func parse_dec_integer_constant( token : Dictionary ):
-	#current_frame = StackFrame.new( FrameType.DEC_INTEGER_CONSTANT )
-	#stack.push_back( current_frame )
-	#stack.pop_back()
-#
-#func parse_hex_integer_constant( token : Dictionary ):
-	#current_frame = StackFrame.new( FrameType.HEX_INTEGER_CONSTANT )
-	#stack.push_back( current_frame )
-	#stack.pop_back()
 
 func parse_integer_constant( token : Dictionary ):
-	var frame = stack.back()
-	if token.type == TokenType.SCALAR:
-		reader.next_token()
-		return end_frame(token.t)
-	syntax_error( token, "Wanted TokenType.SCALAR" )
-	return end_frame()
+	# INTEGER_CONSTANT = dec_integer_constant | hex_integer_constant
+	var frame : StackFrame = stack.back()
 
-#func parse_dec_float_constant( token : Dictionary ):
-	#current_frame = StackFrame.new( FrameType.DEC_FLOAT_CONSTANT )
-	#stack.push_back( current_frame )
-	#stack.pop_back()
-#
-#func parse_hex_float_constant( token : Dictionary ):
-	#current_frame = StackFrame.new( FrameType.HEX_FLOAT_CONSTANT )
-	#stack.push_back( current_frame )
-	#stack.pop_back()
-#
-#func parse_special_float_constant( token : Dictionary ):
-	#current_frame = StackFrame.new( FrameType.SPECIAL_FLOAT_CONSTANT )
-	#stack.push_back( current_frame )
-	#stack.pop_back()
-#
-#func parse_float_constant( token : Dictionary ):
-	#current_frame = StackFrame.new( FrameType.FLOAT_CONSTANT )
-	#stack.push_back( current_frame )
-	#stack.pop_back()
-#
-#func parse_boolean_constant( token : Dictionary ):
-	#current_frame = StackFrame.new( FrameType.BOOLEAN_CONSTANT )
-	#stack.push_back( current_frame )
-	#stack.pop_back()
+	var ok : bool = true
+	while true:
+		if regex_dec_integer_constant.search( token.t ): break
+		if regex_hex_integer_constant.search( token.t ): break
+		ok = false; break
+	if ok:
+		reader.next_token()
+		return end_frame()
+	syntax_error( token, "Wanted ( dec_integer_constant | hex_integer_constant )" )
+	return end_frame()
 
 #endregion Parser
 
