@@ -50,6 +50,8 @@ func _init():
 	colours[TokenType.SCALAR] = editor_settings.get_setting("text_editor/theme/highlighting/number_color")
 	colours[TokenType.META] = editor_settings.get_setting("text_editor/theme/highlighting/text_color")
 
+	verbose = editor_settings.get_setting( FlatBuffersPlugin.debug_verbosity )
+
 	#Regex Compilation
 	# STRING_CONSTANT = \".*?\\"
 	regex_string_constant = RegEx.new()
@@ -109,6 +111,7 @@ func _clear_highlighting_cache ( ):
 # we can use it to update the highlighting.
 static var counter = 0
 func _get_line_syntax_highlighting ( line_num : int ) -> Dictionary:
+	verbose = editor_settings.get_setting( FlatBuffersPlugin.debug_verbosity )
 	counter += 1
 	error_flag = false
 	line_dict = dict.get( line_num, {} )
@@ -120,6 +123,10 @@ func _get_line_syntax_highlighting ( line_num : int ) -> Dictionary:
 	if stack.size(): stack.front().data['counter'] = '%s'%counter
 	line_dict = { 'stack':stack }
 	if verbose > 1: print_rich( "\n[b]Line %s | Start: %s[/b]" % [line_num+1, sstring( dict.get(line_num, {'stack':[]})['stack'] )] )
+
+	# If there are no user types specified perform a quick scan of the file
+	if user_types.is_empty() || user_enum_vals.is_empty():
+		quick_scan_text( get_text_edit().text )
 
 	var line = get_text_edit().get_line( line_num )
 	if line.is_empty():
@@ -162,7 +169,6 @@ func _get_line_syntax_highlighting ( line_num : int ) -> Dictionary:
 func _update_cache ( ):
 	if verbose > 2: print_rich("[b]_update_cache( )[/b]")
 	quick_scan_text( get_text_edit().text )
-	verbose = 1 # FIXME set the option better
 	error_color = Color.RED
 	if verbose > 2: print( "dict", JSON.stringify( dict, '\t') )
 
@@ -1164,7 +1170,15 @@ func quick_scan_file( filename : String ):
 		filename = 'res://addons/gdflatbuffers/godot.fbs'
 
 	if not FileAccess.file_exists( filename ):
-		printerr("FBS syntax highlighting is unable to locate file for inclusion: ", filename)
+		var notes : String = \
+"	# NOTE: there is currently no known way to know which file I am parsing.
+	# So that means its impossible to know which files to load and parse
+	# if this were a game script compiled with debug, then I could use
+	# get_stack(), however it is not available in a thread, and that appears to
+	# be where the syntax highliter lives.
+	# NOTE: files references by abosolute paths will still work"
+		if verbose > 0: printerr("FBS syntax highlighting is unable to locate file for inclusion: ", filename)
+		if verbose > 1: print( notes )
 		return
 
 	if filename in included_files: return # Dont create a loop
@@ -1204,22 +1218,3 @@ func quick_scan_text( text : String ):
 
 	if verbose > 1: print( "user_types: ", user_types.keys())
 	if verbose > 1: print( "user_enum_vals: ", user_enum_vals.keys())
-	return
-
-
-#  ██████  ██      ██████      ███████ ████████ ██    ██ ███████ ███████
-# ██    ██ ██      ██   ██     ██         ██    ██    ██ ██      ██
-# ██    ██ ██      ██   ██     ███████    ██    ██    ██ █████   █████
-# ██    ██ ██      ██   ██          ██    ██    ██    ██ ██      ██
-#  ██████  ███████ ██████      ███████    ██     ██████  ██      ██
-
-func parse_included_file( filename : String ):
-	if filename == 'godot.fbs':
-		reader.builtin_included = true
-		return
-
-	# NOTE, there is currently no known way to know which file I am parsing.
-	# So that means its impossible to know which files to load and parse
-	# if this were a game script compiled with debug, then I could use
-	# get_stack(), however it is not available in a thread, and that appears to
-	# be where the syntax highliter lives.

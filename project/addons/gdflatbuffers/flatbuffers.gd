@@ -2,6 +2,8 @@
 class_name FlatBuffersPlugin extends EditorPlugin
 
 const EDITOR_SETTINGS_BASE = &"plugin/FlatBuffers/"
+const debug_verbosity = EDITOR_SETTINGS_BASE + &"fbs_debug_verbosity"
+const flatc_path = EDITOR_SETTINGS_BASE + &"flatc_path"
 
 var script_editor := EditorInterface.get_script_editor()
 var settings = EditorInterface.get_editor_settings()
@@ -37,21 +39,21 @@ func disable_syntax_highlighter():
 func change_editor_settings():
 	# TODO make these project settings
 	# Editor Settings
-	if not settings.get( EDITOR_SETTINGS_BASE + &"flatc_path" ):
-		settings.set(EDITOR_SETTINGS_BASE + &"flatc_path", "")
+	if not settings.get( flatc_path ):
+		settings.set( flatc_path, "")
 		var property_info = {
-			"name": EDITOR_SETTINGS_BASE + &"flatc_path",
+			"name": flatc_path,
 			"type": TYPE_STRING,
 			"hint": PROPERTY_HINT_GLOBAL_FILE,
 			"hint_string": "flatc.exe" # This will the filter string in the file dialog
 		}
 		settings.add_property_info(property_info)
 
-	if not settings.get( EDITOR_SETTINGS_BASE + &"fbs_debug_print" ):
-		settings.set(EDITOR_SETTINGS_BASE + &"fbs_debug_print", false )
+	if not settings.get( debug_verbosity ):
+		settings.set(debug_verbosity, false )
 		var property_info = {
-			"name": EDITOR_SETTINGS_BASE + &"fbs_debug_print",
-			"type": TYPE_BOOL,
+			"name": debug_verbosity,
+			"type": TYPE_INT,
 		}
 		settings.add_property_info(property_info)
 
@@ -113,7 +115,7 @@ func rcm_generate( id ):
 static func flatc_generate( path : String ) -> Variant:
 	var settings = EditorInterface.get_editor_settings()
 	# Make sure we have the flac compiler
-	var flatc_path : String = settings.get( &"plugin/FlatBuffers/flatc_path")
+	var flatc_path : String = settings.get( flatc_path )
 	if flatc_path.is_empty():
 		flatc_path = "res://addons/gdflatbuffers/bin/flatc.exe"
 

@@ -1,4 +1,4 @@
-include "other.fbs";
+include "res://tests/includes/other.fbs";
 
 union TestUnion { OtherTable, OtherStruct }
 
