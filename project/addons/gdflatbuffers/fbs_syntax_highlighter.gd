@@ -12,7 +12,7 @@ var verbose : int = 0
 # ██   ██ ██  ██████  ██   ██ ███████ ██  ██████  ██   ██    ██    ███████ ██   ██
 
 enum TokenType { UNKNOWN, COMMENT, KEYWORD, TYPE, STRING, PUNCT, IDENT, SCALAR,
-				META, EOF }
+				META, EOL, EOF }
 
 var colours : Dictionary = {
 	TokenType.UNKNOWN : Color.GREEN,
@@ -98,10 +98,11 @@ func _get_supported_languages ( ) -> PackedStringArray:
 
 # Override methods for Syntax Highlighter
 func _clear_highlighting_cache ( ):
-	if verbose > 2: print_rich("[b]_clear_highlighting_cache ( )[/b]")
+	if verbose > 2: print_rich("[b]_clear_highlighting_cache( )[/b]")
+	included_files.clear()
 	user_enum_vals.clear()
 	user_types.clear()
-	dict = {}
+	dict.clear()
 	error_flag = false
 
 # This function runs on any change, with the line number that is edited.
@@ -159,8 +160,8 @@ func _get_line_syntax_highlighting ( line_num : int ) -> Dictionary:
 
 
 func _update_cache ( ):
-	if verbose > 2: print_rich("[b]_update_cache ( )[/b]")
-	quick_scan()
+	if verbose > 2: print_rich("[b]_update_cache( )[/b]")
+	quick_scan_text( get_text_edit().text )
 	verbose = 1 # FIXME set the option better
 	error_color = Color.RED
 	if verbose > 2: print( "dict", JSON.stringify( dict, '\t') )
@@ -468,6 +469,7 @@ class Reader:
 			token['line'] = line_n
 			token['col'] =  cursor_lp
 			token['t'] = peek_char()
+			if peek_char() == '\n': token['type'] = TokenType.EOL
 			if peek_char() in whitespace: adv(); continue
 			if peek_char() == '/' and peek_char(1) == '/':
 				token = get_comment();
@@ -675,8 +677,10 @@ func parse_include( token : Dictionary ):
 		reader.next_token();
 		return
 	if frame.data.get('next') == 'parse':
-		# FIXME Perform a very fast parse of the include file
-		# parse_included_file( quoted.substr(1, quoted.length() -2 ) )
+		var filename = frame.data.get('return')
+		frame.data.erase('return')
+		if filename:
+			quick_scan_file( filename )
 		frame.data['next'] = ';'
 		return
 	if frame.data.get('next') == ';':
@@ -956,6 +960,7 @@ func parse_type( token : Dictionary ):
 
 	if is_type:
 		typename.type = TokenType.TYPE
+		highlight( typename )
 		reader.next_token()
 		return end_frame(typename.t)
 
@@ -1152,10 +1157,26 @@ func parse_integer_constant( token : Dictionary ):
 # ██ ▄▄ ██ ██    ██ ██ ██      ██  ██               ██ ██      ██   ██ ██  ██ ██
 #  ██████   ██████  ██  ██████ ██   ██ ███████ ███████  ██████ ██   ██ ██   ████
 
-func quick_scan():
-	# I need a function which scans the source fast to pick up names before the main scan happens.
-	var text = get_text_edit().text
+var included_files : Array = []
 
+func quick_scan_file( filename : String ):
+	if filename == "godot.fbs":
+		filename = 'res://addons/gdflatbuffers/godot.fbs'
+
+	if not FileAccess.file_exists( filename ):
+		printerr("FBS syntax highlighting is unable to locate file for inclusion: ", filename)
+		return
+
+	if filename in included_files: return # Dont create a loop
+	included_files.append( filename )
+	if verbose > 1: print( "Including file: ", filename )
+	if verbose > 1: print( "Included files: ", included_files )
+	var file = FileAccess.open( filename, FileAccess.READ )
+	var content = file.get_as_text()
+	quick_scan_text( content )
+
+func quick_scan_text( text : String ):
+	# I need a function which scans the source fast to pick up names before the main scan happens.
 	var r = Reader.new( text )
 
 	while not r.at_end():
@@ -1166,7 +1187,10 @@ func quick_scan():
 			continue
 
 		if token.t == 'include':
-			r.next_line() #TODO quick parse the contents of the included file
+			var filename : String = r.next_token().t
+			if regex_string_constant.search(filename):
+				quick_scan_file( filename.substr( 1, filename.length() - 2 ) )
+			r.next_line()
 			continue
 
 		if token.t in ['struct', 'table', 'enum', 'union']:
