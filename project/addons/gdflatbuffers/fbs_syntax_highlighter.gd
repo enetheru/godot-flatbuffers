@@ -98,7 +98,7 @@ func _get_name ( ) -> String:
 
 
 func _get_supported_languages ( ) -> PackedStringArray:
-	return ["FlatBuffersSchema"]
+	return ["FlatBuffersSchema", "fbs"]
 
 
 # Override methods for Syntax Highlighter
