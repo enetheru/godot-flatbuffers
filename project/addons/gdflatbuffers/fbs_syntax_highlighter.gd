@@ -1180,14 +1180,14 @@ func parse_integer_constant( token : Dictionary ):
 var included_files : Array = []
 
 func quick_scan_file( filename : String ) -> bool:
-	if filename == "godot.fbs":
-		filename = 'res://addons/gdflatbuffers/godot.fbs'
-
 	if filename.begins_with("res://"):
 		if verbose > 0: printerr("paths starting with res:// or user:// are not yet supported: ", filename)
 		return false
 
-	filename = file_location + filename
+	if filename == "godot.fbs":
+		filename = 'res://addons/gdflatbuffers/godot.fbs'
+	else:
+		filename = file_location + filename
 
 	if not FileAccess.file_exists( filename ):
 		if verbose > 0: printerr("Enable to locate file for inclusion: ", filename)
