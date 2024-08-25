@@ -1,0 +1,7 @@
+include "godot.fbs";
+
+table Relative {
+	value : Vector3;
+}
+
+root_type Relative;

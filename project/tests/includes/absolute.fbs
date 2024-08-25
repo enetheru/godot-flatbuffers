@@ -1,0 +1,8 @@
+include "godot.fbs";
+
+table Absolute {
+	value : float;
+	offset : Vector3;
+}
+
+root_type Absolute;

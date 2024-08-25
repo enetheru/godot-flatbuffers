@@ -1,22 +1,15 @@
-include "res://tests/includes/other.fbs";
+// FIXME, godot paths starting with 'res://'' do not work
+// include "res://tests/includes/absolute.fbs";
+include "relative.fbs";
 
-union TestUnion { OtherTable, OtherStruct }
-
-struct LocalStruct {
-	var : int;
-}
-
-table LocalTable {
+table Local {
 	var : int;
 }
 
 table RootTable {
-	local_struct : LocalStruct;
-	local_table : LocalTable;
-	other_struct : OtherStruct;
-	other_table : OtherTable;
-	other_array_struct : [OtherStruct];
-	other_array_table : [OtherTable];
+	from_local : Local;
+	from_relative : Relative;
+	// from_absolute : Absolute;
 }
 
 root_type RootTable;

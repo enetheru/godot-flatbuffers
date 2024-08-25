@@ -28,6 +28,8 @@ var colours : Dictionary = {
 }
 var error_color : Color = Color.FIREBRICK
 
+var resource : Resource
+var file_location : String
 var reader : Reader
 var dict : Dictionary
 var line_dict : Dictionary
@@ -88,6 +90,7 @@ func _init():
 	# SPECIAL_FLOAT_CONSTANT = [-+]?(nan|inf|infinity)
 	regex_special_float_constant = RegEx.new()
 	regex_special_float_constant.compile("^[-+]?(nan|inf|infinity)$")
+	if verbose > 0: print_rich("[b]FlatBuffersHighlighter._init() - Completed[/b]")
 
 # Override methods for EditorSyntaxHighlighter
 func _get_name ( ) -> String:
@@ -100,6 +103,8 @@ func _get_supported_languages ( ) -> PackedStringArray:
 
 # Override methods for Syntax Highlighter
 func _clear_highlighting_cache ( ):
+	resource = get_edited_resource()
+	file_location = resource.resource_path.get_base_dir() + "/"
 	if verbose > 2: print_rich("[b]_clear_highlighting_cache( )[/b]")
 	included_files.clear()
 	user_enum_vals.clear()
@@ -111,6 +116,13 @@ func _clear_highlighting_cache ( ):
 # we can use it to update the highlighting.
 static var counter = 0
 func _get_line_syntax_highlighting ( line_num : int ) -> Dictionary:
+	#var test = EditorInterface.get_script_editor().get_current_editor().script
+
+
+	#var props = test.get_property_list()
+	#for prop in props:
+		#print( JSON.stringify(prop, '\t'))
+
 	verbose = editor_settings.get_setting( FlatBuffersPlugin.debug_verbosity )
 	counter += 1
 	error_flag = false
@@ -683,10 +695,13 @@ func parse_include( token : Dictionary ):
 		reader.next_token();
 		return
 	if frame.data.get('next') == 'parse':
-		var filename = frame.data.get('return')
+		var string_constant = frame.data.get('return')
 		frame.data.erase('return')
-		if filename:
-			quick_scan_file( filename )
+		if not string_constant:
+			return end_frame()
+		var filestring : String= string_constant.t
+		if not quick_scan_file( filestring.substr(1, filestring.length() -2 ) ):
+			syntax_error( string_constant, "Unable to scan filename")
 		frame.data['next'] = ';'
 		return
 	if frame.data.get('next') == ';':
@@ -1109,8 +1124,7 @@ func parse_string_constant( token : Dictionary ):
 	var frame = stack.back()
 	if token.get('type') == TokenType.STRING:
 		reader.next_token()
-		var string : String = token.t
-		return end_frame( string.substr(1, string.length() -2 ) )
+		return end_frame( token )
 	syntax_error(token, "wanted filename as string")
 	end_frame()
 
@@ -1133,7 +1147,7 @@ func parse_ident( token : Dictionary ):
 	if is_ident:
 		token.type == TokenType.IDENT
 		reader.next_token()
-		return end_frame( token.t )
+		return end_frame( token )
 
 	syntax_error( token, "ident = [a-zA-Z_][a-zA-Z0-9_]*" )
 	end_frame()
@@ -1165,29 +1179,28 @@ func parse_integer_constant( token : Dictionary ):
 
 var included_files : Array = []
 
-func quick_scan_file( filename : String ):
+func quick_scan_file( filename : String ) -> bool:
 	if filename == "godot.fbs":
 		filename = 'res://addons/gdflatbuffers/godot.fbs'
 
-	if not FileAccess.file_exists( filename ):
-		var notes : String = \
-"	# NOTE: there is currently no known way to know which file I am parsing.
-	# So that means its impossible to know which files to load and parse
-	# if this were a game script compiled with debug, then I could use
-	# get_stack(), however it is not available in a thread, and that appears to
-	# be where the syntax highliter lives.
-	# NOTE: files references by abosolute paths will still work"
-		if verbose > 0: printerr("FBS syntax highlighting is unable to locate file for inclusion: ", filename)
-		if verbose > 1: print( notes )
-		return
+	if filename.begins_with("res://"):
+		if verbose > 0: printerr("paths starting with res:// or user:// are not yet supported: ", filename)
+		return false
 
-	if filename in included_files: return # Dont create a loop
+	filename = file_location + filename
+
+	if not FileAccess.file_exists( filename ):
+		if verbose > 0: printerr("Enable to locate file for inclusion: ", filename)
+		return false
+
+	if filename in included_files: return true # Dont create a loop
 	included_files.append( filename )
 	if verbose > 1: print( "Including file: ", filename )
 	if verbose > 1: print( "Included files: ", included_files )
 	var file = FileAccess.open( filename, FileAccess.READ )
 	var content = file.get_as_text()
 	quick_scan_text( content )
+	return true
 
 func quick_scan_text( text : String ):
 	# I need a function which scans the source fast to pick up names before the main scan happens.
