@@ -14,9 +14,9 @@ cmake-build*
 .cmake/
 
 # FetchContent and generated files
-gdextension/
-godot-cpp/
-flatbuffers/
+/gdextension/
+/godot-cpp/
+/flatbuffers/
 
 # Prerequisites
 *.d
@@ -68,10 +68,11 @@ src/entry_point.cpp
 *_generated.h
 *_generated.gd
 
-project/addons/gdflatbuffers/gdflatbuffers.gdextension
-project/addons/gdflatbuffers/bin
-project/addons/gdflatbuffers/godot.fbs
+/project/addons/gdflatbuffers/gdflatbuffers.gdextension
+/project/addons/gdflatbuffers/bin
+/project/addons/gdflatbuffers/godot.fbs
 
 # Other Unnecessary Files
-project/scratch.gd
-project/addons/Todo_Manager
+/project/scratch.gd
+/project/addons/Todo_Manager
+/project/addons/zylann.editor_debugger
