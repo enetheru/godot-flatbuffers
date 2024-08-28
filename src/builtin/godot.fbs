@@ -1,18 +1,110 @@
+//// math types
+//VECTOR2,
+struct Vector2 {
+    x:float32;
+    y:float32;
+}
+//VECTOR2I,
+struct Vector2i {
+    x:int32;
+    y:int32;
+}
+//RECT2,
+struct Rect2 {
+    position:Vector2;
+    size:Vector2;
+}
+//RECT2I,
+struct Rect2i {
+    position:Vector2i;
+    size:Vector2i;
+}
+//VECTOR3,
 struct Vector3 {
-  x:float;
-  y:float;
-  z:float;
+    x:float32;
+    y:float32;
+    z:float32;
 }
-
+//VECTOR3I,
 struct Vector3i {
-  x:int;
-  y:int;
-  z:int;
+    x:int32;
+    y:int32;
+    z:int32;
+}
+//TRANSFORM2D,
+struct Transform2D {
+    columns:[Vector2:3];
+}
+//VECTOR4,
+struct Vector4 {
+    x:float32;
+    y:float32;
+    z:float32;
+    w:float32;
+}
+//VECTOR4I,
+struct Vector4i {
+    x:int32;
+    y:int32;
+    z:int32;
+    w:int32;
+}
+//PLANE,
+struct Plane {
+    normal:Vector3;
+    d:float;
+}
+//QUATERNION,
+struct Quaternion {
+    x:float32;
+    y:float32;
+    z:float32;
+    w:float32;
+}
+//AABB,
+struct AABB {
+    position:Vector3;
+    size:Vector3;
+}
+//BASIS,
+struct Basis {
+    rows:[Vector3:3];
+}
+//TRANSFORM3D,
+struct Transform3D {
+    basis:Basis;
+    origin:Vector3;
+}
+//PROJECTION,
+struct Projection {
+    columns:[Vector4:4];
 }
 
-struct Color {
-  r:float;
-  g:float;
-  b:float;
-  a:float;
+//// misc types
+//COLOR,
+struct Color{
+    r:float;
+    g:float;
+    b:float;
+    a:float;
 }
+//STRING_NAME,  aka string
+//NODE_PATH,    aka string
+//RID,
+//OBJECT,
+//CALLABLE,
+//SIGNAL,
+//DICTIONARY,
+//ARRAY,
+
+//// typed arrays
+//PACKED_BYTE_ARRAY,
+//PACKED_INT32_ARRAY,
+//PACKED_INT64_ARRAY,
+//PACKED_FLOAT32_ARRAY,
+//PACKED_FLOAT64_ARRAY,
+//PACKED_STRING_ARRAY,
+//PACKED_VECTOR2_ARRAY,
+//PACKED_VECTOR3_ARRAY,
+//PACKED_COLOR_ARRAY,
+//PACKED_VECTOR4_ARRAY,

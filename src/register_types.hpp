@@ -8,7 +8,8 @@
 
 #include <godot_cpp/core/class_db.hpp>
 
-void initialize_module(godot::ModuleInitializationLevel p_level);
-void terminate_module(godot::ModuleInitializationLevel p_level);
+void initialize_module( godot::ModuleInitializationLevel p_level );
+
+void terminate_module( godot::ModuleInitializationLevel p_level );
 
 #endif // EXAMPLE_REGISTER_TYPES_HPP

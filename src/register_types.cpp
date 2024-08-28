@@ -11,20 +11,20 @@
 #include "flatbuffer.hpp"
 #include "flatbufferbuilder.hpp"
 
-void initialize_module(godot::ModuleInitializationLevel p_level) {
-	if (p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE) {
-		return;
-	}
+void initialize_module( const godot::ModuleInitializationLevel p_level ) {
+  if( p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE ) {
+    return;
+  }
 
-	using namespace godot_flatbuffers;
-	godot::ClassDB::register_class<FlatBuffer>();
-	godot::ClassDB::register_class<FlatBufferBuilder>();
-	godot::UtilityFunctions::print("gdflatbuffers initialised");
+  using namespace godot_flatbuffers;
+  godot::ClassDB::register_class< FlatBuffer >();
+  godot::ClassDB::register_class< FlatBufferBuilder >();
+  godot::UtilityFunctions::print( "gdflatbuffers initialised" );
 }
 
-void terminate_module(godot::ModuleInitializationLevel p_level) {
-	if (p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE) {
-		return;
-	}
-	godot::UtilityFunctions::print("gdflatbuffers terminated");
+void terminate_module( const godot::ModuleInitializationLevel p_level ) {
+  if( p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE ) {
+    return;
+  }
+  godot::UtilityFunctions::print( "gdflatbuffers terminated" );
 }
