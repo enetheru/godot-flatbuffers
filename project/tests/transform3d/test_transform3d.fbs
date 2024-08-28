@@ -1,0 +1,7 @@
+include "godot.fbs";
+
+table RootTable {
+	my_field : Transform3D;
+}
+
+root_type RootTable;
