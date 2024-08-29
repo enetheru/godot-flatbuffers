@@ -30,17 +30,40 @@ var error_color : Color = Color.FIREBRICK
 
 var resource : Resource
 var file_location : String
-var reader : Reader
+var reader : Reader				# the main reader
+var qreader : Reader			# for scanning alternate files
 var dict : Dictionary
 var line_dict : Dictionary
-var error_flag : bool = false # This is to indicate not to save the stack to the next line
+var error_flag : bool = false 	# This is to indicate not to save the stack to the next line
 
 var user_types : Dictionary = {}
 var user_enum_vals : Dictionary = {}
 
+var new_index_chunk : Array[bool]
+var stack_index : Array[bool]		= [false]	# array index = index in stack list
+var stack_list : Dictionary			= {}	# saved stacks
+
 func _init():
+	new_index_chunk.resize(10)
+	new_index_chunk.fill(false)
 	editor_settings = EditorInterface.get_editor_settings()
 	error_color = Color.RED
+
+	reader = Reader.new()
+	qreader = Reader.new()
+
+	reader.new_token.connect(func( token ):
+		if verbose > 1:
+			var colour : Color = colours[token.type]
+			if verbose > 1: print_rich("next: [color=%s]%s[/color]" % [colour.to_html(), stoken( token )] )
+		loop_detection = 0
+		highlight( token )
+	)
+	reader.newline.connect( func(l,p):
+		if error_flag: return
+		save_stack(l, 0)
+	)
+	#FIXME reader.endfile.connect( save_stack )
 
 	colours[TokenType.UNKNOWN] = editor_settings.get_setting("text_editor/theme/highlighting/text_color")
 	colours[TokenType.COMMENT] = editor_settings.get_setting("text_editor/theme/highlighting/comment_color")
@@ -53,7 +76,7 @@ func _init():
 	colours[TokenType.META] = editor_settings.get_setting("text_editor/theme/highlighting/text_color")
 
 	verbose = editor_settings.get_setting( FlatBuffersPlugin.debug_verbosity )
-
+	#TODO move the regex compilation to the plugin
 	#Regex Compilation
 	# STRING_CONSTANT = \".*?\\"
 	regex_string_constant = RegEx.new()
@@ -90,7 +113,7 @@ func _init():
 	# SPECIAL_FLOAT_CONSTANT = [-+]?(nan|inf|infinity)
 	regex_special_float_constant = RegEx.new()
 	regex_special_float_constant.compile("^[-+]?(nan|inf|infinity)$")
-	if verbose > 0: print_rich("[b]FlatBuffersHighlighter._init() - Completed[/b]")
+	if verbose > 1: print_rich("[b]FlatBuffersHighlighter._init() - Completed[/b]")
 
 # Override methods for EditorSyntaxHighlighter
 func _get_name ( ) -> String:
@@ -111,78 +134,77 @@ func _clear_highlighting_cache ( ):
 	user_types.clear()
 	dict.clear()
 	error_flag = false
+	stack_list.clear()
+	stack_index.resize( get_text_edit().text.length() + 10)
+	stack_index.fill(false)
+	if verbose > 2: print( "highlight dict: ", JSON.stringify(dict, '\t') )
 
 # This function runs on any change, with the line number that is edited.
 # we can use it to update the highlighting.
-static var counter = 0
 func _get_line_syntax_highlighting ( line_num : int ) -> Dictionary:
-	#var test = EditorInterface.get_script_editor().get_current_editor().script
-
-
-	#var props = test.get_property_list()
-	#for prop in props:
-		#print( JSON.stringify(prop, '\t'))
-
-	verbose = editor_settings.get_setting( FlatBuffersPlugin.debug_verbosity )
-	counter += 1
-	error_flag = false
-	line_dict = dict.get( line_num, {} )
-
-	# clear the colour flags but keep the stack
-	# line_num = 0 is special, as there is no context to go back to.
-	var pre_stack = line_dict.get('stack', [] ) if line_num else []
-	stack = copy_stack( pre_stack )
-	if stack.size(): stack.front().data['counter'] = '%s'%counter
-	line_dict = { 'stack':stack }
-	if verbose > 1: print_rich( "\n[b]Line %s | Start: %s[/b]" % [line_num+1, sstring( dict.get(line_num, {'stack':[]})['stack'] )] )
-
-	# If there are no user types specified perform a quick scan of the file
-	if user_types.is_empty() || user_enum_vals.is_empty():
-		quick_scan_text( get_text_edit().text )
-
+	# Very early out for an empty line
 	var line = get_text_edit().get_line( line_num )
+	dict.erase(line_num)
+	line_dict = {}
+	stack_index[line_num] = false
 	if line.is_empty():
-		# Save the empty dict
-		line_dict = { 'stack':stack }
-		# We need to push our stack forward
-		save_stack( line_num +1, 0 )
-		return line_dict
+		return {}
 
-	reader = Reader.new( line, line_num )
-	reader.new_token.connect(func( token ):
-		if verbose > 1:
-			var padding = "".lpad(stack.size(), '\t')
-			var colour : Color = colours[token.type]
-			if verbose > 1: print_rich( padding + "get: [color=%s]%s[/color]" % [colour.to_html(), tstring( token )] )
-		loop_detection = 0
-		highlight( token )
-	)
-	reader.newline.connect( func(l,p):
-		if error_flag: return
-		save_stack(l +1, 0) )
-	#FIXME reader.endfile.connect( save_stack )
-	reader.line_n = line_num
+	if verbose > 1:
+		print_rich( "\n[b]Line %s[/b]" % [line_num+1] )
+		print( "stack_index[%s]: %s" % [line_num+1, stack_index[line_num]] )
+
+	# reset the reader
+	reader.reset( line, line_num )
+	# skip whitespace, comments and empty lines
+	reader.skip_whitespace()
+	if verbose > 2: print( "peek_char() = '%s'" % reader.peek_char().c_escape() )
+	if reader.peek_char() == '/' and reader.peek_char(1) == '/':
+		highlight(reader.next_token())
+		dict[line_num] = line_dict
+		return line_dict
+	if reader.peek_char() == '\n': return {}
+
+
+	# get the previous stack save, skip lines with empty stacks.
+	# FIXME This part takes forever.
+	while stack_index.size() < line_num: stack_index.append_array(new_index_chunk)
+	prev_stack = []
+
+	var stack_line : int = line_num
+	while not prev_stack and stack_line > 0:
+		stack_line -= 1
+		if not stack_index[stack_line]: continue
+		if not stack_list.has( stack_line ): continue
+		prev_stack = stack_list.get( stack_line )
+
+	#-- dictionary code
+	#prev_stack = []
+	#var stack_line : int = line_num
+	#while not prev_stack and stack_line:
+		#stack_line -= 1
+		#if not dict.has( stack_line ): continue
+		#line_dict = dict.get( stack_line, {} )
+		#if not line_dict.has('stack'): continue
+		#prev_stack = line_dict.get( 'stack' )
+#
+	stack = copy_stack( prev_stack ) if prev_stack else []
+
+	if verbose > 1:
+		print_rich( "Using stack from line %s | %s" % [stack_line+1, sstack()] )
 
 	parse()
 
-	# save the current to the next line for continuation
-	# I think we might want to skip this if a syntax error was detected.
-	#if not error_flag: save_stack(line_num +1, 0 )
-
-	# restore the original stack and put in the cache
-	line_dict['stack'] = pre_stack
 	dict[line_num] = line_dict
-	if verbose > 1: print_rich( "[b]Line %s |Finish: %s[/b]" % [line_num+1, sstring( dict.get(line_num, {'stack':[]})['stack'] )] )
-
-	if verbose > 2: print( "dict", JSON.stringify( dict, '\t') )
 	return line_dict
 
 
 func _update_cache ( ):
+	# Get settings
+	verbose = editor_settings.get_setting( FlatBuffersPlugin.debug_verbosity )
 	if verbose > 2: print_rich("[b]_update_cache( )[/b]")
 	quick_scan_text( get_text_edit().text )
 	error_color = Color.RED
-	if verbose > 2: print( "dict", JSON.stringify( dict, '\t') )
 
 func highlight( token : Dictionary ):
 	if token.type in [TokenType.EOF, TokenType.UNKNOWN]: return
@@ -194,18 +216,19 @@ func syntax_warning( token : Dictionary, reason = "" ):
 		var padding = "".lpad(stack.size(), '\t') if verbose > 1 else ""
 		var colour = Color.ORANGE.to_html()
 		var frame_type = FrameType.keys()[stack.back().type] if stack.size() else '#'
-		print_rich( padding + "[color=%s]%s:Warning in: %s - %s[/color]" % [colour, frame_type, tstring( token ), reason] )
-		if verbose > 1: print_rich( "[color=%s]%s[/color]\n" % [colour,sstring()] )
+		print_rich( padding + "[color=%s]%s:Warning in: %s - %s[/color]" % [colour, frame_type, stoken( token ), reason] )
+		if verbose > 1: print_rich( "[color=%s]%s[/color]\n" % [colour,sstack()] )
 
 func syntax_error( token : Dictionary, reason = "" ):
 	error_flag = true
+	if line_dict.has(token.col): line_dict.erase(token.col)
 	line_dict[token.col] = { 'color':error_color }
 	if verbose > 0:
 		var padding = "".lpad(stack.size(), '\t') if verbose > 1 else ""
 		var colour = error_color.to_html()
 		var frame_type = FrameType.keys()[stack.back().type] if stack.size() else '#'
-		print_rich( padding + "[color=%s]%s:Error in: %s - %s[/color]" % [colour, frame_type, tstring( token ), reason] )
-		if verbose > 1: print_rich( "[color=%s]%s[/color]\n" % [colour,sstring()] )
+		print_rich( padding + "[color=%s]%s:Error in: %s - %s[/color]" % [colour, frame_type, stoken( token ), reason] )
+		if verbose > 1: print_rich( "[color=%s]%s[/color]\n" % [colour,sstack()] )
 
 #endregion
 
@@ -260,6 +283,40 @@ enum FrameType {
 	#FLOAT_CONSTANT, # = dec_float_constant | hex_float_constant | special_float_constant
 	#BOOLEAN_CONSTANT, # = true | false
 }
+
+var keywords : Array = [ 'include', 'namespace', 'table', 'struct', 'enum',
+	'union', 'root_type', 'file_extension', 'file_identifier', 'attribute',
+	'rpc_service']
+
+var scalar_types: Array = [ "bool", "byte", "ubyte", "short", "ushort", "int",
+	"uint", "float", "long", "ulong", "double", "int8", "uint8", "int16",
+	"uint16", "int32", "uint32", "int64", "uint64", "float32", "float64" ]
+
+var struct_types: Array = [
+	"Vector2",
+	"Vector2i",
+	"Rect2",
+	"Rect2i",
+	"Vector3",
+	"Vector3i",
+	"Transform2D",
+	"Vector4",
+	"Vector4i",
+	"Plane",
+	"Quaternion",
+	"AABB",
+	"Basis",
+	"Transform3D",
+	"Projection",
+	"Color", ]
+
+var table_types: Array = []
+
+var array_types: Array = [
+	"string",
+	"String",
+	"StringName",
+	"NodePath", ]
 #endregion
 
 #region Regex
@@ -274,11 +331,9 @@ var regex_digit : RegEx # [:digit:] = [0-9]
 var regex_xdigit : RegEx # [:xdigit:] = [0-9a-fA-F]
 var regex_dec_integer_constant : RegEx # = [-+]?[:digit:]+
 var regex_hex_integer_constant : RegEx # = [-+]?0[xX][:xdigit:]+
-var regex_integer_constant : RegEx # = dec_integer_constant | hex_integer_constant
 var regex_dec_float_constant : RegEx # = [-+]?(([.][:digit:]+)|([:digit:]+[.][:digit:]*)|([:digit:]+))([eE][-+]?[:digit:]+)?
 var regex_hex_float_constant : RegEx # = [-+]?0[xX](([.][:xdigit:]+)|([:xdigit:]+[.][:xdigit:]*)|([:xdigit:]+))([pP][-+]?[:digit:]+)
 var regex_special_float_constant : RegEx # = [-+]?(nan|inf|infinity)
-var regex_float_constant : RegEx # = dec_float_constant | hex_float_constant | special_float_constant
 var regex_boolean_constant : RegEx # = true | false
 #endregion
 
@@ -290,30 +345,17 @@ var regex_boolean_constant : RegEx # = true | false
 # ██   ██ ███████ ██   ██ ██████  ███████ ██   ██
 
 class Reader:
+	static var parent = load('res://addons/gdflatbuffers/fbs_syntax_highlighter.gd').new()
+
 	signal new_token( token : Dictionary )
 	signal newline( ln, p )
 	signal endfile( ln, p )
 
 	var word_separation : Array = [' ', '\t', '\n', '{','}', ':', ';', ',',
 	'(', ')', '[', ']' ]
-
 	var whitespace : Array = [' ', '\t', '\n']
-
 	var punc : Array = [',', '.', ':', ';', '[', ']', '{', '}', '(', ')', '=']
 
-	var types: Array = [ "bool", "byte", "ubyte", "short", "ushort", "int",
-	"uint", "float", "long", "ulong", "double", "int8", "uint8", "int16",
-	"uint16", "int32", "uint32", "int64", "uint64", "float32", "float64",
-	"string" ]
-
-	var keywords : Array = [ 'include', 'namespace', 'table', 'struct', 'enum',
-	'union', 'root_type', 'file_extension', 'file_identifier', 'attribute',
-	'rpc_service']
-
-	var builtin_included : bool = false
-	var builtin_types : Array = [ "Vector3", "Vector3i", "Color" ]
-
-	var hl = load('res://addons/gdflatbuffers/fbs_syntax_highlighter.gd')
 	var text : String					# The text to parse
 	var line_index : Array[int] = [0]	# cursor position for each line start
 	var cursor_p : int = 0				# Cursor position in file
@@ -323,20 +365,28 @@ class Reader:
 
 	var token : Dictionary
 
-	func _init( text_ : String, line_i : int = 0 ) -> void:
-		token = { 'type':TokenType.COMMENT, 'line':0, 'col':0, 't':'' }
-		text = text_
-		line_start = line_i
-		line_n = line_i
+	func _to_string() -> String:
+		return JSON.stringify({
+			'text': text,
+			'line_index':line_index,
+			'cursor_p': cursor_p,
+			'cursor_lp': cursor_lp,
+			'line_n': line_n,
+			'line_start': line_start,
+			'token': token,
+		},'\t', false)
 
 	func length() -> int:
 		return text.length()
 
-	func reset():
-		cursor_p = 0
-		line_n = line_start
+	func reset( text_ : String, line_i : int = 0 ):
+		text = text_
 		line_index = [0]
+		cursor_p = 0
 		cursor_lp = 0
+		line_start = line_i
+		line_n = line_i
+		token = peek_token()
 
 	func at_end() -> bool:
 		if cursor_p >= text.length(): return true
@@ -394,7 +444,8 @@ class Reader:
 		}
 		var start := cursor_p
 		while peek_char() != '\n': adv()
-		token['t'] = text.substr( start, cursor_p - start )
+		token['t'] = text.substr( start, start + 2 )
+
 		return token
 
 	func get_word() -> Dictionary:
@@ -418,12 +469,14 @@ class Reader:
 		# long | ulong | double | int8 | uint8 | int16 | uint16 | int32 |
 		# uint32| int64 | uint64 | float32 | float64 | string | [ type ] |
 		# ident
-		if word in types: return true
-		if builtin_included and word in builtin_types: return true
+		if word in parent.scalar_types: return true
+		if word in parent.struct_types: return true
+		if word in parent.table_types: return true
+		if word in parent.array_types: return true
 		return false
 
 	func is_keyword( word : String ) -> bool:
-		if word in keywords: return true
+		if word in parent.keywords: return true
 		return false
 
 	func is_ident( word : String ) -> bool:
@@ -503,9 +556,50 @@ class Reader:
 		return token
 
 	func get_token() -> Dictionary:
+		skip_whitespace()
 		while true:
 			if token.type == TokenType.COMMENT: next_token(); continue
 			break
+		return token
+
+	func skip_whitespace():
+		while not at_end():
+			if peek_char() in [' ','\t']: adv(); continue
+			break;
+
+	func peek_token() -> Dictionary:
+		skip_whitespace()
+		var p_token = { 'line':line_n, 'col': cursor_lp, 'type':TokenType.UNKNOWN, 't':peek_char() }
+		if at_end(): p_token.type = TokenType.EOF
+		if peek_char() == '\n': p_token.type = TokenType.EOL
+		return p_token
+
+
+	func get_integer_constant() -> Dictionary:
+		# Verify Starting position.
+		var p_token = peek_token()
+		if p_token.type != TokenType.UNKNOWN:
+			return p_token
+
+		#DIGIT, # [:digit:] = [0-9]
+		#XDIGIT, # [:xdigit:] = [0-9a-fA-F]
+		#DEC_INTEGER_CONSTANT, # = [-+]?[:digit:]+
+		#HEX_INTEGER_CONSTANT, # = [-+]?0[xX][:xdigit:]+
+		#INTEGER_CONSTANT, # = dec_integer_constant | hex_integer_constant
+		var first_char : String = "-+0123456789abcdefABCDEF"
+		var valid_chars = "xX0123456789abcdefABCDEF"
+		if peek_char() not in first_char: return p_token
+		token = p_token
+		token.type = TokenType.SCALAR
+		# seek to the end and return our valid integer constant
+		var start : int = cursor_p
+		while not at_end():
+			adv()
+			if peek_char() in valid_chars: continue
+			break
+
+		token.t = text.substr( start, cursor_p - start )
+		new_token.emit( token )
 		return token
 #endregion
 
@@ -552,7 +646,7 @@ var parse_funcs : Dictionary = {
 	#FrameType.BOOLEAN_CONSTANT : parse_boolean_constant,
 }
 
-var keywords : Dictionary = {
+var kw_frame_map : Dictionary = {
 	'include' : FrameType.INCLUDE,
 	'namespace' : FrameType.NAMESPACE_DECL,
 	'table' : FrameType.TYPE_DECL,
@@ -571,6 +665,7 @@ class StackFrame:
 	var type : FrameType
 	var data : Dictionary
 
+var prev_stack : Array = []
 var stack : Array = []
 
 func copy_stack( _stack ) -> Array:
@@ -590,7 +685,7 @@ func start_frame( token : Dictionary ) -> StackFrame:
 		var padding = "".lpad(stack.size()-1, '\t')
 		var head = "⮱Start" if frame.data.is_empty() else " Con.."
 		var frame_name = FrameType.keys()[frame.type] if stack.size() else "empty"
-		print( padding + head + " %s | {Token:%s} | Data:%s" % [frame_name, tstring( token ), frame.data] )
+		print( padding + head + " %s | {Token:%s} | Data:%s" % [frame_name, stoken( token ), frame.data] )
 	return frame
 
 func end_frame( retval = null ) -> bool:
@@ -604,20 +699,27 @@ func end_frame( retval = null ) -> bool:
 	return true
 
 func save_stack( line_num : int, cursor_pos : int = 0 ):
-	#if verbose > 2: print( "Line %s stack saved | " % line_num, sstring( stack ) )
-	var this_dict = dict.get( line_num, {} )
-	this_dict['stack'] = copy_stack( stack )
-	dict[line_num] = this_dict
-	if verbose > 1: print_rich( "[b]Line %s |Saved: %s[/b]" % [line_num+1, sstring( dict.get(line_num, {'stack':[]})['stack'] )] )
+	if stack.size() == prev_stack.size(): return # FIXME
+	if verbose > 2: print( "Stack saved to line %s | " % [line_num+1], sstack( stack ) )
+
+	#var this_dict = dict.get( line_num, {} )
+	#this_dict['stack'] = copy_stack( stack )
+	#dict[line_num] = this_dict
+	#if verbose > 1: print_rich( "[b]Line %s |Saved: %s[/b]" % [line_num+1, sstack( dict.get(line_num, {'stack':[]})['stack'] )] )
 
 
-func tstring( token : Dictionary ) -> String:
+	if stack_index.size() < line_num: stack_index.append_array( new_index_chunk )
+	stack_list[line_num] = copy_stack( stack )
+	stack_index[line_num] = true
+
+
+func stoken( token : Dictionary ) -> String:
 	var t : String = token.t
 	var type : String = TokenType.keys()[token.type]
-	var coord := Vector2i(token.line, token.col)
+	var coord := Vector2i(token.line+1, token.col+1) # +1 is because the editor counts from 1
 	return "%s | %s | '%s'" % [coord, type, t.c_escape() ]
 
-func sstring( _stack : Array = stack ):
+func sstack( _stack : Array = stack ):
 	var stack_string : String = "#"
 	for frame in _stack:
 		var data = "" if frame.data.is_empty() else frame.data
@@ -635,16 +737,19 @@ var loop_detection : int = 0
 func parse():
 	if not stack.size(): push_stack(FrameType.SCHEMA)
 	loop_detection = 0
-	while stack.size() > 0:
+	reader.next_token()
+	while stack.size() > 0 or not reader.at_end():
 		loop_detection += 1
 		if loop_detection > 10: break
 		var frame = stack.back()
 		var token = reader.get_token()
+		if token.type == TokenType.EOF: if verbose > 1: print("EOF"); break
 		start_frame( token )
 		parse_funcs[ frame.type ].call( token )
-		if token.type == TokenType.EOF: if verbose > 1: print("EOF"); break
 
-	save_stack(reader.line_n +1, 0 )
+
+
+	save_stack(reader.line_n, 0 )
 
 # ███████  ██████ ██   ██ ███████ ███    ███  █████
 # ██      ██      ██   ██ ██      ████  ████ ██   ██
@@ -658,7 +763,7 @@ func parse_schema( token : Dictionary ):
 	#					 | attribute_decl | rpc_decl | object )*
 	var frame : StackFrame = stack.back()
 
-	if token.type == TokenType.EOF: return end_frame()
+	if token.type == TokenType.EOF: return# end_frame()
 
 	if token.type != TokenType.KEYWORD:
 		syntax_error( token, "Wanted TokenType.KEYWORD" )
@@ -674,7 +779,7 @@ func parse_schema( token : Dictionary ):
 		return
 
 	frame.data['no_includes'] = true
-	push_stack(keywords.get( token.t ))
+	push_stack(kw_frame_map.get( token.t ))
 
 # ██ ███    ██  ██████ ██      ██    ██ ██████  ███████
 # ██ ████   ██ ██      ██      ██    ██ ██   ██ ██
@@ -948,44 +1053,64 @@ func parse_rpc_method( token : Dictionary ):
 	return end_frame()
 
 func parse_type( token : Dictionary ):
+	var this_frame = stack.back()
 	# TYPE = bool | byte | ubyte | short | ushort | int | uint | float |
 	# long | ulong | double | int8 | uint8 | int16 | uint16 | int32 |
 	# uint32| int64 | uint64 | float32 | float64 | string
 	# | [ type ]
 	# | ident
+
+	# NOTE TYPE can also be [type:integer] to denote a fixed type array
+	# however in this case the type must be a scalar or struct
 	var types: Array = [ "bool", "byte", "ubyte", "short", "ushort", "int",
 	"uint", "float", "long", "ulong", "double", "int8", "uint8", "int16",
 	"uint16", "int32", "uint32", "int64", "uint64", "float32", "float64",
 	"string" ]
 
+	var is_type : bool = true
+	var is_array : bool = false
+	var is_fixed : bool = false
+
 	var start = token
-	var typename
+	var type
+	var fixed_size
 	var end
 	if start.t == '[':
-		typename = reader.next_token()
-	else: typename = start
+		is_array = true
+		type = reader.next_token()
+	else: type = start
 
-	var is_type = true
-
+	# Check type as it stands currently, it can be any type.
 	while true:
-		if typename.t in types: break
-		if typename.t in user_types: break
+		if type.t in types: break
+		if type.t in user_types: break
 		is_type = false;
 		break
 
-	if start.t == '[':
+	if is_array:
 		end = reader.next_token()
+		if end.t == ':':
+			is_fixed = true
+			# Look for the size
+			fixed_size = reader.get_integer_constant()
+			if fixed_size.type != TokenType.SCALAR:
+				syntax_error(fixed_size, "did not find integer constant")
+			# we have a fixed array, and much check the type against scalar and struct.
+			if type.t in struct_types || type.t in scalar_types: pass
+			else: syntax_error(type,"cannot have a fixed sized array with anything but scalar | struct")
+			end = reader.next_token()
+
 		if end.t != ']':
-			syntax_error(start, "missing end ']'")
-			syntax_error(end, " wanted end '['")
+			syntax_error(start, "missing matching brace ']'")
+			syntax_error(end, "missing matching brace '['")
 
 	if is_type:
-		typename.type = TokenType.TYPE
-		highlight( typename )
+		type.type = TokenType.TYPE
+		highlight( type )
 		reader.next_token()
-		return end_frame(typename.t)
+		return end_frame(type.t)
 
-	syntax_error( typename, "Unknown Type" )
+	syntax_error( type, "Unknown Type" )
 	return end_frame()
 
 # ███████ ███    ██ ██    ██ ███    ███ ██    ██  █████  ██
@@ -1203,31 +1328,32 @@ func quick_scan_file( filename : String ) -> bool:
 	return true
 
 func quick_scan_text( text : String ):
+	if verbose > 1: print_rich( "[b]quick_scan_text( ... )[/b]")
 	# I need a function which scans the source fast to pick up names before the main scan happens.
-	var r = Reader.new( text )
+	qreader.reset( text )
 
-	while not r.at_end():
-		var token = r.get_token()
+	while not qreader.at_end():
+		var token = qreader.get_token()
 
 		if token.type != TokenType.KEYWORD:
-			r.next_line()
+			qreader.next_line()
 			continue
 
 		if token.t == 'include':
-			var filename : String = r.next_token().t
+			var filename : String = qreader.next_token().t
 			if regex_string_constant.search(filename):
 				quick_scan_file( filename.substr( 1, filename.length() - 2 ) )
-			r.next_line()
+			qreader.next_line()
 			continue
 
 		if token.t in ['struct', 'table', 'enum', 'union']:
-			var ident = r.next_token()
+			var ident = qreader.next_token()
 			if regex_ident.search(ident.t):
 				user_types[ident.t] = OK
 
 			if token.t == 'enum':
 				pass # TODO get the enum names
-		r.next_line()
+		qreader.next_line()
 
 	if verbose > 1: print( "user_types: ", user_types.keys())
 	if verbose > 1: print( "user_enum_vals: ", user_enum_vals.keys())
