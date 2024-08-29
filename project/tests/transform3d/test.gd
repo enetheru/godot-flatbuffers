@@ -1,7 +1,7 @@
 @tool
 extends TestBase
 
-const schema = preload( './test_transform3d_generated.gd' )
+const schema = preload( './test_schema_generated.gd' )
 
 #region == Testing Setup ==
 # testing variables

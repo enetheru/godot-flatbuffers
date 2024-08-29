@@ -1,10 +1,9 @@
 @tool
 extends TestBase
 
-const fb = preload('./test_schema_generated.gd')
+const fb = preload('./FBTestStruct_generated.gd')
 
-var my_array : Array
-var builtin_array : Array
+var builtin_ := Vector3i(1,2,3)
 
 func _run() -> void:
 	short_way()
@@ -17,10 +16,9 @@ func _run() -> void:
 func short_way():
 	var builder = FlatBufferBuilder.new()
 
-	var my_array_offset : int
-	var array_offset : int
+	var my_struct = fb.MyStruct.new()
 
-	var offset = fb.CreateRootTable( builder, my_array_offset, array_offset )
+	var offset = fb.CreateRootTable( builder, my_struct, builtin_ )
 	builder.finish( offset )
 
 	## This must be called after `Finish()`.
@@ -31,12 +29,8 @@ func short_way():
 func long_way():
 	var builder = FlatBufferBuilder.new()
 
-	var my_array_offset : int
-	var array_offset : int
-
 	var root_builder = fb.RootTableBuilder.new( builder )
-	root_builder.add_my_array( my_array_offset )
-	root_builder.add_builtin_array( array_offset )
+	root_builder.add_builtin_struct( builtin_ )
 	builder.finish( root_builder.finish() )
 
 	## This must be called after `Finish()`.
@@ -48,4 +42,4 @@ func reconstruction( buffer : PackedByteArray ):
 	var root_table := fb.GetRoot( buffer )
 	output.append( "root_table: " + JSON.stringify( root_table.debug(), '\t', false ) )
 
-	TEST_EQ( 0, 1, "TODO Generate testing" )
+	TEST_EQ( root_table.builtin_struct(), builtin_, "builtin_struct()" )

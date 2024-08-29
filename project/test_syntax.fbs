@@ -1,0 +1,67 @@
+// # schema grammer : https://flatbuffers.dev/flatbuffers_grammar.html
+// SCHEMA, # = include ( namespace_decl
+// #					| type_decl
+// #					| enum_decl
+// #					| root_decl
+// #					| file_extension_decl
+// #					| file_identifier_decl
+// #					| attribute_decl
+// #					| rpc_decl
+// #					| object )*
+
+// INCLUDE,# = include string_constant ;
+include "godot.fbs";
+
+// NAMESPACE_DECL, # = namespace ident ( . ident )* ;
+namespace  Schema.Test;
+
+// TYPE_DECL, # = ( table | struct ) ident metadata { field_decl+ }
+table TableDecl {
+	// FIELD_DECL, # = ident : type [ = scalar ] metadata ;
+	ident1 : bool;
+	ident2 : byte = 32;
+	ident3 : ubyte = 64 (meta);
+	ident4 : short = 12345;
+	ident5 : [ushort];
+	ident6 : [ushort:-123];
+	ident : int;
+}
+
+// ENUM_DECL, # = ( enum ident : type | union ident ) metadata { commasep( enumval_decl ) }
+// ROOT_DECL, # = root_type ident ;
+// FILE_EXTENSION_DECL, # = file_extension string_constant ;
+// FILE_IDENTIFIER_DECL, # = file_identifier string_constant ;
+// ATTRIBUTE_DECL, # = attribute ident | "</tt>ident<tt>" ;
+// RPC_DECL, # = rpc_service ident { rpc_method+ }
+// OBJECT, # = { commasep( ident : value ) }
+
+// ENUM_DECL, # = ( enum ident : type | union ident ) metadata { commasep( enumval_decl ) }
+// ROOT_DECL, # = root_type ident ;
+// FIELD_DECL, # = ident : type [ = scalar ] metadata ;
+// RPC_METHOD, # = ident ( ident ) : ident metadata ;
+// TYPE, # = bool | byte | ubyte | short | ushort | int | uint | float | long | ulong | double | int8 | uint8 | int16 | uint16 | int32 | uint32| int64 | uint64 | float32 | float64 | string | [ type ] | ident
+// ENUMVAL_DECL, # = ident [ = integer_constant ]
+// METADATA, # = [ ( commasep( ident [ : single_value ] ) ) ]
+// SCALAR, # = boolean_constant | integer_constant | float_constant
+
+// SINGLE_VALUE, # = scalar | string_constant
+// VALUE, # = single_value | object | [ commasep( value ) ]
+// COMMASEP, #(x) = [ x ( , x )* ]
+
+// STRING_CONSTANT, # = \".*?\\"
+// IDENT, # = [a-zA-Z_][a-zA-Z0-9_]*
+// #DIGIT, # [:digit:] = [0-9]
+// #XDIGIT, # [:xdigit:] = [0-9a-fA-F]
+// #DEC_INTEGER_CONSTANT, # = [-+]?[:digit:]+
+// #HEX_INTEGER_CONSTANT, # = [-+]?0[xX][:xdigit:]+
+// INTEGER_CONSTANT, # = dec_integer_constant | hex_integer_constant
+// #DEC_FLOAT_CONSTANT, # = [-+]?(([.][:digit:]+)|([:digit:]+[.][:digit:]*)|([:digit:]+))([eE][-+]?[:digit:]+)?
+// #HEX_FLOAT_CONSTANT, # = [-+]?0[xX](([.][:xdigit:]+)|([:xdigit:]+[.][:xdigit:]*)|([:xdigit:]+))([pP][-+]?[:digit:]+)
+// #SPECIAL_FLOAT_CONSTANT, # = [-+]?(nan|inf|infinity)
+// #FLOAT_CONSTANT, # = dec_float_constant | hex_float_constant | special_float_constant
+// #BOOLEAN_CONSTANT, # = true | false
+
+
+/// Error cases
+// - Duplicate Names in either table, or field
+// - Literal values invalid for type

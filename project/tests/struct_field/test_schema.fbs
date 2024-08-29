@@ -1,0 +1,13 @@
+include "godot.fbs";
+
+struct MyStruct{
+	x : int;
+	y : float;
+}
+
+table RootTable{
+	my_array:[MyStruct];
+	builtin_array:[Vector3];
+}
+
+root_type RootTable;
