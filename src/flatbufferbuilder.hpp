@@ -44,30 +44,33 @@ public:
   [[nodiscard]] uoffset_t StartTable() const { return builder->StartTable(); }
   [[nodiscard]] uoffset_t EndTable( const uoffset_t start ) const { return builder->EndTable( start ); }
 
-  void AddOffset( uint16_t voffset, uint64_t value ) const;
-
-  void AddBytes( uint16_t voffset, const godot::PackedByteArray &bytes ) const;
-
-  // Add or Create Scalars
+  // Add / Create Scalars
   template< typename in, typename out >
   void AddScalar( uint16_t voffset, in value ) { builder->AddElement< out >( voffset, value ); }
 
   template< typename in, typename out >
   void AddScalarDefault( uint16_t voffset, in value, in def ) { builder->AddElement< out >( voffset, value, def ); }
 
-  // Add or Create struct like objects
+  // Add / Create Structs
   template< typename godot_type >
   void AddGodotStruct( uint16_t voffset, const godot_type &value ) { builder->AddStruct( voffset, &value ); }
 
-  // == Create functions ==
+  template< typename godot_type >
+  uoffset_t CreateGodotStruct( const godot_type &value ) { return builder->CreateStruct( &value ).o; }
+
+  // Add Offsets
+  void AddOffset( uint16_t voffset, uint64_t value ) const;
+
+  // Vector of offsets
   [[nodiscard]] uoffset_t CreateVectorOffset( const godot::PackedInt32Array &array ) const;
 
   // Custom Class to Table Creators
   [[nodiscard]] uoffset_t CreateVectorTable( const godot::Array &array, const godot::Callable &constructor ) const;
 
-  template< typename godot_type >
-  uoffset_t CreateGodotStruct( const godot_type &value ) { return builder->CreateStruct( &value ).o; }
-
+  // Add Arrays of bytes
+  void AddBytes( uint16_t voffset, const godot::PackedByteArray &bytes ) const;
+  
+  // Create arrays of scalars
   template< typename T >
   uoffset_t CreatePackedArray( const godot::Array &v ) {
     builder->StartVector< T >( v.size() );
@@ -77,9 +80,9 @@ public:
     return builder->EndVector( v.size() );
   }
 
-  [[nodiscard]] uoffset_t CreatePackedStringArray( const godot::PackedStringArray &value ) const;
 
   [[nodiscard]] uoffset_t CreateString( const godot::String &string ) const;
+  [[nodiscard]] uoffset_t CreatePackedStringArray( const godot::PackedStringArray &value ) const;
 };
 
 }

@@ -4,6 +4,8 @@
 #include <utility>
 
 namespace godot_flatbuffers {
+
+
 void FlatBuffer::_bind_methods() {
   using namespace godot;
 
@@ -34,42 +36,25 @@ void FlatBuffer::_bind_methods() {
   // STRING,
   ClassDB::bind_method( D_METHOD( "decode_String", "start_" ), &decode_String );
 
-  //FIXME: Pretty sure the use of this template to copy the bytes completely breaks the endianness correction that could happen. so its a temporary hack.
   //// Decode math types
-  // VECTOR2,
-  ClassDB::bind_method( D_METHOD( "decode_Vector2", "start_" ), &decode_struct< Vector2 > );
-  // VECTOR2I,
-  ClassDB::bind_method( D_METHOD( "decode_Vector2i", "start_" ), &decode_struct< Vector2i > );
-  // RECT2,
-  ClassDB::bind_method( D_METHOD( "decode_Rect2", "start_" ), &decode_struct< Rect2 > );
-  // RECT2I,
-  ClassDB::bind_method( D_METHOD( "decode_Rect2i", "start_" ), &decode_struct< Rect2i > );
-  // VECTOR3,
-  ClassDB::bind_method( D_METHOD( "decode_Vector3", "start_" ), &decode_struct< Vector3 > );
-  // VECTOR3I,
-  ClassDB::bind_method( D_METHOD( "decode_Vector3i", "start_" ), &decode_struct< Vector3i > );
-  // TRANSFORM2D,
-  ClassDB::bind_method( D_METHOD( "decode_Transform2D", "start_" ), &decode_struct< Transform2D > );
-  // VECTOR4,
-  ClassDB::bind_method( D_METHOD( "decode_Vector4", "start_" ), &decode_struct< Vector4 > );
-  // VECTOR4I,
-  ClassDB::bind_method( D_METHOD( "decode_Vector4i", "start_" ), &decode_struct< Vector4i > );
-  // PLANE,
-  ClassDB::bind_method( D_METHOD( "decode_Plane", "start_" ), &decode_struct< Plane > );
-  // QUATERNION,
-  ClassDB::bind_method( D_METHOD( "decode_Quaternion", "start_" ), &decode_struct< Quaternion > );
-  // AABB,
-  ClassDB::bind_method( D_METHOD( "decode_AABB", "start_" ), &decode_struct< godot::AABB > );
-  // BASIS,
-  ClassDB::bind_method( D_METHOD( "decode_Basis", "start_" ), &decode_struct< godot::Basis > );
-  // TRANSFORM3D,
-  ClassDB::bind_method( D_METHOD( "GetTransform3D", "start_" ), &decode_struct< godot::Transform3D > );
-  // PROJECTION,
-  ClassDB::bind_method( D_METHOD( "decode_Projection", "start_" ), &decode_struct< Projection > );
+  BindGetStructMethod<Vector2>("Vector2");
+  BindGetStructMethod<Vector2i>("Vector2i");
+  BindGetStructMethod<Rect2>("Rect2");
+  BindGetStructMethod<Rect2i>("Rect2i");
+  BindGetStructMethod<Vector3>("Vector3");
+  BindGetStructMethod<Vector3i>("Vector3i");
+  BindGetStructMethod<Transform2D>("Transform2D");
+  BindGetStructMethod<Vector4>("Vector4");
+  BindGetStructMethod<Vector4i>("Vector4i");
+  BindGetStructMethod<Plane>("Plane");
+  BindGetStructMethod<Quaternion>("Quaternion");
+  BindGetStructMethod<AABB>("AABB");
+  BindGetStructMethod<Basis>("Basis");
+  BindGetStructMethod<Transform3D>("Transform3D");
+  BindGetStructMethod<Projection>("Projection");
 
   //// Decode misc types
-  // COLOR,
-  ClassDB::bind_method( D_METHOD( "decode_Color", "start_" ), &decode_struct< Color > );
+  BindGetStructMethod<Color>("Color");
   // STRING_NAME,
   // NODE_PATH,
   // RID,

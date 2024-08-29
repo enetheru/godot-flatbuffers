@@ -11,12 +11,23 @@ class FlatBuffer final : public godot::RefCounted {
 
   typedef int32_t  soffset_t;
   typedef uint16_t voffset_t;
+  typedef uint32_t uoffset_t;
 
   godot::PackedByteArray bytes; // I need to make this a reference somehow
   int64_t                start{};
 
 protected:
+
   static void _bind_methods();
+
+  // Bind Helper
+  template< typename T >
+  static void BindGetStructMethod( const godot::StringName &type_name ) {
+    using namespace godot;
+    //FIXME: Pretty sure the use of this template to copy the bytes completely breaks the endianness correction that could happen.
+    //  so its a temporary hack.
+    ClassDB::bind_method( D_METHOD( "Get"+type_name, "voffset" ), &GetStruct< T > );
+  }
 
 public:
   //Debug
@@ -41,10 +52,13 @@ public:
 
   [[nodiscard]] int64_t get_array_element_start( int64_t array_start, int64_t idx ) const;
 
-  template< typename GodotStruct >
-  [[nodiscard]] GodotStruct decode_struct( const int64_t start_ ) const {
-    const auto p = const_cast< uint8_t * >(bytes.ptr() + start_);
-    return *reinterpret_cast< GodotStruct * >(p);
+  template< typename godot_struct >
+  [[nodiscard]] godot_struct GetStruct( const int64_t voffset ) const {
+    const uoffset_t field_offset = get_field_offset( voffset );
+    if( not field_offset) return {};
+    const uoffset_t field_start = start + field_offset;
+    const auto p = const_cast< uint8_t * >(bytes.ptr() + field_start);
+    return *reinterpret_cast< godot_struct * >(p);
   }
 
   [[nodiscard]] godot::String decode_String( int64_t start_ ) const;
