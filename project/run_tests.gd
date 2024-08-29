@@ -35,8 +35,6 @@ func _run() -> void:
 			print_rich("[b]# Error processing %s[/b]" % key )
 			print_result_error( result )
 
-	print_results( "Compile Results", compile_results )
-
 	print_rich( "\n[b]... Running %s Tests[/b]\n" % tests.size() )
 	var test_results : Dictionary = {}
 	for test : String in tests:
@@ -51,11 +49,12 @@ func _run() -> void:
 			print_rich("[b]# Error running test %s[/b]" % key )
 			print_result_error( result )
 
-	print_results( "Test Results", test_results )
+	print_compile_results( compile_results )
+	print_test_results( test_results )
 
 
-func run_test( file_path : String ):
-	var result : Dictionary = {}
+func run_test( file_path : String ) -> Dictionary:
+	var result : Dictionary = {'path':file_path}
 	var script : GDScript = load( file_path )
 	if not script.can_instantiate():
 		result['retcode'] = FAILED
@@ -68,18 +67,36 @@ func run_test( file_path : String ):
 	result['output'] = instance.output
 	return result
 
-
-func print_results( heading : String, results : Dictionary ):
-	var rich_text : String = "\n[b]== %s ==[/b]\n" % heading
+func print_compile_results( results : Dictionary ):
+	var rich_text : String = "\n[b]== Compile Results ==[/b]\n"
 	rich_text += "[table=3]"
 	for key in results:
 		var result = results[key]
-		rich_text += "[cell]%s[/cell]" % key
+		print( key, result.get('path') )
+		rich_text += "[cell]%s[/cell]" % [key]
 		rich_text += "[cell]:[/cell]"
 		rich_text += "[cell]%s[/cell]" % ("[color=red]Failure[/color]" if result['retcode'] else "[color=green]Success[/color]")
 	rich_text += "[/table]"
 	print_rich( rich_text )
 
+
+func print_test_results( results : Dictionary ):
+	var rich_text : String = "\n[b]== Test Results ==[/b]\n"
+	var compilation : PackedStringArray = []
+	for key in results:
+		var result = results[key]
+		compilation.push_back("[url=%s]%s[/url]" % [results.get('path'),key])
+		compilation.push_back(":")
+		compilation.push_back("[color=%s]%s[/color]" % (["red","Failure"] if result.retcode else ['green','Success']))
+	rich_text += compile_rich_table( compilation, 3 )
+	print_rich( rich_text )
+
+func compile_rich_table( data : PackedStringArray, stride : int ):
+	var rich_text : String = "[table=%s]" % stride
+	for string in data:
+		rich_text += "[cell]%s[/cell]" % string
+	rich_text += "[/table]"
+	return rich_text
 
 func print_result_error( result : Dictionary ):
 	var output = result.get('output')

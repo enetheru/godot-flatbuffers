@@ -5,12 +5,22 @@ class_name TestBase extends EditorScript
 var silent : bool = false
 var retcode : int = OK
 var output : PackedStringArray = []
-func TEST_EQ( value1, value2, desc : String = "" ):
-	if value1 == value2: return
+
+func TEST_EQ( value1, value2, desc : String = "" ) -> bool:
+	if value1 == value2: return false
 	retcode |= FAILED
-	var msg = "[b][color=salmon]TEST_EQ Failed[/color][/b]: '%s' got '%s' wanted '%s'" % [desc, value1, value2 ]
+	var msg = "[b][color=salmon]TEST_EQ Failed: '%s'[/color][/b]\nwanted: '%s'\n   got: '%s'" % [desc, value1, value2 ]
 	output.append( msg )
 	if not silent: print_rich( msg )
+	return true
+
+func TEST_TRUE( value, desc : String = "" ) -> bool:
+	if value: return false
+	retcode |= FAILED
+	var msg = "[b][color=salmon]TEST_TRUE Failed: '%s'[/color][/b]\nwanted: true | value != (0 & null)\n   got: '%s'" % [desc, value ]
+	output.append( msg )
+	if not silent: print_rich( msg )
+	return true
 #endregion
 
 # ███████ ██   ██  █████  ███    ███ ██████  ██      ███████
