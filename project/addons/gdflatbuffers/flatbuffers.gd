@@ -8,6 +8,7 @@ const flatc_path = EDITOR_SETTINGS_BASE + &"flatc_path"
 var script_editor := EditorInterface.get_script_editor()
 var settings = EditorInterface.get_editor_settings()
 var fs := EditorInterface.get_resource_filesystem()
+var editor_log : RichTextLabel
 
 var fbs := EditorInterface.get_file_system_dock()
 var fbs_rcm : PopupMenu
@@ -21,11 +22,34 @@ func _enter_tree() -> void:
 	change_editor_settings()
 	enable_syntax_highlighter()
 	enable_changes_to_fbs()
+	connect_to_output_meta()
 
 
 func _exit_tree() -> void:
 	disable_changes_to_fbs()
 	disable_syntax_highlighter()
+	disconnect_from_output_meta()
+
+
+func _on_meta_clicked( meta ):
+	print( meta )
+	#if ResourceLoader.exists( meta ):
+		#print( "Path exists: ", meta)
+	#else:
+		#printerr( "Path does not exists: ", meta)
+	#print( test )
+	#if test:
+		#load( meta.test )._run()
+
+func connect_to_output_meta():
+	var logs = EditorInterface.get_base_control().find_children('', 'EditorLog', true, false )
+	for item in logs:
+		editor_log = item.find_children('','RichTextLabel', true, false ).front()
+		editor_log.meta_clicked.connect( _on_meta_clicked )
+
+
+func disconnect_from_output_meta():
+	editor_log.meta_clicked.disconnect( _on_meta_clicked )
 
 
 func enable_syntax_highlighter():
