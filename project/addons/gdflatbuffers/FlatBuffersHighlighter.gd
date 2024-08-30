@@ -232,12 +232,12 @@ func syntax_error( token : Dictionary, reason = "" ):
 
 #endregion
 
-#region Grammer
-#  ██████  ██████   █████  ███    ███ ███    ███ ███████ ██████
-# ██       ██   ██ ██   ██ ████  ████ ████  ████ ██      ██   ██
-# ██   ███ ██████  ███████ ██ ████ ██ ██ ████ ██ █████   ██████
-# ██    ██ ██   ██ ██   ██ ██  ██  ██ ██  ██  ██ ██      ██   ██
-#  ██████  ██   ██ ██   ██ ██      ██ ██      ██ ███████ ██   ██
+#region Grammar
+#  ██████  ██████   █████  ███    ███ ███    ███  █████  ██████
+# ██       ██   ██ ██   ██ ████  ████ ████  ████ ██   ██ ██   ██
+# ██   ███ ██████  ███████ ██ ████ ██ ██ ████ ██ ███████ ██████
+# ██    ██ ██   ██ ██   ██ ██  ██  ██ ██  ██  ██ ██   ██ ██   ██
+#  ██████  ██   ██ ██   ██ ██      ██ ██      ██ ██   ██ ██   ██
 
 enum FrameType {
 	NONE, # so that SCHEMA isnt at zero which is conflated with bool
@@ -345,7 +345,7 @@ var regex_boolean_constant : RegEx # = true | false
 # ██   ██ ███████ ██   ██ ██████  ███████ ██   ██
 
 class Reader:
-	static var parent = load('res://addons/gdflatbuffers/fbs_syntax_highlighter.gd').new()
+	static var parent = load('res://addons/gdflatbuffers/FlatBuffersHighlighter.gd').new()
 
 	signal new_token( token : Dictionary )
 	signal newline( ln, p )

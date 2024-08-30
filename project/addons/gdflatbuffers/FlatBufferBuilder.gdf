@@ -1,5 +1,8 @@
 class_name FlatBufferBuilder
 
+func create( size : int = 1024 ) -> FlatBufferBuilder:
+	return FlatBufferBuilder.new()
+
 func start_table() -> int:
 	return 0
 
