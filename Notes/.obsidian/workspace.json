@@ -19,13 +19,42 @@
                   "list-collapse": [
                     false,
                     false,
+                    false,
                     false
                   ]
                 }
               }
             }
+          },
+          {
+            "id": "fb185b46046ece63",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "godot-cpp.md",
+                "mode": "source",
+                "source": true
+              }
+            }
+          },
+          {
+            "id": "0b9957370f3923b1",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "DataFlow.canvas",
+                "viewState": {
+                  "x": 70,
+                  "y": 430,
+                  "zoom": -2.081226592991966
+                }
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -91,7 +120,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Tracker.md",
+                "file": "DataFlow.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -108,7 +137,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Tracker.md",
+                "file": "DataFlow.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -131,7 +160,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Tracker.md"
+                "file": "DataFlow.canvas"
               }
             }
           }
@@ -153,22 +182,25 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "4540d9866ba31c77",
+  "active": "0b9957370f3923b1",
   "lastOpenFiles": [
+    "Compile Options.md~",
+    "Compile Options.md",
     "DataFlow.canvas",
-    "reflection.fbs.canvas",
-    "FeatureCanvas.canvas",
     "EditorSettings.md",
+    "FeatureCanvas.canvas",
+    "Diary/2024-09.md",
+    "godot-cpp.md",
+    "Tracker.md",
+    "Diary/2024-06.md",
+    "Diary/2024-05.md",
+    "Diary/2024-04.md",
     "FileSystemDock.md",
     "Godot-FlatBuffers.md",
     "Older Notes.md",
+    "reflection.fbs.canvas",
     "ScriptEditor.md",
-    "Tracker.md",
-    "Diary/2024-06.md",
-    "Untitled.md",
     "2024-06-05.md",
-    "Diary/2024-05.md",
-    "Diary/2024-04.md",
     "Diary/2024-05.md~",
     "Welcome.md",
     "Diary"

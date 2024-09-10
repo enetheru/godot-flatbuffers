@@ -4,18 +4,9 @@ kanban-plugin: board
 
 ---
 
-## Issues
+## gdextension
 
-- [ ] right click menu addition off screen
-- [ ] reload script in editor after re-generation
-- [ ] make failed compile popup
-- [ ] move editor settings to project settings
-- [ ] create custom allocator backed by PackedByteArray
-- [ ] add filename to debug print
 - [ ] cleanup source generation so that it is just a copy paste of the addons folder
-- [ ] add right click generate to code views
-- [ ] Notify user if creation date of fbs file is different to generated file and could use a re-gen
-- [ ] To get file extension recognition working I need to create a ResourceFormatLoader https://docs.godotengine.org/en/stable/classes/class_resourceformatloader.html
 
 
 ## flatc Generator
@@ -24,6 +15,19 @@ kanban-plugin: board
 - [ ] Create* functions need to be able to take the object, not the offset, ie string instead of int
 - [ ] builder add_* function arguments need to be named with \_offset if they expect an offset instead of a value.
 - [ ] Add an option to the settings to auto generate after a fbs file is changed.
+
+
+## addon
+
+- [ ] right click menu addition off screen
+- [ ] reload script in editor after re-generation
+- [ ] make failed compile popup
+- [ ] move editor settings to project settings
+- [ ] create custom allocator backed by PackedByteArray
+- [ ] add filename to debug print
+- [ ] add right click generate to code views
+- [ ] Notify user if creation date of fbs file is different to generated file and could use a re-gen
+- [ ] To get file extension recognition working I need to create a ResourceFormatLoader https://docs.godotengine.org/en/stable/classes/class_resourceformatloader.html
 
 
 ## syntax highlighting
@@ -45,6 +49,6 @@ kanban-plugin: board
 
 %% kanban:settings
 ```
-{"kanban-plugin":"board","list-collapse":[false,false,false]}
+{"kanban-plugin":"board","list-collapse":[false,false,false,false]}
 ```
 %%
