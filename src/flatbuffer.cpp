@@ -10,31 +10,31 @@ void FlatBuffer::_bind_methods() {
   using namespace godot;
 
   //Debug
-  ClassDB::bind_method( D_METHOD( "get_memory_address" ), &get_memory_address );
+  ClassDB::bind_method( D_METHOD( "get_memory_address" ), &FlatBuffer::get_memory_address );
 
   //Properties
-  ClassDB::bind_method( D_METHOD( "set_start", "start" ), &set_start );
-  ClassDB::bind_method( D_METHOD( "get_start" ), &get_start );
+  ClassDB::bind_method( D_METHOD( "set_start", "start" ), &FlatBuffer::set_start );
+  ClassDB::bind_method( D_METHOD( "get_start" ), &FlatBuffer::get_start );
   ADD_PROPERTY( PropertyInfo(Variant::INT, "start"), "set_start", "get_start" );
 
-  ClassDB::bind_method( D_METHOD( "set_bytes", "bytes" ), &set_bytes );
-  ClassDB::bind_method( D_METHOD( "get_bytes" ), &get_bytes );
+  ClassDB::bind_method( D_METHOD( "set_bytes", "bytes" ), &FlatBuffer::set_bytes );
+  ClassDB::bind_method( D_METHOD( "get_bytes" ), &FlatBuffer::get_bytes );
   ADD_PROPERTY( PropertyInfo(Variant::PACKED_BYTE_ARRAY, "bytes"), "set_bytes", "get_bytes" );
 
   // Field Access Helpers
-  ClassDB::bind_method( D_METHOD( "get_field_offset", "vtable_offset" ), &get_field_offset );
-  ClassDB::bind_method( D_METHOD( "get_field_start", "field_offset" ), &get_field_start );
+  ClassDB::bind_method( D_METHOD( "get_field_offset", "vtable_offset" ), &FlatBuffer::get_field_offset );
+  ClassDB::bind_method( D_METHOD( "get_field_start", "field_offset" ), &FlatBuffer::get_field_start );
 
   //Array Access Helpers
-  ClassDB::bind_method( D_METHOD( "get_array_size", "vtable_offset" ), &get_array_size );
-  ClassDB::bind_method( D_METHOD( "get_array_element_start", "array_start", "idx" ), &get_array_element_start );
+  ClassDB::bind_method( D_METHOD( "get_array_size", "vtable_offset" ), &FlatBuffer::get_array_size );
+  ClassDB::bind_method( D_METHOD( "get_array_element_start", "array_start", "idx" ), &FlatBuffer::get_array_element_start );
 
   //// decode atomic types
   // BOOL,
   // INT,
   // FLOAT,
   // STRING,
-  ClassDB::bind_method( D_METHOD( "decode_String", "start_" ), &decode_String );
+  ClassDB::bind_method( D_METHOD( "decode_String", "start_" ), &FlatBuffer::decode_String );
 
   //// Decode math types
   BindGetStructMethod<Vector2>("Vector2");
@@ -66,17 +66,17 @@ void FlatBuffer::_bind_methods() {
 
   // Decode typed arrays
   // PACKED_BYTE_ARRAY,
-  ClassDB::bind_method( D_METHOD( "decode_PackedByteArray", "start_" ), &decode_PackedByteArray );
+  ClassDB::bind_method( D_METHOD( "decode_PackedByteArray", "start_" ), &FlatBuffer::decode_PackedByteArray );
   // PACKED_INT32_ARRAY,
-  ClassDB::bind_method( D_METHOD( "decode_PackedInt32Array", "start_" ), &decode_PackedInt32Array );
+  ClassDB::bind_method( D_METHOD( "decode_PackedInt32Array", "start_" ), &FlatBuffer::decode_PackedInt32Array );
   // PACKED_INT64_ARRAY,
-  ClassDB::bind_method( D_METHOD( "decode_PackedInt64Array", "start_" ), &decode_PackedInt64Array );
+  ClassDB::bind_method( D_METHOD( "decode_PackedInt64Array", "start_" ), &FlatBuffer::decode_PackedInt64Array );
   // PACKED_FLOAT32_ARRAY,
-  ClassDB::bind_method( D_METHOD( "decode_PackedFloat32Array", "start_" ), &decode_packed_float32_array );
+  ClassDB::bind_method( D_METHOD( "decode_PackedFloat32Array", "start_" ), &FlatBuffer::decode_packed_float32_array );
   // PACKED_FLOAT64_ARRAY,
-  ClassDB::bind_method( D_METHOD( "decode_PackedFloat64Array", "start_" ), &decode_packed_float64_array );
+  ClassDB::bind_method( D_METHOD( "decode_PackedFloat64Array", "start_" ), &FlatBuffer::decode_packed_float64_array );
   // PACKED_STRING_ARRAY,
-  ClassDB::bind_method( D_METHOD( "decode_PackedStringArray", "start_" ), &decode_PackedStringArray );
+  ClassDB::bind_method( D_METHOD( "decode_PackedStringArray", "start_" ), &FlatBuffer::decode_PackedStringArray );
   // PACKED_VECTOR2_ARRAY,
   // PACKED_VECTOR3_ARRAY,
   // PACKED_COLOR_ARRAY,

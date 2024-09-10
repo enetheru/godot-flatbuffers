@@ -26,7 +26,7 @@ protected:
     using namespace godot;
     //FIXME: Pretty sure the use of this template to copy the bytes completely breaks the endianness correction that could happen.
     //  so its a temporary hack.
-    ClassDB::bind_method( D_METHOD( "Get"+type_name, "voffset" ), &GetStruct< T > );
+    ClassDB::bind_method( D_METHOD( "Get"+type_name, "voffset" ), &FlatBuffer::GetStruct< T > );
   }
 
 public:

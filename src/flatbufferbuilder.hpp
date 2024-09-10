@@ -69,7 +69,7 @@ public:
 
   // Add Arrays of bytes
   void AddBytes( uint16_t voffset, const godot::PackedByteArray &bytes ) const;
-  
+
   // Create arrays of scalars
   template< typename T >
   uoffset_t CreatePackedArray( const godot::Array &v ) {
@@ -83,6 +83,8 @@ public:
 
   [[nodiscard]] uoffset_t CreateString( const godot::String &string ) const;
   [[nodiscard]] uoffset_t CreatePackedStringArray( const godot::PackedStringArray &value ) const;
+  [[nodiscard]] uoffset_t CreatePackedVector2Array( const godot::PackedVector2Array &value ) const;
+
 };
 
 }
