@@ -10,7 +10,7 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Generate compilation DB (`comp
 set( BUILD_EXTENSION ON CACHE STRING "build the extension" )
 
 ## Target options
-set( GDE_NAME "my_extension" CACHE STRING "The name of the extension library" )
+set( GDE_NAME "gdflatbuffers" CACHE STRING "The name of the extension library" )
 set( GDE_SUFFIX "" CACHE STRING "an additional suffix you can append to builds" )
 set( GDE_OUTPUT_NAME "" CACHE STRING "A custom output name, resulting binary will be: GDE_NAME.{editor|template_{release|debug}}[.GDE_SUFFIX].dll" )
 
@@ -18,7 +18,9 @@ set( GDE_OUTPUT_NAME "" CACHE STRING "A custom output name, resulting binary wil
 set( GODOT_EXECUTABLE "" CACHE FILEPATH "Path to the godot executable you are targeting" )
 set( GODOT_PROJECT_PATH "project" CACHE PATH "Path to a demo project that can test the gdextension" )
 
-set( GODOT_CUSTOM_API_FILE "extension_api.json" CACHE FILEPATH
+set( GODOT_GDEXTENSION_DIR "${PROJECT_SOURCE_DIR}/gdextension" CACHE PATH
+        "Path to a custom directory containing GDExtension interface header and API JSON file ( /path/to/gdextension_dir )" )
+set( GODOT_CUSTOM_API_FILE "${GODOT_GDEXTENSION_DIR}/extension_api.json" CACHE FILEPATH
         "Location of extension_api.json, default is 'extension_api.json'" )
 
 ## Git repo info for fetching if there is no api dir set.

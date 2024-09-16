@@ -145,7 +145,7 @@ static func flatc_generate( path : String ) -> Variant:
 	flatc_path = flatc_path.replace('res://', './')
 
 	if not FileAccess.file_exists(flatc_path):
-		return {'return_code':ERR_FILE_BAD_PATH, 'output': "Missing flatc compiler"}
+		return {'retcode':ERR_FILE_BAD_PATH, 'output': ["Missing flatc compiler"]}
 
 	# TODO make this an editor setting that can be added to.
 	var include_paths : Array = ["res://addons/gdflatbuffers/"]
@@ -154,7 +154,7 @@ static func flatc_generate( path : String ) -> Variant:
 
 	var source_path : String = path.replace('res://', './')
 	if not FileAccess.file_exists(source_path):
-		return {'return_code':ERR_FILE_BAD_PATH, 'output': "Missing Schema File: %s" % source_path }
+		return {'retcode':ERR_FILE_BAD_PATH, 'output': ["Missing Schema File: %s" % source_path] }
 
 	var output_path : String = source_path.get_base_dir()
 

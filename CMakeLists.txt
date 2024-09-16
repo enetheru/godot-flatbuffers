@@ -14,6 +14,7 @@ endif ()
 
 ### Independent Global CMake options
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/" )
+include(FetchContent)
 include(CMakePrintHelpers)
 include(PreventInSourceBuilds)
 include(options.cmake)
@@ -25,6 +26,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 # Output Directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${GODOT_PROJECT_PATH}/addons/${GDE_NAME}/bin )
+
+### Add Flatbuffers as a sub project
+FetchContent_Declare( FlatBuffers
+        GIT_REPOSITORY "https://github.com/enetheru/flatbuffers.git"
+        GIT_TAG "gdscript"
+        SOURCE_DIR "${PROJECT_SOURCE_DIR}/flatbuffers"
+        UPDATE_DISCONNECTED ON
+)
+FetchContent_MakeAvailable( FlatBuffers )
+
+# If we dont want to build the extension then we can stop here
+# This does break any other targets for this configuration
+# so currently only useful for building flatc.
+if( NOT BUILD_EXTENSION )
+    return()
+endif ()
 
 ### Generate target name
 include(cmake/naming.cmake)
@@ -61,12 +78,7 @@ endif()
 
 find_program( GODOT_EXECUTABLE
         NAMES ${GODOT_FIND_NAMES}
-        PATHS ${GODOT_FIND_PATHS}
-        REQUIRED )
-
-if( GODOT_EXECUTABLE STREQUAL "GODOT_EXECUTABLE-NOTFOUND" )
-    message( FATAL_ERROR "Unable to find Godot executable" )
-endif()
+        PATHS ${GODOT_FIND_PATHS} )
 
 if (NOT GODOT_EXECUTABLE)
     message( WARNING "Missing Godot Executable: ${GODOT_EXECUTABLE}")
@@ -80,9 +92,9 @@ endif ()
 include( godot-dump )
 
 ### We add the dump target so that the sources can be relied upon. if it weren't for the fact that the generation of
-# the api in godot-cpp was constructed at configure time I could use add_custom_command above instead of execute process
+# the api in godot-cpp was constructed at configure time I could use add_custom_command
 add_custom_target(dump_api DEPENDS
-        ${PROJECT_SOURCE_DIR}/gdextension/gdextension_interface.h
+        ${GODOT_GDEXTENSION_DIR}/gdextension_interface.h
         ${GODOT_CUSTOM_API_FILE})
 
 ### Fetch and configure Godot C++ GDExtension interface(godot-cpp)
@@ -99,7 +111,6 @@ if( GODOT_CPP_GIT_TAG STREQUAL "" )
     include( godot-cpp-git-tag )
 endif()
 
-include(FetchContent)
 message( STATUS "Fetching ${GODOT_CPP_GIT_URL} : ${GODOT_CPP_GIT_TAG}")
 FetchContent_Declare(godot-cpp
         GIT_REPOSITORY "${GODOT_CPP_GIT_URL}"
@@ -178,16 +189,6 @@ endif ()
 if (FLOAT_PRECISION STREQUAL "double" )
     add_compile_definitions("REAL_T_IS_DOUBLE")
 endif ()
-
-
-### Add Flatbuffers as a sub project
-FetchContent_Declare( FlatBuffers
-        GIT_REPOSITORY "https://github.com/enetheru/flatbuffers.git"
-        GIT_TAG "gdscript"
-        SOURCE_DIR "${PROJECT_SOURCE_DIR}/flatbuffers"
-        UPDATE_DISCONNECTED ON
-)
-FetchContent_MakeAvailable( FlatBuffers )
 
 ### separate CMakeLists for our gdextension sources.
 add_library( ${GDE_NAME} SHARED )
