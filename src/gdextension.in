@@ -2,6 +2,7 @@
 
 entry_symbol = "${GDE_ENTRY_SYMBOL}"
 compatibility_minimum = "${GODOT_VERSION_MAJOR}.${GODOT_VERSION_MINOR}"
+${HOT_RELOAD_REPL}
 
 [libraries]
 windows.editor.x86_64 = "res://addons/${GDE_NAME}/bin/lib${GDE_NAME}.windows.editor.x86_64.dll"

@@ -19,6 +19,10 @@ target_sources( ${GDE_NAME}
         ${FBHEADERS}
 )
 
+if( GODOT_ENABLE_HOT_RELOAD )
+    set( HOT_RELOAD_REPL "reloadable = true")
+endif ()
+
 configure_file( gdextension.in ${CMAKE_SOURCE_DIR}/project/addons/${GDE_NAME}/${GDE_NAME}.gdextension )
 
 configure_file( builtin/godot.fbs ${CMAKE_SOURCE_DIR}/project/addons/${GDE_NAME}/godot.fbs )

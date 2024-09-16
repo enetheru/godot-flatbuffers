@@ -75,8 +75,8 @@ function( gde_names_gdextension )
         list(APPEND NAME_PARTS "template")
     endif()
 
-    if (CMAKE_BUILD_TYPE MATCHES Debug)
-        list(APPEND NAME_PARTS "debug")
+    if( GODOT_CPP_DEV_BUILD )
+        list(APPEND NAME_PARTS "dev")
     endif()
 
     if (${GODOT_CPP_FLOAT_DOUBLE})
