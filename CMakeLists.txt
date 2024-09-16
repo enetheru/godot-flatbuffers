@@ -8,6 +8,9 @@ project( godot-flatbuffers-extension
 
 cmake_policy(SET CMP0077 NEW ) # don't let option(...) to reset my values
 # FIXME this only appears to work for my own code, not the imported code from godot-cpp.
+if( CMAKE_C_COMPILER )
+    #Do nothing, just shut up the build because clion adds this from the toolchain
+endif ()
 
 ### Independent Global CMake options
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/" )
@@ -79,8 +82,8 @@ include( godot-dump )
 ### We add the dump target so that the sources can be relied upon. if it weren't for the fact that the generation of
 # the api in godot-cpp was constructed at configure time I could use add_custom_command above instead of execute process
 add_custom_target(dump_api DEPENDS
-        ${PROJECT_SOURCE_DIR}/${GODOT_DUMP_DIR}/gdextension_interface.h
-        ${GODOT_API_JSON})
+        ${PROJECT_SOURCE_DIR}/gdextension/gdextension_interface.h
+        ${GODOT_CUSTOM_API_FILE})
 
 ### Fetch and configure Godot C++ GDExtension interface(godot-cpp)
 # TODO optionally use the GODOT_CPP_DIR and dont fetch
@@ -102,13 +105,12 @@ FetchContent_Declare(godot-cpp
         GIT_REPOSITORY "${GODOT_CPP_GIT_URL}"
         GIT_TAG "${GODOT_CPP_GIT_TAG}"
         GIT_SHALLOW ON
-        SOURCE_DIR "${PROJECT_SOURCE_DIR}/${GODOT_CPP_DIR}"
+        SOURCE_DIR "${GODOT_CPP_DIR}"
 )
 
 if(NOT godot-cpp_POPULATED)
     FetchContent_Populate(godot-cpp)
 
-    set(GODOT_GDEXTENSION_DIR "${PROJECT_SOURCE_DIR}/gdextension" CACHE INTERNAL "Path to the directory containing GDExtension interface header and API JSON file" )
     set(GODOT_CPP_SYSTEM_HEADERS ON CACHE INTERNAL "Mark the header files as SYSTEM. This may be useful to supress warnings in projects including this one." )
     set(GODOT_CPP_WARNING_AS_ERROR ON CACHE INTERNAL "Treat any warnings as errors" )
     set(GODOT_CUSTOM_API_FILE ${PROJECT_SOURCE_DIR}/gdextension/extension_api.json CACHE INTERNAL "Path to a custom GDExtension API JSON file (takes precedence over `gdextension_dir`)" )
@@ -169,11 +171,11 @@ endif ()
 
 # Hot reload
 # TODO, the original logic was if unspecified enable in debug and editor builds
-if (GODOT_CPP_USE_HOT_RELOAD)
+if (GODOT_ENABLE_HOT_RELOAD)
     target_compile_definitions(godot-cpp PUBLIC "HOT_RELOAD_ENABLED")
 endif ()
 
-if (GODOT_CPP_FLOAT_DOUBLE)
+if (FLOAT_PRECISION STREQUAL "double" )
     add_compile_definitions("REAL_T_IS_DOUBLE")
 endif ()
 
@@ -188,7 +190,17 @@ FetchContent_Declare( FlatBuffers
 FetchContent_MakeAvailable( FlatBuffers )
 
 ### separate CMakeLists for our gdextension sources.
+add_library( ${GDE_NAME} SHARED )
+
 add_subdirectory(src)
+
+target_include_directories( ${GDE_NAME} SYSTEM PUBLIC godot-cpp FlatBuffers::FlatBuffers )
+target_link_libraries( ${GDE_NAME} PUBLIC godot-cpp FlatBuffers::FlatBuffers )
+
+set_target_properties( ${GDE_NAME}
+        PROPERTIES
+        OUTPUT_NAME "${GDE_OUTPUT_NAME}"
+)
 
 ## Add a dummy target for when I need to debug from clion.
 ## This needs additional configuration from the clion side of things to make it work

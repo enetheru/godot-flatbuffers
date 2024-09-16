@@ -1,60 +1,108 @@
 {
-  "version": 6,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 28,
-    "patch": 0
-  },
-  "configurePresets": [
-    {
-      "name": "default",
-      "displayName": "default",
-      "description": "Default preset that are inherited by all",
-      "generator": "Ninja",
-      "hidden": true,
-      "cacheVariables": {
-        "GDE_NAME": "godot-flatbuffers",
-        "GODOT_EXECUTABLE": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Godot Engine\\godot.windows.opt.tools.64.exe"
-      }
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 28,
+        "patch": 0
     },
-
-    {
-      "name": "editor",
-      "inherits": "default",
-      "description": "Build extension for the editor",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "GODOT_CPP_TOOLS_ENABLED": "ON",
-        "GODOT_CPP_OPTIMISATION_MODE": "speed"
-      }
-    },
-    {
-      "name": "editor_debug",
-      "description": "Build extension for the editor with debug symbols",
-      "inherits": "default",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "GODOT_CPP_TOOLS_ENABLED": "ON",
-        "GODOT_CPP_OPTIMISATION_MODE": "speed_trace"
-      }
-    },
-    {
-      "name": "template",
-      "description": "Build extension for the editor with debug symbols and dev_tools",
-      "inherits": "default",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "GODOT_CPP_OPTIMISATION_MODE": "speed"
-      }
-    },
-    {
-      "name": "template_debug",
-      "description": "Build extension for the editor with debug symbols and dev_tools",
-      "inherits": "default",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "GODOT_CPP_OPTIMISATION_MODE": "speed_trace"
-      }
-    }
-  ]
+    "include": [
+        "preset.deps.json"
+    ],
+    "configurePresets": [
+        {
+            "hidden": true,
+            "name": "extension",
+            "inherits": "flatbuffers",
+            "cacheVariables": {
+                "GDE_NAME": "gdflatbuffers"
+            }
+        },
+        {
+            "name": "flatc-llvm",
+            "inherits": [
+                "flatbuffers",
+                "clang64-llvm"
+            ],
+            "cacheVariables": {
+                "FLATBUFFERS_BUILD_FLATC": true,
+                "FLATBUFFERS_STATIC_FLATC": true,
+                "BUILD_EXTENSION": false
+            }
+        },
+        {
+            "name": "flatc-gcc",
+            "inherits": [
+                "flatbuffers",
+                "ucrt64-gcc"
+            ],
+            "cacheVariables": {
+                "FLATBUFFERS_BUILD_FLATC": true,
+                "BUILD_EXTENSION": false
+            }
+        },
+        {
+            "name": "gde-editor-msys-llvm",
+            "inherits": [
+                "clang64-llvm",
+                "extension",
+                "editor"
+            ]
+        },
+        {
+            "name": "gde-dev_build-msys-llvm",
+            "inherits": [
+                "extension",
+                "dev_build",
+                "clang64-llvm"
+            ]
+        },
+        {
+            "name": "gde-template_release-msys-llvm",
+            "inherits": [
+                "extension",
+                "template_release",
+                "clang64-llvm"
+            ]
+        },
+        {
+            "name": "gde-template_debug-msys-llvm",
+            "inherits": [
+                "extension",
+                "template_debug",
+                "clang64-llvm"
+            ]
+        },
+        {
+            "name": "gde-editor-msys-gcc",
+            "inherits": [
+                "ucrt64-gcc",
+                "extension",
+                "editor"
+            ]
+        },
+        {
+            "name": "gde-dev_build-msys-gcc",
+            "inherits": [
+                "extension",
+                "dev_build",
+                "ucrt64-gcc"
+            ]
+        },
+        {
+            "name": "gde-template_release-msys-gcc",
+            "inherits": [
+                "extension",
+                "template_release",
+                "ucrt64-gcc"
+            ]
+        },
+        {
+            "name": "gde-demplate_debug-msys-gcc",
+            "inherits": [
+                "extension",
+                "template_debug",
+                "ucrt64-gcc"
+            ]
+        }
+    ]
 }

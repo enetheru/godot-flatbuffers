@@ -6,20 +6,16 @@ function(get_godot_version)
 
     execute_process(COMMAND ${GODOT_EXECUTABLE} --version
             OUTPUT_VARIABLE GODOT_VERSION
-            COMMAND_ECHO STDOUT
             ERROR_QUIET)
     string(STRIP ${GODOT_VERSION} GODOT_VERSION)
     if( GODOT_VERSION STREQUAL "" )
         message( FATAL_ERROR "Godot executable did not produce an understandable version string: ${GODOT_EXECUTABLE}" )
     endif ()
-    message(STATUS "Godot Version: ${GODOT_VERSION}")
 
     string(REPLACE "." ";" GODOT_VERSION_LIST ${GODOT_VERSION})
     list(POP_FRONT GODOT_VERSION_LIST GODOT_VERSION_MAJOR)
     list(POP_FRONT GODOT_VERSION_LIST GODOT_VERSION_MINOR)
     list(POP_FRONT GODOT_VERSION_LIST GODOT_VERSION_POINT)
-
-    message(STATUS "Godot Version Base: ${GODOT_VERSION_MAJOR}.${GODOT_VERSION_MINOR}.${GODOT_VERSION_POINT}")
 
     return( PROPAGATE GODOT_VERSION GODOT_VERSION_MAJOR GODOT_VERSION_MINOR GODOT_VERSION_POINT )
 endfunction()

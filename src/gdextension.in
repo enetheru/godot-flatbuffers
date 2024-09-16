@@ -4,10 +4,9 @@ entry_symbol = "${GDE_ENTRY_SYMBOL}"
 compatibility_minimum = "${GODOT_VERSION_MAJOR}.${GODOT_VERSION_MINOR}"
 
 [libraries]
-windows.editor.debug.x86_64 = "res://addons/${GDE_NAME}/bin/lib${GDE_NAME}.windows.editor.debug.x86_64.dll"
-windows.editor.release.x86_64 = "res://addons/${GDE_NAME}/bin/lib${GDE_NAME}.windows.editor.x86_64.dll"
-windows.debug.x86_64 = "res://addons/${GDE_NAME}/bin/lib${GDE_NAME}.windows.template.debug.x86_64.dll"
-windows.release.x86_64 = "res://addons/${GDE_NAME}/bin/lib${GDE_NAME}.windows.template.x86_64.dll"
+windows.editor.x86_64 = "res://addons/${GDE_NAME}/bin/lib${GDE_NAME}.windows.editor.x86_64.dll"
+windows.template.debug.x86_64 = "res://addons/${GDE_NAME}/bin/lib${GDE_NAME}.windows.template.debug.x86_64.dll"
+windows.template.release.x86_64 = "res://addons/${GDE_NAME}/bin/lib${GDE_NAME}.windows.template.x86_64.dll"
 
 macos.debug = "res://addons/${GDE_NAME}/bin/lib${GDE_NAME}.macos.template.debug.framework"
 macos.release = "res://addons/${GDE_NAME}/bin/lib${GDE_NAME}.macos.template.framework"

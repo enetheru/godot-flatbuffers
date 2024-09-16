@@ -41,13 +41,14 @@ function( godot_executable_name )
 
     list(APPEND NAME_PARTS "${GDE_TARGET_ARCH}") # AKA arch
 
-    if (NOT GDE_CUSTOM_SUFFIX STREQUAL "")
-        list(APPEND NAME_PARTS "${GDE_CUSTOM_SUFFIX}")
+    if (NOT GDE_SUFFIX STREQUAL "")
+        list(APPEND NAME_PARTS "${GDE_SUFFIX}")
     endif ()
 
     list(APPEND NAME_PARTS "exe")
 
     list(JOIN NAME_PARTS "." GODOT_EXECUTABLE_NAME)
+
     return( PROPAGATE GODOT_EXECUTABLE_NAME )
 endfunction()
 godot_executable_name()
@@ -56,17 +57,22 @@ godot_executable_name()
 # godot.<platform>.<target>[.dev][.double].<arch>[.custom_suffix][.console].exe
 function( gde_names_gdextension )
     # Entry Symbol
-    string(REGEX REPLACE "[ -]" "_" GDE_ENTRY_SYMBOL ${GDE_NAME} )
+    string(REGEX REPLACE "[ -]" "_" GDE_ENTRY_SYMBOL "${GDE_NAME}" )
     set( GDE_ENTRY_SYMBOL "${GDE_ENTRY_SYMBOL}_library_init" )
-    message( STATUS "Entry Symbol: ${GDE_ENTRY_SYMBOL}")
 
-    # Output gdextension library name
+    if( NOT ${GDE_OUTPUT_NAME} STREQUAL "" )
+        return( PROPAGATE GDE_OUTPUT_NAME GDE_ENTRY_SYMBOL )
+    endif ()
+
+        # Output gdextension library name
     set(NAME_PARTS ${GDE_NAME})
 
     list(APPEND NAME_PARTS "${GDE_TARGET_PLATFORM}")
 
     if( ${GODOT_CPP_TOOLS_ENABLED} )
         list(APPEND NAME_PARTS "editor")
+    else()
+        list(APPEND NAME_PARTS "template")
     endif()
 
     if (CMAKE_BUILD_TYPE MATCHES Debug)
@@ -79,13 +85,11 @@ function( gde_names_gdextension )
 
     list(APPEND NAME_PARTS "${GDE_TARGET_ARCH}") # AKA arch
 
-    if (NOT GDE_CUSTOM_SUFFIX STREQUAL "")
-        list(APPEND NAME_PARTS "${GDE_CUSTOM_SUFFIX}")
+    if( GDE_SUFFIX )
+        list(APPEND NAME_PARTS "${GDE_SUFFIX}")
     endif ()
 
     list(JOIN NAME_PARTS "." GDE_OUTPUT_NAME)
-
-    message( STATUS "Library Filename: ${GDE_OUTPUT_NAME}")
 
     return( PROPAGATE GDE_OUTPUT_NAME GDE_ENTRY_SYMBOL )
 endfunction()

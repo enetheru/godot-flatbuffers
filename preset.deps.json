@@ -1,0 +1,103 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 28,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "hidden": true,
+            "name": "flatbuffers",
+            "cacheVariables": {
+                "FLATBUFFERS_BUILD_FLATHASH": false,
+                "FLATBUFFERS_BUILD_SHAREDLIB": false,
+                "FLATBUFFERS_BUILD_TESTS": false,
+                "FLATBUFFERS_INSTALL": false,
+                "FLATBUFFERS_BUILD_FLATC": false
+            }
+        },
+        {
+            "hidden": true,
+            "name": "godot-cpp",
+            "description": "base profile for godot-cpp and dependencies",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "GODOT_EXECUTABLE": "C:\\godot\\src\\godot\\bin\\godot.windows.editor.x86_64.console.exe",
+                "GODOT_CPP_GIT_URL": "https://github.com/enetheru/godot-cpp.git",
+                "GODOT_CPP_GIT_TAG": "godot-4.3-stable"
+            }
+        },
+        {
+            "hidden": true,
+            "name": "ucrt64-gcc",
+            "vendor": {
+                "jetbrains.com/clion": {
+                    "enablePythonIntegration": true,
+                    "toolchain": "MSYS2-ucrt64-gcc"
+                }
+            }
+        },
+        {
+            "hidden": true,
+            "name": "clang64-llvm",
+            "vendor": {
+                "jetbrains.com/clion": {
+                    "enablePythonIntegration": true,
+                    "toolchain": "MSYS2-clang64-llvm"
+                }
+            }
+        },
+        {
+            "name": "editor",
+            "hidden": true,
+            "inherits": ["godot-cpp"],
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "GODOT_CPP_TOOLS_ENABLED": true,
+                "GODOT_ENABLE_HOT_RELOAD": true,
+                "GODOT_CPP_WARNING_AS_ERROR": false,
+                "GODOT_DISABLE_EXCEPTIONS": false
+            }
+        },
+        {
+            "name": "dev_build",
+            "hidden": true,
+            "inherits": "godot-cpp",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "GODOT_CPP_TOOLS_ENABLED": true,
+                "GODOT_ENABLE_HOT_RELOAD": true,
+                "GODOT_CPP_WARNING_AS_ERROR": true,
+                "GODOT_DISABLE_EXCEPTIONS": false,
+                "GODOT_CPP_DEV_BUILD": true,
+                "GODOT_CPP_OPTIMISATION_MODE": "debug"
+            }
+        },
+        {
+            "name": "template_release",
+            "hidden": true,
+            "inherits": "godot-cpp",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "GODOT_CPP_OPTIMISATION_MODE": "speed",
+                "GODOT_CPP_TOOLS_ENABLED": false,
+                "GODOT_CPP_WARNING_AS_ERROR": false,
+                "GODOT_ENABLE_HOT_RELOAD": false
+            }
+        },
+        {
+            "name": "template_debug",
+            "hidden": true,
+            "inherits": "godot-cpp",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "GODOT_CPP_OPTIMISATION_MODE": "speed",
+                "GODOT_CPP_TOOLS_ENABLED": false,
+                "GODOT_CPP_WARNING_AS_ERROR": false,
+                "GODOT_ENABLE_HOT_RELOAD": false,
+                "GODOT_DISABLE_EXCEPTIONS": false
+            }
+        }
+    ]
+}
