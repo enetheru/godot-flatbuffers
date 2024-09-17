@@ -6,8 +6,6 @@ project( godot-flatbuffers-extension
         DESCRIPTION ""
         LANGUAGES CXX)
 
-cmake_policy(SET CMP0077 NEW ) # don't let option(...) to reset my values
-# FIXME this only appears to work for my own code, not the imported code from godot-cpp.
 if( CMAKE_C_COMPILER )
     #Do nothing, just shut up the build because clion adds this from the toolchain
 endif ()
@@ -19,11 +17,11 @@ include(CMakePrintHelpers)
 include(PreventInSourceBuilds)
 include(options.cmake)
 
-
 ### Global options
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Output Directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${GODOT_PROJECT_PATH}/addons/${GDE_NAME}/bin )
 
@@ -123,73 +121,11 @@ if(NOT godot-cpp_POPULATED)
     FetchContent_Populate(godot-cpp)
 endif()
 
-set(GODOT_CPP_SYSTEM_HEADERS ON CACHE INTERNAL "Mark the header files as SYSTEM. This may be useful to supress warnings in projects including this one." )
-set(GODOT_CPP_WARNING_AS_ERROR ON CACHE INTERNAL "Treat any warnings as errors" )
-set(GODOT_CUSTOM_API_FILE ${PROJECT_SOURCE_DIR}/gdextension/extension_api.json CACHE INTERNAL "Path to a custom GDExtension API JSON file (takes precedence over `gdextension_dir`)" )
-set(FLOAT_PRECISION "single" CACHE INTERNAL "docstring" )
-
 add_subdirectory( ${GODOT_CPP_DIR} )
+include( cmake/godotcpp.cmake )
 
-# TODO add any additional godot-cpp definitions here.
-# TODO unset any exclusively godot-cpp variable here.
 # Add dependency to dump_api
 add_dependencies(godot-cpp dump_api)
-
-# At this point godot-cpp has been configured using our cached variables, but it's not enough to enable some features.
-# We need to figure out and override things like build and link flags because the godot-cpp cmake project
-# doesn't have feature parity with the scons build.
-
-# Scrub the options so we can start again.
-set_target_properties( godot-cpp
-        PROPERTIES
-#        COMPILE_OPTIONS ""
-#        COMPILE_FLAGS ""
-        LINK_OPTIONS ""
-        LINK_FLAGS ""
-)
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC") # using Visual Studio C++
-    include(cmake/msvc.cmake)
-elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-    include(cmake/gcc.cmake)
-else ()
-    message(FATAL_ERROR "${CMAKE_CXX_COMPILER_ID} Compiler is not supported")
-endif ()
-
-### Platform
-# TODO properly separate out these things.
-# platforms = ("linux", "macos", "windows", "android", "ios", "web")
-
-### Code Features
-#TODO move these compile definitions to the targets so they dont pollute other packages that we might want.
-add_compile_definitions("GDEXTENSION")
-target_compile_definitions( godot-cpp PRIVATE "GDEXTENSION" )
-
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-    # DEBUG_ENABLED enables debugging *features* and debug-only code, which is intended
-    # to give *users* extra debugging information for their game development.
-    # DEBUG_METHODS_ENABLED is added to typedefs.h in Godot when DEBUG_ENABLED is set.
-    add_compile_definitions("DEBUG_ENABLED" "DEBUG_METHODS_ENABLED")
-else ()
-    # define NDEBUG to disable assert() for production targets (only used in third-party code)
-    add_compile_definitions("NDEBUG")
-endif ()
-
-# if editor tools are intended to be enabled.
-# Analogous to the target=editor from scons
-if (GODOT_CPP_TOOLS_ENABLED)
-    target_compile_definitions(godot-cpp PUBLIC "TOOLS_ENABLED")
-endif ()
-
-# Hot reload
-# TODO, the original logic was if unspecified enable in debug and editor builds
-if (GODOT_ENABLE_HOT_RELOAD)
-    target_compile_definitions(godot-cpp PUBLIC "HOT_RELOAD_ENABLED")
-endif ()
-
-if (FLOAT_PRECISION STREQUAL "double" )
-    add_compile_definitions("REAL_T_IS_DOUBLE")
-endif ()
 
 ### separate CMakeLists for our gdextension sources.
 add_library( ${GDE_NAME} SHARED )
@@ -203,9 +139,3 @@ set_target_properties( ${GDE_NAME}
         PROPERTIES
         OUTPUT_NAME "${GDE_OUTPUT_NAME}"
 )
-
-## Add a dummy target for when I need to debug from clion.
-## This needs additional configuration from the clion side of things to make it work
-# * The executable to run
-# * The command line options ie -e --path
-add_custom_target(demo_project DEPENDS ${GDE_NAME})

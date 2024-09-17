@@ -53,7 +53,7 @@
             "hidden": true,
             "inherits": ["godot-cpp"],
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_BUILD_TYPE": "Release",
                 "GODOT_CPP_TOOLS_ENABLED": true,
                 "GODOT_ENABLE_HOT_RELOAD": true,
                 "GODOT_CPP_WARNING_AS_ERROR": false,
