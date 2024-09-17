@@ -31,7 +31,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${GODOT_PROJECT_PATH}/a
 FetchContent_Declare( FlatBuffers
         GIT_REPOSITORY "https://github.com/enetheru/flatbuffers.git"
         GIT_TAG "gdscript"
-        SOURCE_DIR "${PROJECT_SOURCE_DIR}/flatbuffers"
+        SOURCE_DIR "${PROJECT_SOURCE_DIR}/lib/flatbuffers"
         UPDATE_DISCONNECTED ON
 )
 FetchContent_MakeAvailable( FlatBuffers )
@@ -121,14 +121,15 @@ FetchContent_Declare(godot-cpp
 
 if(NOT godot-cpp_POPULATED)
     FetchContent_Populate(godot-cpp)
-
-    set(GODOT_CPP_SYSTEM_HEADERS ON CACHE INTERNAL "Mark the header files as SYSTEM. This may be useful to supress warnings in projects including this one." )
-    set(GODOT_CPP_WARNING_AS_ERROR ON CACHE INTERNAL "Treat any warnings as errors" )
-    set(GODOT_CUSTOM_API_FILE ${PROJECT_SOURCE_DIR}/gdextension/extension_api.json CACHE INTERNAL "Path to a custom GDExtension API JSON file (takes precedence over `gdextension_dir`)" )
-    set(FLOAT_PRECISION "single" CACHE INTERNAL "docstring" )
-
-    add_subdirectory(godot-cpp)
 endif()
+
+set(GODOT_CPP_SYSTEM_HEADERS ON CACHE INTERNAL "Mark the header files as SYSTEM. This may be useful to supress warnings in projects including this one." )
+set(GODOT_CPP_WARNING_AS_ERROR ON CACHE INTERNAL "Treat any warnings as errors" )
+set(GODOT_CUSTOM_API_FILE ${PROJECT_SOURCE_DIR}/gdextension/extension_api.json CACHE INTERNAL "Path to a custom GDExtension API JSON file (takes precedence over `gdextension_dir`)" )
+set(FLOAT_PRECISION "single" CACHE INTERNAL "docstring" )
+
+add_subdirectory( ${GODOT_CPP_DIR} )
+
 # TODO add any additional godot-cpp definitions here.
 # TODO unset any exclusively godot-cpp variable here.
 # Add dependency to dump_api
