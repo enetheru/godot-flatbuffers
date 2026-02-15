@@ -10,6 +10,9 @@
 
 #include "flatbuffer.hpp"
 #include "flatbufferbuilder.hpp"
+#include "flexbuffer.hpp"
+
+
 
 void initialize_module( const godot::ModuleInitializationLevel p_level ) {
   if( p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE ) {
@@ -19,6 +22,7 @@ void initialize_module( const godot::ModuleInitializationLevel p_level ) {
   using namespace godot_flatbuffers;
   godot::ClassDB::register_class< FlatBuffer >();
   godot::ClassDB::register_class< FlatBufferBuilder >();
+  godot::ClassDB::register_class< FlexBuffer >();
   godot::UtilityFunctions::print( "gdflatbuffers initialised" );
 }
 

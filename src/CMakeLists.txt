@@ -14,6 +14,8 @@ set( SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/flatbuffer.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/flatbufferbuilder.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/flatbufferbuilder.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/flexbuffer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/flexbuffer.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/utils.hpp
         ${FBHEADERS}
         PARENT_SCOPE
