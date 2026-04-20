@@ -12,8 +12,6 @@ set( SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/register_types.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/flatbuffer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/flatbuffer.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/uuid.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/uuid.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/flatbufferbuilder.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/flatbufferbuilder.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/flatbufferverifier.cpp
