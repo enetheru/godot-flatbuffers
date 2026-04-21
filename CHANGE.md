@@ -2,13 +2,6 @@
 I guess its time to start recording the important changes since there have been enough, and this project is old enough to track them.
 Mostly this is about the things that will have to change, or at least the ones I am aware of. since I tend to use only a subset of the things.
 The full change log can be gleaned from git.
-## UUID 
-- UUID functions `from_*` have been replaced with `to_*_from_variant` to be more explicit in their usage.
-- re-named most of the uuid-variant map functions, and added some more
-    - set_variant -> assign_value
-    - has_variant -> has_key + has_value
-    - get_variant -> get_value
-    - erase_variant -> erase_key + erase_value
 ## FlatBuffer
 - `get_*` functions are limited to only the root type for any schema file, inline with the FlatBuffers defaults
     - FlatBuffer.get_root(buffer, Variant::Type) was added to replicate the templated get_root function convenience, where the type is optional for error checking.
