@@ -22,9 +22,23 @@ set( SOURCES
 )
 
 # Multi-Step .gdextension file configuration.
+set( GDEXT_FILE_STRING [[
+[configuration]
+entry_symbol = "${GDE_NAME}_library_init"
+compatibility_minimum = "${GODOT_VERSION_MAJOR}.${GODOT_VERSION_MINOR}"
+reloadable = $<IF:$<BOOL:${GODOTCPP_USE_HOT_RELOAD}>,true,false>
 
-# First is to load the file into a variable
-file( READ gdextension.in GDEXT_FILE_STRING )
+[libraries]
+]])
+
+foreach( TARGET editor template_debug template_release )
+  set( FLAGS "${GODOTCPP_PLATFORM}.${TARGET}.${GODOTCPP_ARCH}")
+  set( LIB "bin/${GDE_NAME}.${FLAGS}.dll")
+
+#  STRING( JOIN "."  FEATURES "${GODOTCPP_PLATFORM}" "${TARGET}" "${GODOTCPP_ARCH}" )
+#  STRING( JOIN "\n" GDEXT_FILE_STRING "${GDEXT_FILE_STRING}" "${FEATURES} = \"bin/${GDE_NAME}.${FEATURES}.dll\"" )
+    STRING( APPEND GDEXT_FILE_STRING "${FLAGS} = \"${LIB}\"\n")
+endforeach()
 
 # Replace variables with their content
 string( CONFIGURE "${GDEXT_FILE_STRING}" GDEXT_FILE_STRING_CONFIGURED)
@@ -34,6 +48,3 @@ file( GENERATE
         OUTPUT ${GDE_INSTALL_PATH}/${GDE_NAME}.gdextension
         CONTENT "${GDEXT_FILE_STRING_CONFIGURED}"
 )
-
-# TODO, modify godot.fbs to cater to double precision builds
-configure_file( builtin/godot.fbs ${GDE_INSTALL_PATH}/godot.fbs )

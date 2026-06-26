@@ -1,8 +1,0 @@
-[configuration]
-
-entry_symbol = "${GDE_NAME}_library_init"
-compatibility_minimum = "${GODOT_VERSION_MAJOR}.${GODOT_VERSION_MINOR}"
-reloadable = $<IF:$<BOOL:${GODOTCPP_USE_HOT_RELOAD}>,true,false>
-
-[libraries]
-${GODOTCPP_PLATFORM}$<$<CONFIG:Debug,RelWithDebInfo>:.$<LOWER_CASE:$<CONFIG>>>.${GODOTCPP_ARCH} = "bin/$<TARGET_FILE_NAME:godot-flatbuffers>"
