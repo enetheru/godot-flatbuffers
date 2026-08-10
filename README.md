@@ -26,16 +26,24 @@ The project consists of four main areas:
 
 
 ### Installation
+
 Due to the work in progress nature, there are no release binaries yet.
 
 I've tried to make compilation as straight forward as possible, dependencies are pulled using CMake's FetchContent.
-
-After CMake configure completes, you will need to build two targets: `flatc` and `godot-flatbuffers`
+After CMake configure completes, you will need to build two targets: `flatc` and `godot-flatbuffers`.
 
 To generate the documentation XML files for the GDExtension classes, you can run the `godot-docs` target.
 This will use the Godot executable to scan the project and update the `docxml` folder.
 
-Then copy or link the `project/addons/enetheru.flatbuffers-extension` folder into your `project/addons` folder
+Then copy or link the `project/addons/enetheru.flatbuffers-extension` folder into your `project/addons` folder.
+
+```sh
+cmake -DCMAKE_BUILD_TYPE=Release -B build
+cmake --build build --config Release
+
+cp -r project/addons/enetheru.flatbuffers-extension ~/godot/my-godot-project/addons
+./project/addons/enetheru.flatbuffers-extension/bin/flatc --version
+```
 
 I do know that at least on windows `flatc` builds using mingw, if you run into trouble please hit me up in issues, or in godot discord gdextension/c++ channels linked at the bottom of this document.
 
