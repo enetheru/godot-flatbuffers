@@ -179,6 +179,13 @@ endif()
 
 target_link_libraries( "godot-flatbuffers" PRIVATE godot-cpp FlatBuffers::FlatBuffers)
 
+# Printed at startup so a loaded editor binary can be told apart from another build.
+target_compile_definitions( "godot-flatbuffers"
+        PRIVATE
+        "FLATBUFFERS_BUILD_TARGET=${GODOTCPP_TARGET}"
+        "FLATBUFFERS_BUILD_CONFIG=$<CONFIG>"
+)
+
 set_target_properties( "godot-flatbuffers"
         PROPERTIES
         FOLDER "godot-flatbuffers"

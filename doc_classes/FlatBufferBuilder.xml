@@ -354,8 +354,10 @@
 		<method name="finish" qualifiers="const">
 			<return type="void" />
 			<param index="0" name="table_offset" type="int" />
+			<param index="1" name="file_identifier" type="String" default="&quot;&quot;" />
 			<description>
 				Finishes building the buffer, setting the provided [param table_offset] as the root of the FlatBuffer.
+				When [param file_identifier] is 4 characters, those bytes are written immediately after the root offset. Any other length fails and leaves the buffer unfinished. An empty identifier writes none.
 			</description>
 		</method>
 		<method name="get_buffer" qualifiers="const">

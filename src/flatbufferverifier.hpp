@@ -6,7 +6,9 @@
 #include <godot_cpp/classes/ref.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "flatbuffers/buffer.h"
 #include "flatbuffers/verifier.h"
+#include <godot_cpp/variant/string.hpp>
 #include "godot_cpp/variant/variant_internal.hpp"
 
 namespace godot_flatbuffers {
@@ -41,6 +43,7 @@ protected:
 
     // All of the functions are called via the c++ interface from the
     // FlatBuffer, This object is used to replicate the interface of the parent project.
+    ClassDB::bind_method( D_METHOD( "buffer_has_identifier", "file_identifier"), &FlatBufferVerifier::buffer_has_identifier );
     ClassDB::bind_method( D_METHOD( "set_buffer", "byte_array"), &FlatBufferVerifier::set_buffer );
   }
 
@@ -52,9 +55,27 @@ public:
   // but it probably doesnt when the byte array is re-sized.
   void set_buffer( const godot::Variant &new_var ) {
     variant  = new_var;
-    buffer   = godot::VariantInternal::get_byte_array(&new_var);
+    // Point at the stored variant. The argument dies when this call returns.
+    buffer   = godot::VariantInternal::get_byte_array( &variant );
     // create a new verifier pointing to the bytes.
     verifier = std::make_unique< flatbuffers::Verifier >( buffer->ptr(), buffer->size());
+  }
+
+  // True when the 4 bytes after the root offset match file_identifier.
+  // A missing buffer, a short buffer, or any other length is false.
+  bool buffer_has_identifier( const godot::String &file_identifier ) const {
+    if( buffer == nullptr ) {
+      return false;
+    }
+    const godot::CharString utf8 = file_identifier.utf8();
+    if( utf8.length() != flatbuffers::kFileIdentifierLength ) {
+      return false;
+    }
+    const size_t need = sizeof( flatbuffers::uoffset_t ) + flatbuffers::kFileIdentifierLength;
+    if( static_cast< size_t >( buffer->size() ) < need ) {
+      return false;
+    }
+    return flatbuffers::BufferHasIdentifier( buffer->ptr(), utf8.get_data() );
   }
 
   flatbuffers::Verifier *getVerifier() const {

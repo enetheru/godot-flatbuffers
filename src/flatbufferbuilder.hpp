@@ -3,6 +3,7 @@
 
 #include "flatbuffers/flatbuffer_builder.h"
 #include <godot_cpp/classes/object.hpp>
+#include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/classes/ref.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
@@ -36,7 +37,7 @@ public:
 
   bool Required(uoffset_t table, flatbuffers::voffset_t field_offset) const;
 
-  void Finish( uint32_t root ) const;
+  void Finish( uint32_t root, const godot::String &file_identifier = "" ) const;
 
   [[nodiscard]] godot::PackedByteArray GetPackedByteArray() const;
 

@@ -9,6 +9,14 @@
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="buffer_has_identifier" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="file_identifier" type="String" />
+			<description>
+				Returns true when the 4 bytes immediately after the root offset equal [param file_identifier].
+				Call [method set_buffer] first. A short buffer, or an identifier that is not 4 characters, returns false.
+			</description>
+		</method>
 		<method name="set_buffer">
 			<return type="void" />
 			<param index="0" name="byte_array" type="Variant" />

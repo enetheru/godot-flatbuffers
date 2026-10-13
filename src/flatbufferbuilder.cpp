@@ -17,7 +17,7 @@ void FlatBufferBuilder::_bind_methods() {
 
   ClassDB::bind_method(D_METHOD("clear"), &FlatBufferBuilder::Clear);
   ClassDB::bind_method(D_METHOD("reset"), &FlatBufferBuilder::Reset);
-  ClassDB::bind_method(D_METHOD("finish", "table_offset"), &FlatBufferBuilder::Finish);
+  ClassDB::bind_method(D_METHOD("finish", "table_offset", "file_identifier"), &FlatBufferBuilder::Finish, "");
   ClassDB::bind_method(D_METHOD("start_table"), &FlatBufferBuilder::StartTable);
   ClassDB::bind_method(D_METHOD("end_table", "start"), &FlatBufferBuilder::EndTable);
   ClassDB::bind_method(D_METHOD("required", "table", "field"), &FlatBufferBuilder::Required);
@@ -160,9 +160,17 @@ bool FlatBufferBuilder::Required(
 }
 
 
-void FlatBufferBuilder::Finish(const uint32_t root) const {
+void FlatBufferBuilder::Finish(const uint32_t root, const godot::String &file_identifier) const {
   const Offset offset = root;
-  builder->Finish(offset, nullptr);
+  if (file_identifier.is_empty()) {
+    builder->Finish(offset, nullptr);
+    return;
+  }
+  const godot::CharString utf8 = file_identifier.utf8();
+  ERR_FAIL_COND_MSG(
+      utf8.length() != flatbuffers::kFileIdentifierLength,
+      "file_identifier must be exactly 4 characters");
+  builder->Finish(offset, utf8.get_data());
 }
 
 godot::PackedByteArray FlatBufferBuilder::GetPackedByteArray() const {
