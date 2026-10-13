@@ -574,9 +574,9 @@ int64_t FlatBuffer::get_array_size(const int64_t vtable_offset) const {
 int64_t FlatBuffer::get_array_element_start(const int64_t array_start, const int64_t idx) const {
 #ifdef DEBUG_ENABLED
   [[maybe_unused]] const int64_t array_size = fb_bytes->decode_u32(array_start);
-  assert(array_start < bytes->size() - 4);
+  assert(array_start < fb_bytes->size() - 4);
   assert(idx < array_size);
-  assert(array_start + array_size * 4 < bytes->size());
+  assert(array_start + array_size * 4 < fb_bytes->size());
 #endif
 
   const int64_t data    = array_start + 4;

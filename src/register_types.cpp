@@ -17,7 +17,7 @@ void initialize_module( const godot::ModuleInitializationLevel p_level ) {
     return;
   }
 
-  using namespace godot_flatbuffers;
+  using namespace godot_flatbuffers; // NOLINT(*-build-using-namespace)
   godot::ClassDB::register_class< FlatBuffer >();
   godot::ClassDB::register_class< FlatBufferBuilder >();
   godot::ClassDB::register_class< FlatBufferVerifier >();
