@@ -1,4 +1,6 @@
 #include "flatbuffer.hpp"
+#include "flatbufferbuilder.hpp"
+
 #include <godot_cpp/core/class_db.hpp>
 
 #include "utils.hpp"
@@ -18,6 +20,182 @@ godot::String FlatBuffer::get_memory_address() const {
 #include "godot_cpp/variant/variant_internal.hpp"
 
 namespace godot_flatbuffers {
+
+namespace {
+
+using flatbuffers::uoffset_t;
+using flatbuffers::voffset_t;
+
+template <typename T>
+int cmp_less(T a, T b) {
+  return static_cast<int>(a > b) - static_cast<int>(a < b);
+}
+
+int64_t variant_i64(const godot::Variant &v) {
+  if (v.get_type() == godot::Variant::NIL) return 0;
+  return static_cast<int64_t>(v);
+}
+
+double variant_f64(const godot::Variant &v) {
+  if (v.get_type() == godot::Variant::NIL) return 0.0;
+  return static_cast<double>(v);
+}
+
+int cmp_strings(const char *a, uoffset_t a_size, const char *b, uoffset_t b_size) {
+  if (flatbuffers::StringLessThan(a, a_size, b, b_size)) return -1;
+  if (flatbuffers::StringLessThan(b, b_size, a, a_size)) return 1;
+  return 0;
+}
+
+// A missing string sorts after a present one, matching flatc.
+int cmp_string_fields(const flatbuffers::Table *a, const flatbuffers::Table *b, voffset_t field) {
+  const auto *as = a->GetPointer<const flatbuffers::String *>(field);
+  const auto *bs = b->GetPointer<const flatbuffers::String *>(field);
+  if (as && bs) return cmp_strings(as->data(), as->size(), bs->data(), bs->size());
+  if (as) return -1;
+  if (bs) return 1;
+  return 0;
+}
+
+int cmp_string_value(const flatbuffers::Table *table, voffset_t field, const godot::Variant &key) {
+  const godot::String text = key.get_type() == godot::Variant::NIL
+      ? godot::String()
+      : static_cast<godot::String>(key);
+  const godot::CharString utf8 = text.utf8();
+  const auto *fs = table->GetPointer<const flatbuffers::String *>(field);
+  const char *fdata = fs ? fs->data() : "";
+  const auto fsize = fs ? static_cast<uoffset_t>(fs->size()) : 0;
+  const char *kdata = utf8.get_data() ? utf8.get_data() : "";
+  const auto ksize = static_cast<uoffset_t>(utf8.length());
+  return cmp_strings(fdata, fsize, kdata, ksize);
+}
+
+template <typename T>
+T narrow_int(const godot::Variant &v) {
+  return static_cast<T>(variant_i64(v));
+}
+
+bool known_key_kind(int kind) {
+  switch (kind) {
+    case FlatBufferBuilder::KEY_STRING:
+    case FlatBufferBuilder::KEY_BOOL:
+    case FlatBufferBuilder::KEY_BYTE:
+    case FlatBufferBuilder::KEY_UBYTE:
+    case FlatBufferBuilder::KEY_SHORT:
+    case FlatBufferBuilder::KEY_USHORT:
+    case FlatBufferBuilder::KEY_INT:
+    case FlatBufferBuilder::KEY_UINT:
+    case FlatBufferBuilder::KEY_LONG:
+    case FlatBufferBuilder::KEY_ULONG:
+    case FlatBufferBuilder::KEY_FLOAT:
+    case FlatBufferBuilder::KEY_DOUBLE:
+      return true;
+    default:
+      return false;
+  }
+}
+
+voffset_t key_voffset(int field) {
+  return static_cast<voffset_t>(field);
+}
+
+}  // namespace
+
+int compare_tables_by_key(const flatbuffers::Table *a, const flatbuffers::Table *b,
+                          int field, int kind, const godot::Variant &key_default) {
+  if (a == nullptr || b == nullptr) return 0;
+  const voffset_t vt = key_voffset(field);
+  switch (kind) {
+    case FlatBufferBuilder::KEY_STRING:
+      return cmp_string_fields(a, b, vt);
+    case FlatBufferBuilder::KEY_BOOL:
+    case FlatBufferBuilder::KEY_UBYTE:
+      return cmp_less(a->GetField<uint8_t>(vt, narrow_int<uint8_t>(key_default)),
+                      b->GetField<uint8_t>(vt, narrow_int<uint8_t>(key_default)));
+    case FlatBufferBuilder::KEY_BYTE:
+      return cmp_less(a->GetField<int8_t>(vt, narrow_int<int8_t>(key_default)),
+                      b->GetField<int8_t>(vt, narrow_int<int8_t>(key_default)));
+    case FlatBufferBuilder::KEY_SHORT:
+      return cmp_less(a->GetField<int16_t>(vt, narrow_int<int16_t>(key_default)),
+                      b->GetField<int16_t>(vt, narrow_int<int16_t>(key_default)));
+    case FlatBufferBuilder::KEY_USHORT:
+      return cmp_less(a->GetField<uint16_t>(vt, narrow_int<uint16_t>(key_default)),
+                      b->GetField<uint16_t>(vt, narrow_int<uint16_t>(key_default)));
+    case FlatBufferBuilder::KEY_INT:
+      return cmp_less(a->GetField<int32_t>(vt, narrow_int<int32_t>(key_default)),
+                      b->GetField<int32_t>(vt, narrow_int<int32_t>(key_default)));
+    case FlatBufferBuilder::KEY_UINT:
+      return cmp_less(a->GetField<uint32_t>(vt, narrow_int<uint32_t>(key_default)),
+                      b->GetField<uint32_t>(vt, narrow_int<uint32_t>(key_default)));
+    case FlatBufferBuilder::KEY_LONG:
+      return cmp_less(a->GetField<int64_t>(vt, variant_i64(key_default)),
+                      b->GetField<int64_t>(vt, variant_i64(key_default)));
+    case FlatBufferBuilder::KEY_ULONG:
+      return cmp_less(a->GetField<uint64_t>(vt, static_cast<uint64_t>(variant_i64(key_default))),
+                      b->GetField<uint64_t>(vt, static_cast<uint64_t>(variant_i64(key_default))));
+    case FlatBufferBuilder::KEY_FLOAT:
+      return cmp_less(a->GetField<float>(vt, static_cast<float>(variant_f64(key_default))),
+                      b->GetField<float>(vt, static_cast<float>(variant_f64(key_default))));
+    case FlatBufferBuilder::KEY_DOUBLE:
+      return cmp_less(a->GetField<double>(vt, variant_f64(key_default)),
+                      b->GetField<double>(vt, variant_f64(key_default)));
+    default:
+      return 0;
+  }
+}
+
+int compare_table_key(const flatbuffers::Table *table, int field, int kind,
+                      const godot::Variant &key, const godot::Variant &key_default) {
+  if (table == nullptr) return 0;
+  const voffset_t vt = key_voffset(field);
+  switch (kind) {
+    case FlatBufferBuilder::KEY_STRING:
+      return cmp_string_value(table, vt, key);
+    case FlatBufferBuilder::KEY_BOOL:
+    case FlatBufferBuilder::KEY_UBYTE:
+      return cmp_less(table->GetField<uint8_t>(vt, narrow_int<uint8_t>(key_default)),
+                      narrow_int<uint8_t>(key));
+    case FlatBufferBuilder::KEY_BYTE:
+      return cmp_less(table->GetField<int8_t>(vt, narrow_int<int8_t>(key_default)),
+                      narrow_int<int8_t>(key));
+    case FlatBufferBuilder::KEY_SHORT:
+      return cmp_less(table->GetField<int16_t>(vt, narrow_int<int16_t>(key_default)),
+                      narrow_int<int16_t>(key));
+    case FlatBufferBuilder::KEY_USHORT:
+      return cmp_less(table->GetField<uint16_t>(vt, narrow_int<uint16_t>(key_default)),
+                      narrow_int<uint16_t>(key));
+    case FlatBufferBuilder::KEY_INT:
+      return cmp_less(table->GetField<int32_t>(vt, narrow_int<int32_t>(key_default)),
+                      narrow_int<int32_t>(key));
+    case FlatBufferBuilder::KEY_UINT:
+      return cmp_less(table->GetField<uint32_t>(vt, narrow_int<uint32_t>(key_default)),
+                      narrow_int<uint32_t>(key));
+    case FlatBufferBuilder::KEY_LONG:
+      return cmp_less(table->GetField<int64_t>(vt, variant_i64(key_default)), variant_i64(key));
+    case FlatBufferBuilder::KEY_ULONG:
+      return cmp_less(table->GetField<uint64_t>(vt, static_cast<uint64_t>(variant_i64(key_default))),
+                      static_cast<uint64_t>(variant_i64(key)));
+    case FlatBufferBuilder::KEY_FLOAT:
+      return cmp_less(table->GetField<float>(vt, static_cast<float>(variant_f64(key_default))),
+                      static_cast<float>(variant_f64(key)));
+    case FlatBufferBuilder::KEY_DOUBLE:
+      return cmp_less(table->GetField<double>(vt, variant_f64(key_default)), variant_f64(key));
+    default:
+      return 0;
+  }
+}
+
+int FlatBuffer::key_compare(int field, int kind, const godot::Variant &key,
+                            const godot::Variant &key_default) const {
+  if (table == nullptr) {
+    ERR_FAIL_V_MSG(0, "key_compare was called on an empty table.");
+  }
+  if (field < 0 || field > 0xFFFF || !known_key_kind(kind)) {
+    ERR_FAIL_V_MSG(0, "key_compare was given a bad field or key kind.");
+  }
+  return compare_table_key(table, field, kind, key, key_default);
+}
+
 // Value, Variant::Type, c++ type
 #define GODOT_TYPES_SCALAR(TD) \
 TD(  0, godot::Variant::NIL,                   nullptr) \
@@ -212,6 +390,9 @@ void FlatBuffer::_bind_methods() {
   ClassDB::bind_method( D_METHOD( "get_field_offset", "vtable_pos" ), &FlatBuffer::get_field_offset );
   ClassDB::bind_method( D_METHOD( "get_inline_field_start", "vtable_pos" ), &FlatBuffer::get_inline_field_start );
   ClassDB::bind_method( D_METHOD( "get_offset_field_start", "vtable_pos" ), &FlatBuffer::get_offset_field_start );
+  ClassDB::bind_method(
+      D_METHOD( "key_compare", "field", "kind", "key", "key_default" ),
+      &FlatBuffer::key_compare );
 
   //Array Access Helpers
   ClassDB::bind_method( D_METHOD( "get_array_size", "vtable_offset" ), &FlatBuffer::get_array_size );

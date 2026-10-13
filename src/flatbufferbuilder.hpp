@@ -28,6 +28,23 @@ protected:
   static void _bind_methods();
 
 public:
+  // Field widths for create_vector_of_sorted_tables and FlatBuffer.key_compare.
+  // Values stay in this order. Generated scripts pass them by name.
+  enum KeyKind {
+    KEY_STRING = 0,
+    KEY_BOOL,
+    KEY_BYTE,
+    KEY_UBYTE,
+    KEY_SHORT,
+    KEY_USHORT,
+    KEY_INT,
+    KEY_UINT,
+    KEY_LONG,
+    KEY_ULONG,
+    KEY_FLOAT,
+    KEY_DOUBLE,
+  };
+
   explicit FlatBufferBuilder();
 
   explicit FlatBufferBuilder( int size );
@@ -68,6 +85,13 @@ public:
 
   // is a special case when handling offsets.
   [[nodiscard]] uoffset_t CreateVectorOfOffset( const godot::PackedInt32Array &array ) const;
+
+  // Sort table offsets by a scalar or string key, then write them as a vector.
+  // key_field is the vtable offset. key_kind is a KeyKind value. key_default
+  // is the schema default used when a scalar key was not stored.
+  [[nodiscard]] uoffset_t CreateVectorOfSortedTables(
+      const godot::PackedInt32Array &offsets, int key_field, int key_kind,
+      const godot::Variant &key_default) const;
 
 
   // template for creating vectors of scalars.

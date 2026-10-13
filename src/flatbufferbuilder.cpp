@@ -1,8 +1,14 @@
 #include "flatbufferbuilder.hpp"
+#include <godot_cpp/core/binder_common.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "flatbuffer.hpp"
+
+#include <algorithm>
+#include <vector>
+
+VARIANT_ENUM_CAST(godot_flatbuffers::FlatBufferBuilder::KeyKind);
 
 /*
  * Flatbuffer Builder wrapper for gdscript
@@ -38,6 +44,21 @@ void FlatBufferBuilder::_bind_methods() {
 
   // == Create Vectors of Offset(uint32_t) ==
   ClassDB::bind_method(D_METHOD("create_vector_offset", "array"), &FlatBufferBuilder::CreateVectorOfOffset);
+  ClassDB::bind_method(
+          D_METHOD("create_vector_of_sorted_tables", "offsets", "key_field", "key_kind", "key_default"),
+          &FlatBufferBuilder::CreateVectorOfSortedTables);
+  BIND_ENUM_CONSTANT(KEY_STRING);
+  BIND_ENUM_CONSTANT(KEY_BOOL);
+  BIND_ENUM_CONSTANT(KEY_BYTE);
+  BIND_ENUM_CONSTANT(KEY_UBYTE);
+  BIND_ENUM_CONSTANT(KEY_SHORT);
+  BIND_ENUM_CONSTANT(KEY_USHORT);
+  BIND_ENUM_CONSTANT(KEY_INT);
+  BIND_ENUM_CONSTANT(KEY_UINT);
+  BIND_ENUM_CONSTANT(KEY_LONG);
+  BIND_ENUM_CONSTANT(KEY_ULONG);
+  BIND_ENUM_CONSTANT(KEY_FLOAT);
+  BIND_ENUM_CONSTANT(KEY_DOUBLE);
 
   // == Create Vectors of Scalars ==
   ClassDB::bind_method(D_METHOD("create_vector_int8", "array"), &FlatBufferBuilder::CreateVectorOfScalar< int8_t >);
@@ -215,7 +236,7 @@ FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVariant(
     case godot::Variant::STRING: {
       const auto v   = static_cast< godot::String >(value);
       const auto str = v.utf8();
-      return builder->CreateString(str.ptr(), str.size()).o;
+      return builder->CreateString(str.ptr(), str.length()).o;
     }
     case godot::Variant::VECTOR2: {
       const auto v = static_cast< godot::Vector2 >(value);
@@ -284,12 +305,12 @@ FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVariant(
     case godot::Variant::STRING_NAME: {
       const godot::String v   = static_cast< godot::StringName >(value);
       const auto          str = v.utf8();
-      return builder->CreateString(str.ptr(), str.size()).o;
+      return builder->CreateString(str.ptr(), str.length()).o;
     }
     case godot::Variant::NODE_PATH: {
       const godot::String v   = static_cast< godot::NodePath >(value);
       const auto          str = v.utf8();
-      return builder->CreateString(str.ptr(), str.size()).o;
+      return builder->CreateString(str.ptr(), str.length()).o;
     }
     case godot::Variant::RID: {
       ERR_FAIL_V_MSG(0, "Unsupported type(RID) given as value.");
@@ -356,7 +377,7 @@ FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVariant(
       std::vector< Offset > offsets(v.size());
       for( int i = 0; i < v.size(); ++i ) {
         const auto str = v[ i ].utf8();
-        offsets[ i ]   = builder->CreateString(str.ptr(), str.size()).o;
+        offsets[ i ]   = builder->CreateString(str.ptr(), str.length()).o;
       }
       const uoffset_t offset = builder->CreateVector(offsets).o;
       return offset;
@@ -391,6 +412,40 @@ FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVectorOfOffset(const godot
     builder->PushElement(static_cast< Offset >(array[ --i ]));
   }
   return builder->EndVector(array.size());
+}
+
+
+FlatBufferBuilder::uoffset_t FlatBufferBuilder::CreateVectorOfSortedTables(
+        const godot::PackedInt32Array &offsets, int key_field, int key_kind,
+        const godot::Variant &key_default) const {
+  if (key_field < 0 || key_field > 0xFFFF || key_kind < KEY_STRING || key_kind > KEY_DOUBLE) {
+    ERR_FAIL_V_MSG(0, "sorted table vector was given a bad field or key kind.");
+  }
+  const auto buf_size = builder->GetSize();
+  std::vector< uoffset_t > ordered;
+  ordered.reserve(static_cast< size_t >(offsets.size()));
+  for (int64_t i = 0; i < offsets.size(); ++i) {
+    const int64_t raw = offsets[ i ];
+    if (raw <= 0 || static_cast< uint64_t >(raw) > buf_size) {
+      ERR_FAIL_V_MSG(0, "sorted table vector was given an offset that is not a table.");
+    }
+    ordered.push_back(static_cast< uoffset_t >(raw));
+  }
+
+  // Offsets are distances from the buffer end. Same formula as Required().
+  const auto table_at = [&](uoffset_t offset) -> const flatbuffers::Table * {
+    return reinterpret_cast< const flatbuffers::Table * >(
+            builder->GetCurrentBufferPointer() + (builder->GetSize() - offset));
+  };
+  std::stable_sort(ordered.begin(), ordered.end(), [&](uoffset_t a, uoffset_t b) {
+    return compare_tables_by_key(table_at(a), table_at(b), key_field, key_kind, key_default) < 0;
+  });
+
+  builder->StartVector< Offset >(ordered.size());
+  for (auto i = ordered.size(); i > 0;) {
+    builder->PushElement(static_cast< Offset >(ordered[ --i ]));
+  }
+  return builder->EndVector(ordered.size());
 }
 
 

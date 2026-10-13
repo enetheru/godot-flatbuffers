@@ -63,7 +63,7 @@ These scripts compile and run. The open work is a phase the strategy never calls
 - [ ] `bit_flags` on an unsigned enum. Generated values are `1 << N`.
 - [ ] `nested_flatbuffer` on a `[ubyte]` field, then verify and read the inner root.
 - [ ] `flexbuffer` on a `[ubyte]` field.
-- [ ] `key` on a table field, then sort a vector and look up by that key.
+- [x] `key` on a table field, then sort a vector and look up by that key. Covered by `res://tests/flatbuffers/test_key.gd`.
 - [ ] Union type alias (`Alias:Type`), separate from the union vector already in `vector.fbs`.
 - [x] `file_identifier` round-trip, and a mismatch that `verify()` rejects. Covered by `res://tests/flatbuffers/test_file_identifier.gd`.
 - [ ] `file_extension` is recorded on the generated script.

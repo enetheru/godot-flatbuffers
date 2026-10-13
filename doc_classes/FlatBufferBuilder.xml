@@ -293,6 +293,16 @@
 				Creates a vector of custom FlatBuffer structs from an [Array] of [PackedByteArray] (each representing a struct). [param element_size] must match the struct's size in bytes.
 			</description>
 		</method>
+		<method name="create_vector_of_sorted_tables" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="offsets" type="PackedInt32Array" />
+			<param index="1" name="key_field" type="int" />
+			<param index="2" name="key_kind" type="int" />
+			<param index="3" name="key_default" type="Variant" />
+			<description>
+				Sorts table [param offsets] by the key at vtable offset [param key_field] and writes them as a vector. [param key_kind] is a [enum FlatBufferBuilder.KeyKind] value. A missing scalar uses [param key_default]. Returns the vector offset.
+			</description>
+		</method>
 		<method name="create_vector_of_table" qualifiers="const">
 			<return type="int" />
 			<param index="0" name="array" type="Array" />
@@ -393,4 +403,42 @@
 			</description>
 		</method>
 	</methods>
+	<constants>
+		<constant name="KEY_STRING" value="0" enum="KeyKind">
+			String key. Order matches FlatBuffers string comparison.
+		</constant>
+		<constant name="KEY_BOOL" value="1" enum="KeyKind">
+			Bool key, stored as one byte.
+		</constant>
+		<constant name="KEY_BYTE" value="2" enum="KeyKind">
+			Signed 8-bit key.
+		</constant>
+		<constant name="KEY_UBYTE" value="3" enum="KeyKind">
+			Unsigned 8-bit key.
+		</constant>
+		<constant name="KEY_SHORT" value="4" enum="KeyKind">
+			Signed 16-bit key.
+		</constant>
+		<constant name="KEY_USHORT" value="5" enum="KeyKind">
+			Unsigned 16-bit key.
+		</constant>
+		<constant name="KEY_INT" value="6" enum="KeyKind">
+			Signed 32-bit key.
+		</constant>
+		<constant name="KEY_UINT" value="7" enum="KeyKind">
+			Unsigned 32-bit key.
+		</constant>
+		<constant name="KEY_LONG" value="8" enum="KeyKind">
+			Signed 64-bit key.
+		</constant>
+		<constant name="KEY_ULONG" value="9" enum="KeyKind">
+			Unsigned 64-bit key. Values above 2^63-1 do not round-trip through a Godot int.
+		</constant>
+		<constant name="KEY_FLOAT" value="10" enum="KeyKind">
+			32-bit float key.
+		</constant>
+		<constant name="KEY_DOUBLE" value="11" enum="KeyKind">
+			64-bit float key.
+		</constant>
+	</constants>
 </class>

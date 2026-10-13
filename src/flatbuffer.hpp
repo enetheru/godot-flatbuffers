@@ -192,6 +192,10 @@ public:
   [[nodiscard]] int64_t get_inline_field_start(int64_t vtable_pos) const;
   [[nodiscard]] int64_t get_offset_field_start(int64_t vtable_pos) const;
 
+  // -1 when this table's key is less than key, 0 when equal, 1 when greater.
+  // kind is a FlatBufferBuilder::KeyKind value. A missing scalar uses key_default.
+  [[nodiscard]] int key_compare(int field, int kind, const godot::Variant &key,
+                                const godot::Variant &key_default) const;
 
   godot::Variant get_variant(int64_t field_start, godot::Variant::Type expected_type) const;
   godot::Variant get_variant_at(int64_t vtable_pos, uint32_t index, godot::Variant::Type expected_type) const;
@@ -201,6 +205,13 @@ public:
 
   [[nodiscard]] int64_t get_array_element_start(int64_t array_start, int64_t idx) const;
 };
+
+// Shared by lookup (one table against a value) and sort (two tables).
+int compare_table_key(const flatbuffers::Table *table, int field, int kind,
+                      const godot::Variant &key, const godot::Variant &key_default);
+int compare_tables_by_key(const flatbuffers::Table *a, const flatbuffers::Table *b,
+                          int field, int kind, const godot::Variant &key_default);
+
 } // namespace godot_flatbuffers
 
 #endif // GODOT_FLATBUFFERS_EXTENSION_FLATBUFFER_HPP
