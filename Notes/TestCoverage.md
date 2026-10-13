@@ -60,7 +60,7 @@ These scripts compile and run. The open work is a phase the strategy never calls
 
 - [x] `(required)` on a string or table field. Building without it fails, and `verify()` fails when the field is absent. Covered by `res://tests/flatbuffers/test_required.gd`.
 - [ ] `id` on every field of a table, including the implicit type field of a union.
-- [ ] `bit_flags` on an unsigned enum. Generated values are `1 << N`.
+- [x] `bit_flags` on an unsigned enum. Generated values are `1 << N`. Covered by `res://tests/flatbuffers/test_bit_flags.gd`.
 - [x] `nested_flatbuffer` on a `[ubyte]` field, then verify and read the inner root. Covered by `res://tests/flatbuffers/test_nested.gd`.
 - [ ] `flexbuffer` on a `[ubyte]` field.
 - [x] `key` on a table field, then sort a vector and look up by that key. Covered by `res://tests/flatbuffers/test_key.gd`.
