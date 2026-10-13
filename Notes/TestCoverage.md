@@ -65,7 +65,7 @@ These scripts compile and run. The open work is a phase the strategy never calls
 - [ ] `flexbuffer` on a `[ubyte]` field.
 - [ ] `key` on a table field, then sort a vector and look up by that key.
 - [ ] Union type alias (`Alias:Type`), separate from the union vector already in `vector.fbs`.
-- [ ] `file_identifier` round-trip, and a mismatch that `verify()` rejects.
+- [x] `file_identifier` round-trip, and a mismatch that `verify()` rejects. Covered by `res://tests/flatbuffers/test_file_identifier.gd`.
 - [ ] `file_extension` is recorded on the generated script.
 - [ ] Namespace becomes something a Godot script can preload, or the test records why a namespace file is the wrong shape.
 - [ ] Identifier collision: a field named like an extension member (`start`, `bytes`) still generates a callable script.
