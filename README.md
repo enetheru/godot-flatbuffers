@@ -190,10 +190,11 @@ I just spent three to four days trying to get an import plugin to work that woul
 Similar situation to the import plugin, all of my attempts failed to produce something of value.
 
 #### Schema Includes
-- While the flatc compiler can use relative paths, the highlighter is not aware of the file path of the file it is currently highlighting, this is a limitation of the plain text editor in godot, and requires a change to the engine code to expose the path. So highlighting will fail on relative paths.
+- Relative include paths only work on Godot 4.7 and later. The highlighter gets the open file from `EditorSyntaxHighlighter._get_edited_resource()`. The plain text editor did not expose that before 4.7, so on older editors a relative include cannot be resolved.
+  - https://github.com/godotengine/godot/pull/96058
+  - Resolved for 4.7 in https://github.com/godotengine/godot/pull/115814
 - flatc also does not recognise res:// or user:// paths, and I will not be changing that.
 - the res:// path is always added to the include list so including files relative to res:// will work fine.
-- I have an outdated PR for this: https://github.com/godotengine/godot/pull/96058
 
 ---
 
