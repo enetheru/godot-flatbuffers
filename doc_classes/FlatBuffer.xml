@@ -206,6 +206,14 @@
 				Verifies that an offset field at [param field] is valid.
 			</description>
 		</method>
+		<method name="verify_offset_required" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="verifier" type="FlatBufferVerifier" />
+			<param index="1" name="field" type="int" />
+			<description>
+				Verifies that a required offset field at [param field] is present and valid. A missing field fails.
+			</description>
+		</method>
 		<method name="verify_string" qualifiers="const">
 			<return type="bool" />
 			<param index="0" name="verifier" type="FlatBufferVerifier" />

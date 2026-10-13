@@ -58,7 +58,7 @@ These scripts compile and run. The open work is a phase the strategy never calls
 
 `TESTING.md` lists these. No current `.fbs` exercises them, apart from `(deprecated)`.
 
-- [ ] `(required)` on a string or table field. Building without it fails, and `verify()` fails when the field is absent.
+- [x] `(required)` on a string or table field. Building without it fails, and `verify()` fails when the field is absent. Covered by `res://tests/flatbuffers/test_required.gd`.
 - [ ] `id` on every field of a table, including the implicit type field of a union.
 - [ ] `bit_flags` on an unsigned enum. Generated values are `1 << N`.
 - [ ] `nested_flatbuffer` on a `[ubyte]` field, then verify and read the inner root.

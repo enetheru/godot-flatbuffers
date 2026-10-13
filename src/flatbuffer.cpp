@@ -250,6 +250,7 @@ void FlatBuffer::_bind_methods() {
   ClassDB::bind_method( D_METHOD( "verify_field_double", "verifier", "field", "align" ), &FlatBuffer::verify_field<double> );
   ClassDB::bind_method( D_METHOD( "verify_variant", "verifier", "field", "type" ), &FlatBuffer::verify_variant);
   ClassDB::bind_method( D_METHOD( "verify_offset", "verifier", "field" ), &FlatBuffer::verify_offset );
+  ClassDB::bind_method( D_METHOD( "verify_offset_required", "verifier", "field" ), &FlatBuffer::verify_offset_required );
   ClassDB::bind_method( D_METHOD( "verify_string", "verifier", "field" ), &FlatBuffer::verify_string );
 
   ClassDB::bind_method( D_METHOD( "verify_vector_s8", "verifier", "field" ), &FlatBuffer::verify_vector<int8_t>);

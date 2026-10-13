@@ -150,6 +150,12 @@ public:
     return table->VerifyOffset(*v, field);
   }
 
+  /// A required offset field must be present and point at a valid offset.
+  bool verify_offset_required(const FlatBufferVerifier *verifier, const voffset_t field) const {
+    const auto v = verifier->getVerifier();
+    return table->VerifyOffsetRequired(*v, field);
+  }
+
   // template <typename OffsetT = uoffset_t, bool B = false>
   // bool VerifyOffsetRequired(const VerifierTemplate<B>& verifier, voffset_t field);
 

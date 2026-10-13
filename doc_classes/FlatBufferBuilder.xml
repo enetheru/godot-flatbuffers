@@ -370,6 +370,14 @@
 				Returns the current size of the built buffer.
 			</description>
 		</method>
+		<method name="required" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="table" type="int" />
+			<param index="1" name="field" type="int" />
+			<description>
+				Returns true when the offset field at [param field] was set on [param table]. A missing required field fails and returns false.
+			</description>
+		</method>
 		<method name="reset" qualifiers="const">
 			<return type="void" />
 			<description>

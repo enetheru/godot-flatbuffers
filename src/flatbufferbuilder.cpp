@@ -143,10 +143,20 @@ FlatBufferBuilder::FlatBufferBuilder() { builder = std::make_unique< flatbuffers
 
 FlatBufferBuilder::FlatBufferBuilder(int size) { builder = std::make_unique< flatbuffers::FlatBufferBuilder >(size); }
 
-void FlatBufferBuilder::Required(
+bool FlatBufferBuilder::Required(
         const uoffset_t table_offset, const flatbuffers::voffset_t field_offset) const {
-  const flatbuffers::Offset<> ofs = table_offset;
-  return builder->Required( ofs, field_offset);
+  // FlatBufferBuilder::Required asserts, and that assert is compiled out of
+  // Release. Report the miss and let the generated finish() return 0.
+  if (table_offset == 0 || table_offset > builder->GetSize()) {
+    ERR_FAIL_V_MSG(false, "Required field check was given a bad table offset.");
+  }
+  const uint8_t *base = builder->GetCurrentBufferPointer();
+  const auto *table_ptr = reinterpret_cast<const flatbuffers::Table *>(
+      base + static_cast<flatbuffers::uoffset_t>(builder->GetSize() - table_offset));
+  const bool present = table_ptr->GetOptionalFieldOffset(field_offset) != 0;
+  ERR_FAIL_COND_V_MSG(
+      !present, false, "A required field was not set before the table was finished.");
+  return true;
 }
 
 
