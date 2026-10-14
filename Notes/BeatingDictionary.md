@@ -18,7 +18,7 @@ These times are the `template_release` rows stamped `2026-10-14T00:31:51` UTC in
 
 FlatBuffers is level with Objects on Store and ahead of Objects on Load, Spawn, Update, and Peek. Dictionary is ahead on every test except Peek.
 
-That pass has no Dict from objects row. `BM_DictFromObj_Store` was added later. The objects already exist, and the timer builds a dictionary from their fields and then calls `var_to_bytes`. The table above does not include it.
+That pass has no Dict from objects row. `BM_DictFromObj_Store` was added later. The objects already exist, and the timer builds a dictionary from their fields and then calls `var_to_bytes`. Load, Spawn, Update, and Peek for that codec time the dictionary path on the bytes that copy produced. The copy stays outside those timers. The table above does not include it.
 
 ## What the split already shows
 

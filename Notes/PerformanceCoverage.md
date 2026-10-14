@@ -9,7 +9,7 @@ The suites live in `project/bench`. `run.ps1` with no arguments runs suite, prea
 Three runners register benchmarks. The scenario runner is the comparison. The other two keep older names runnable.
 
 **Scenario**
-  `runner_scenario.gd` is Store, Load, Spawn, Update, and Peek on one 64-record payload. FlatBuffers, Objects (`BM_BuiltIn_*`, `var_to_bytes_with_objects`), and Dictionary (`BM_GDict_*`, `var_to_bytes`) share the field formulas in `compare_work.gd`. The timer window is `project/bench/BENCH.md` under Scenario suite.
+  `runner_scenario.gd` is Store, Load, Spawn, Update, and Peek on one 64-record payload. FlatBuffers, Objects (`BM_BuiltIn_*`, `var_to_bytes_with_objects`), Dictionary (`BM_GDict_*`, `var_to_bytes`), and Dict from objects (`BM_DictFromObj_*`) share the field formulas in `compare_work.gd`. Store for Dict from objects copies object fields into a dictionary and then calls `var_to_bytes`. Load, Spawn, Update, and Peek for that codec time the dictionary path on the bytes that copy produced. The timer window is `project/bench/BENCH.md` under Scenario suite.
 
 **Upstream copy**
   `runner_suite.gd` is the 3-record sample copied from the upstream Google benchmark. Encode, Decode, ReadAll, and RoundTrip exist for all three codecs. It is kept so those names still run. It is not the fairness document for the scenario suite.
@@ -42,10 +42,10 @@ A `template_release` pass of all fifteen scenario benchmarks is stamped `2026-10
 | Question | What the saved row measures | Against the sketch in `BENCH.md` |
 | --- | --- | --- |
 | Store | FlatBuffers builds the buffer inside the timer. Dictionary and Objects encode a value built outside it. `BM_DictFromObj_Store` keeps the object graph outside the timer and, inside it, copies those fields into a dictionary and then calls `var_to_bytes`. | Dictionary and Objects match the storage sketch. Dict from objects is that sketch when the fields start on objects. FlatBuffers includes construction from the formulas, not from the objects. No `template_release` row for `BM_DictFromObj_Store` yet. |
-| Load | Decode and read every field. The checksum has to match. | Fair as touch-every-field. Dictionary and Objects walk the value a second time after `bytes_to_var`. |
-| Spawn | Bytes become a new value. An empty result fails the run. The timer does not repeat the checksum. | FlatBuffers and Dictionary end as a dictionary. Objects ends as a `FooBarContainer`. |
-| Update | Patch a destination built outside the timer. The timer does not repeat the checksum. | FlatBuffers writes into a dictionary. Dictionary and Objects decode a temporary, then copy. |
-| Peek | Rating of record 32, checked against a value computed outside the timer. | FlatBuffers reads that field. Dictionary and Objects decode the whole buffer first. |
+| Load | Decode and read every field. The checksum has to match. `BM_DictFromObj_Load` does the Dictionary decode and walk on the buffer `dict_from_objects` encoded before the timer. | Fair as touch-every-field. Dictionary, Objects, and Dict from objects walk the value a second time after `bytes_to_var`. The object-to-dictionary copy is not inside this timer. No `template_release` row for `BM_DictFromObj_Load` yet. |
+| Spawn | Bytes become a new value. An empty result fails the run. The timer does not repeat the checksum. `BM_DictFromObj_Spawn` returns `bytes_to_var` of that same buffer. | FlatBuffers, Dictionary, and Dict from objects end as a dictionary. Objects ends as a `FooBarContainer`. No `template_release` row for `BM_DictFromObj_Spawn` yet. |
+| Update | Patch a destination built outside the timer. The timer does not repeat the checksum. `BM_DictFromObj_Update` copies onto a dictionary `dict_from_objects` built before the loop. | FlatBuffers writes into a dictionary. Dictionary, Objects, and Dict from objects decode a temporary, then copy. No `template_release` row for `BM_DictFromObj_Update` yet. |
+| Peek | Rating of record 32, checked against a value computed outside the timer. `BM_DictFromObj_Peek` decodes that dictionary buffer, then reads the rating. | FlatBuffers reads that field. Dictionary, Objects, and Dict from objects decode the whole buffer first. No `template_release` row for `BM_DictFromObj_Peek` yet. |
 
 Peek is the scenario question where that release pass is ahead of Dictionary. Store, Load, Spawn, and Update are behind Dictionary on that same pass. The numbers and the reasons are in `Notes/BeatingDictionary.md`.
 
