@@ -2,7 +2,7 @@
 
 Coverage here means a performance question has a named benchmark, a timer window written down, and a row in `project/bench/results/history.tres` that can be compared with the other codecs inside one Godot binary. A row is not a baseline. Whether FlatBuffers beats Dictionary is a separate claim, written in `Notes/BeatingDictionary.md`.
 
-The suites live in `project/bench`. `run.ps1` runs `editor`, then `template_debug`, then `template_release`. The bench list opens on Scenarios.
+The suites live in `project/bench`. `run.ps1` with no arguments runs suite, prealloc, array-size, and scenario on `editor`, then `template_debug`, then `template_release`. `-Suite` selects one. The bench list opens on Scenarios.
 
 ## Layout
 
