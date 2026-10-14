@@ -252,7 +252,7 @@ GODOT_TYPES_OTHER(TD)
 
 // Get the size of the godot variant types as they are expressed in the
 // flatbuffer.
-size_t get_variant_struct_size(const godot::Variant::Type type ) {
+static size_t get_variant_struct_size(const godot::Variant::Type type ) {
   switch( type ) {
     //Struct Types
 #define GODOT_TD(INT, ENUM, TYPE) \
@@ -266,7 +266,7 @@ case ENUM: return sizeof(TYPE);
 
 
 template< typename T > [[nodiscard]]
-T decode_gtype2( const godot::PackedByteArray *bytes, const uint32_t start ) {
+static T decode_gtype2( const godot::PackedByteArray *bytes, const uint32_t start ) {
   assert(start + sizeof( T ) <= bytes->size() );
   const auto p = const_cast< uint8_t * >(bytes->ptr() + start);
   T t = *reinterpret_cast< T * >(p);
@@ -274,39 +274,22 @@ T decode_gtype2( const godot::PackedByteArray *bytes, const uint32_t start ) {
 }
 
 
-/// Every string read was paying for a PackedByteArray from slice() before
+/// slice() allocated a PackedByteArray on every string read, then
 /// get_string_from_utf8 decoded that copy. name(), location(), and packed
-/// string arrays all come through here, and the length prefix is already in
-/// the buffer, so the copy was pure overhead. A length past the buffer still
-/// stops at the buffer end, matching slice().
-[[nodiscard]] godot::String
-string_from_buffer(const godot::PackedByteArray *bytes, const int64_t start) {
-  if (bytes == nullptr) {
-    return {};
-  }
-  const int64_t size = bytes->size();
-  if (start < 0 || size < 4 || start > size - 4) {
-    return {};
-  }
-  const int64_t count = bytes->decode_u32(start);
-  const int64_t data = start + 4;
-  if (data >= size || count <= 0) {
-    return {};
-  }
-  int64_t end = data + count;
-  if (end < data || end > size) {
-    end = size;
-  }
-  const int64_t n = end - data;
-  if (n <= 0) {
-    return {};
-  }
-  return godot::String::utf8(reinterpret_cast<const char *>(bytes->ptr() + data), n);
+/// string arrays all come through here. The length prefix is already in the
+/// buffer, so this loads it and decodes those bytes in place.
+///
+/// The span is the caller's responsibility. verify_string is where a bad
+/// range is rejected. A check here would run again on every read.
+[[nodiscard]] static godot::String string_from_buffer(const godot::PackedByteArray *bytes, const int64_t start) {
+  const uint8_t *base = bytes->ptr() + start;
+  const uint32_t count = flatbuffers::ReadScalar<uint32_t>(base);
+  return godot::String::utf8(reinterpret_cast<const char *>(base + sizeof(uint32_t)), count);
 }
 
 
 template<typename C, typename E > [[nodiscard]]
-auto decode_packed_string( const godot::PackedByteArray *bytes, const int64_t start ) -> C {
+static auto decode_packed_string( const godot::PackedByteArray *bytes, const int64_t start ) -> C {
   const int num_elements = bytes->decode_u32( start );
   const int64_t data_start = start + sizeof(uint32_t);
 
@@ -322,7 +305,7 @@ auto decode_packed_string( const godot::PackedByteArray *bytes, const int64_t st
 }
 
 template<typename C, typename E> [[nodiscard]]
-auto decode_packed_struct( const godot::PackedByteArray *bytes, const int64_t start ) -> C {
+static auto decode_packed_struct( const godot::PackedByteArray *bytes, const int64_t start ) -> C {
   const uint32_t num_elements = bytes->decode_u32(start);
   const int64_t data_start = start + sizeof(uint32_t);
   const size_t element_size = sizeof(E);
@@ -337,7 +320,7 @@ auto decode_packed_struct( const godot::PackedByteArray *bytes, const int64_t st
 }
 
 
-godot::PackedByteArray
+static godot::PackedByteArray
 slice_packed_bytes(const godot::PackedByteArray *bytes, uint32_t start, const size_t element_size) {
   const uint32_t num_elements = bytes->decode_u32(start);
   enetheru::print("bytes_size: %d", bytes->size());
@@ -577,19 +560,16 @@ godot::Variant FlatBuffer::decode_variant(int64_t start, const godot::Variant::T
     case godot::Variant::BOOL:        return static_cast< bool >(fb_bytes->decode_s8(start));
     case godot::Variant::INT:         return fb_bytes->decode_s64(start);
     case godot::Variant::FLOAT:       return fb_bytes->decode_double(start);
-    case godot::Variant::STRING: {
+    case godot::Variant::STRING:
       return string_from_buffer(fb_bytes, start);
-    }
 #define GODOT_TD(INT, ENUM, TYPE) \
 case ENUM: return decode_gtype2<TYPE>(fb_bytes, start);
       GODOT_TYPES_STRUCT(GODOT_TD)
 #undef GODOT_TD
-    case godot::Variant::STRING_NAME: {
+    case godot::Variant::STRING_NAME:
       return godot::StringName(string_from_buffer(fb_bytes, start));
-    }
-    case godot::Variant::NODE_PATH: {
+    case godot::Variant::NODE_PATH:
       return godot::NodePath(string_from_buffer(fb_bytes, start));
-    }
     case godot::Variant::RID:        { ERR_FAIL_V_MSG(nullptr, "Unsupported type(RID) given as value."); }
     case godot::Variant::OBJECT:     { ERR_FAIL_V_MSG(nullptr, "Unsupported type(OBJECT) given as value."); }
     case godot::Variant::CALLABLE:   { ERR_FAIL_V_MSG(nullptr, "Unsupported type(CALLABLE) given as value."); }
