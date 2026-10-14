@@ -76,7 +76,7 @@ These copies and objects are extra. The bytes, or a reader that could be reused,
 A field read or a table write leaves the extension, runs a few lines of GDScript, and comes back for the rest of the same value. Dictionary encode and decode stay in one native call. String-key search, verify, and the debug dictionary are off the scenario timer.
 
 **Scalar table field**
-  `GenFieldScalar` and `GenFieldEnum` call `get_inline_field_start` in the extension, then `_fb_bytes.decode_*` on `PackedByteArray`. The extension already holds the buffer. In the scenario that is `rating`, `postfix`, `initialized`, and `fruit` in `project/bench/fb_scripts/bench_generated.gd`.
+  `get_bool`, `get_s8` through `get_u64`, `get_f32`, and `get_f64` walk the vtable and load the value in that call. `GenFieldScalar` and `GenFieldEnum` emit one of those. A missing field returns the schema default. `rating`, `postfix`, `initialized`, and `fruit` in `project/bench/fb_scripts/bench_generated.gd` use them. Other generated scripts still call `get_inline_field_start` and then `decode_*` until they are regenerated. The new methods are in the source. The loaded DLL does not have them until it is rebuilt.
 
 **String field**
   `GenFieldString` calls `get_offset_field_start`, returns to GDScript, then calls `decode_variant`. Both calls enter the extension. The GDScript between them checks for a missing field. `name()` and `location()` do this on the timed path.

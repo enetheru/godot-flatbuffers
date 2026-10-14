@@ -192,6 +192,19 @@ public:
   [[nodiscard]] int64_t get_inline_field_start(int64_t vtable_pos) const;
   [[nodiscard]] int64_t get_offset_field_start(int64_t vtable_pos) const;
 
+  // One call for an inline scalar. The vtable walk and the load stay here.
+  [[nodiscard]] bool get_bool(int64_t vtable_pos, bool fallback) const;
+  [[nodiscard]] int64_t get_s8(int64_t vtable_pos, int64_t fallback) const;
+  [[nodiscard]] int64_t get_u8(int64_t vtable_pos, int64_t fallback) const;
+  [[nodiscard]] int64_t get_s16(int64_t vtable_pos, int64_t fallback) const;
+  [[nodiscard]] int64_t get_u16(int64_t vtable_pos, int64_t fallback) const;
+  [[nodiscard]] int64_t get_s32(int64_t vtable_pos, int64_t fallback) const;
+  [[nodiscard]] int64_t get_u32(int64_t vtable_pos, int64_t fallback) const;
+  [[nodiscard]] int64_t get_s64(int64_t vtable_pos, int64_t fallback) const;
+  [[nodiscard]] int64_t get_u64(int64_t vtable_pos, int64_t fallback) const;
+  [[nodiscard]] double get_f32(int64_t vtable_pos, double fallback) const;
+  [[nodiscard]] double get_f64(int64_t vtable_pos, double fallback) const;
+
   // -1 when this table's key is less than key, 0 when equal, 1 when greater.
   // kind is a FlatBufferBuilder::KeyKind value. A missing scalar uses key_default.
   [[nodiscard]] int key_compare(int field, int kind, const godot::Variant &key,

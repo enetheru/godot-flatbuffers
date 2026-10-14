@@ -403,6 +403,17 @@ void FlatBuffer::_bind_methods() {
   ClassDB::bind_method( D_METHOD( "get_field_offset", "vtable_pos" ), &FlatBuffer::get_field_offset );
   ClassDB::bind_method( D_METHOD( "get_inline_field_start", "vtable_pos" ), &FlatBuffer::get_inline_field_start );
   ClassDB::bind_method( D_METHOD( "get_offset_field_start", "vtable_pos" ), &FlatBuffer::get_offset_field_start );
+  ClassDB::bind_method( D_METHOD( "get_bool", "vtable_pos", "fallback" ), &FlatBuffer::get_bool );
+  ClassDB::bind_method( D_METHOD( "get_s8", "vtable_pos", "fallback" ), &FlatBuffer::get_s8 );
+  ClassDB::bind_method( D_METHOD( "get_u8", "vtable_pos", "fallback" ), &FlatBuffer::get_u8 );
+  ClassDB::bind_method( D_METHOD( "get_s16", "vtable_pos", "fallback" ), &FlatBuffer::get_s16 );
+  ClassDB::bind_method( D_METHOD( "get_u16", "vtable_pos", "fallback" ), &FlatBuffer::get_u16 );
+  ClassDB::bind_method( D_METHOD( "get_s32", "vtable_pos", "fallback" ), &FlatBuffer::get_s32 );
+  ClassDB::bind_method( D_METHOD( "get_u32", "vtable_pos", "fallback" ), &FlatBuffer::get_u32 );
+  ClassDB::bind_method( D_METHOD( "get_s64", "vtable_pos", "fallback" ), &FlatBuffer::get_s64 );
+  ClassDB::bind_method( D_METHOD( "get_u64", "vtable_pos", "fallback" ), &FlatBuffer::get_u64 );
+  ClassDB::bind_method( D_METHOD( "get_f32", "vtable_pos", "fallback" ), &FlatBuffer::get_f32 );
+  ClassDB::bind_method( D_METHOD( "get_f64", "vtable_pos", "fallback" ), &FlatBuffer::get_f64 );
   ClassDB::bind_method(
       D_METHOD( "key_compare", "field", "kind", "key", "key_default" ),
       &FlatBuffer::key_compare );
@@ -706,6 +717,54 @@ int64_t FlatBuffer::get_field_offset(const int64_t vtable_pos) const {
     return 0;
   }
   return flatbuffers::ReadScalar<int16_t>(vtable + vtable_pos);
+}
+
+/// get_inline_field_start handed the offset back to GDScript, which then called
+/// PackedByteArray.decode_*. That second call is the whole cost of a scalar
+/// field. The bytes are already here, so the load happens in the same call.
+/// A zero start means the field is absent and the schema default goes back.
+template<typename T>
+T load_inline(const FlatBuffer *fb, const uint8_t *base, const int64_t vtable_pos, const T fallback) {
+  const int64_t start = fb->get_inline_field_start(vtable_pos);
+  if (start == 0) {
+    return fallback;
+  }
+  return flatbuffers::ReadScalar<T>(base + start);
+}
+
+bool FlatBuffer::get_bool(const int64_t vtable_pos, const bool fallback) const {
+  return load_inline<uint8_t>(this, fb_bytes->ptr(), vtable_pos, fallback ? 1 : 0) != 0;
+}
+
+int64_t FlatBuffer::get_s8(const int64_t vtable_pos, const int64_t fallback) const {
+  return load_inline<int8_t>(this, fb_bytes->ptr(), vtable_pos, static_cast<int8_t>(fallback));
+}
+int64_t FlatBuffer::get_u8(const int64_t vtable_pos, const int64_t fallback) const {
+  return load_inline<uint8_t>(this, fb_bytes->ptr(), vtable_pos, static_cast<uint8_t>(fallback));
+}
+int64_t FlatBuffer::get_s16(const int64_t vtable_pos, const int64_t fallback) const {
+  return load_inline<int16_t>(this, fb_bytes->ptr(), vtable_pos, static_cast<int16_t>(fallback));
+}
+int64_t FlatBuffer::get_u16(const int64_t vtable_pos, const int64_t fallback) const {
+  return load_inline<uint16_t>(this, fb_bytes->ptr(), vtable_pos, static_cast<uint16_t>(fallback));
+}
+int64_t FlatBuffer::get_s32(const int64_t vtable_pos, const int64_t fallback) const {
+  return load_inline<int32_t>(this, fb_bytes->ptr(), vtable_pos, static_cast<int32_t>(fallback));
+}
+int64_t FlatBuffer::get_u32(const int64_t vtable_pos, const int64_t fallback) const {
+  return load_inline<uint32_t>(this, fb_bytes->ptr(), vtable_pos, static_cast<uint32_t>(fallback));
+}
+int64_t FlatBuffer::get_s64(const int64_t vtable_pos, const int64_t fallback) const {
+  return load_inline<int64_t>(this, fb_bytes->ptr(), vtable_pos, fallback);
+}
+int64_t FlatBuffer::get_u64(const int64_t vtable_pos, const int64_t fallback) const {
+  return static_cast<int64_t>(load_inline<uint64_t>(this, fb_bytes->ptr(), vtable_pos, static_cast<uint64_t>(fallback)));
+}
+double FlatBuffer::get_f32(const int64_t vtable_pos, const double fallback) const {
+  return load_inline<float>(this, fb_bytes->ptr(), vtable_pos, static_cast<float>(fallback));
+}
+double FlatBuffer::get_f64(const int64_t vtable_pos, const double fallback) const {
+  return load_inline<double>(this, fb_bytes->ptr(), vtable_pos, fallback);
 }
 
 // returns offset from the start of the buffer to the inline field.
