@@ -41,7 +41,7 @@ Store, Load, Spawn, and Update touch every field from GDScript. Those are the te
   Dictionary Store encodes a value built before the timer. FlatBuffers Store, in `compare_work.gd` `encode_flat`, builds the buffer inside the timer: formulas, a new builder, 64 `create_variant` copies of the name, the struct objects above, and `finish`. There is no call that takes an existing dictionary and writes a FlatBuffer in one native walk. Until that exists, Store is a different piece of work from `var_to_bytes`.
 
 **Smaller costs**
-  Each table-field access re-reads the vtable in `FlatBuffer::get_field_offset`. That repeated work sits under the per-field calls. The copies and objects on top of it are under Needless allocation.
+  Each table-field access still walks the vtable in `FlatBuffer::get_field_offset`. The soffset, the vtable size, and the slot are loads from the buffer. They were `decode_s32` and `decode_s16`, and `get_offset_field_start` followed its uoffset with `decode_u32`. Those engine calls sat under every field. The walk itself remains, once per access. The copies and objects on top of it are under Needless allocation.
 
 ## Needless allocation
 

@@ -689,25 +689,23 @@ case ENUM: { ERR_FAIL_V_MSG(false, "Unsupported type(" #TYPE ") given as value."
 }
 
 
-// Returns the offset to the field at the vtable position given.
+/// decode_s32 and decode_s16 cross into the engine. Every table field pays
+/// that, and the vtable is already in this buffer, so the soffset, the
+/// vtable size, and the slot are plain loads. A position below 4, a slot
+/// past the vtable, or a zero slot means the field is absent.
 int64_t FlatBuffer::get_field_offset(const int64_t vtable_pos) const {
-  // vtable positions less than 4 are not valid.
   if( vtable_pos < 4 ) {
     return 0;
   }
 
-  const int64_t vtable_start = fb_start - fb_bytes->decode_s32(fb_start);
-  const int64_t vtable_size  = fb_bytes->decode_s16(vtable_start);
-  // int64_t table_size = bytes->decode_s16( vtable_pos + 2 ); Unnecessary
-
-  // The vtable_pos being outside the range is not an error,
-  // it simply means that the element is not present in the table.
+  const uint8_t *base = fb_bytes->ptr();
+  const int32_t soffset = flatbuffers::ReadScalar<int32_t>(base + fb_start);
+  const uint8_t *vtable = base + fb_start - soffset;
+  const int64_t vtable_size = flatbuffers::ReadScalar<int16_t>(vtable);
   if( vtable_pos >= vtable_size ) {
     return 0;
   }
-
-  // decoding zero means that the field is not present.
-  return fb_bytes->decode_s16(vtable_start + vtable_pos);
+  return flatbuffers::ReadScalar<int16_t>(vtable + vtable_pos);
 }
 
 // returns offset from the start of the buffer to the inline field.
@@ -725,7 +723,8 @@ int64_t FlatBuffer::get_offset_field_start(const int64_t vtable_pos) const {
   if( ! field_offset ) {
     return 0;
 }
-  return fb_start + field_offset + fb_bytes->decode_u32(fb_start + field_offset);
+  const uint8_t *field = fb_bytes->ptr() + fb_start + field_offset;
+  return fb_start + field_offset + flatbuffers::ReadScalar<uint32_t>(field);
 }
 
 
