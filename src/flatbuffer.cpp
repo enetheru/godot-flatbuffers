@@ -414,6 +414,7 @@ void FlatBuffer::_bind_methods() {
   ClassDB::bind_method( D_METHOD( "get_u64", "vtable_pos", "fallback" ), &FlatBuffer::get_u64 );
   ClassDB::bind_method( D_METHOD( "get_f32", "vtable_pos", "fallback" ), &FlatBuffer::get_f32 );
   ClassDB::bind_method( D_METHOD( "get_f64", "vtable_pos", "fallback" ), &FlatBuffer::get_f64 );
+  ClassDB::bind_method( D_METHOD( "get_string", "vtable_pos" ), &FlatBuffer::get_string );
   ClassDB::bind_method(
       D_METHOD( "key_compare", "field", "kind", "key", "key_default" ),
       &FlatBuffer::key_compare );
@@ -784,6 +785,17 @@ int64_t FlatBuffer::get_offset_field_start(const int64_t vtable_pos) const {
 }
   const uint8_t *field = fb_bytes->ptr() + fb_start + field_offset;
   return fb_start + field_offset + flatbuffers::ReadScalar<uint32_t>(field);
+}
+
+/// name() and location() called get_offset_field_start and then decode_variant.
+/// Both enter the extension, and the second call only reads bytes this object
+/// already holds. A zero offset means the field is absent.
+godot::String FlatBuffer::get_string(const int64_t vtable_pos) const {
+  const int64_t start = get_offset_field_start(vtable_pos);
+  if (start == 0) {
+    return {};
+  }
+  return string_from_buffer(fb_bytes, start);
 }
 
 
