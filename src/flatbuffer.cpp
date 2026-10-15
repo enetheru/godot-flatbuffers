@@ -416,6 +416,9 @@ void FlatBuffer::_bind_methods() {
   ClassDB::bind_method( D_METHOD( "get_f64", "vtable_pos", "fallback" ), &FlatBuffer::get_f64 );
   ClassDB::bind_method( D_METHOD( "get_string", "vtable_pos" ), &FlatBuffer::get_string );
   ClassDB::bind_method(
+      D_METHOD( "read_vector_table_into", "into", "vtable_pos", "index" ),
+      &FlatBuffer::read_vector_table_into );
+  ClassDB::bind_method(
       D_METHOD( "key_compare", "field", "kind", "key", "key_default" ),
       &FlatBuffer::key_compare );
 
@@ -813,6 +816,17 @@ godot::String FlatBuffer::get_string(const int64_t vtable_pos) const {
     return {};
   }
   return string_from_buffer(fb_bytes, start);
+}
+
+/// list_at did the vtable walk here, then two PackedByteArray.decode_u32 calls,
+/// then assign_buffer. The element slot is a uoffset relative to itself.
+/// The caller already knows the vector is present and the index is in range.
+void FlatBuffer::read_vector_table_into(
+    FlatBuffer *into, const int64_t vtable_pos, const int64_t index) const {
+  const int64_t vector_start = get_offset_field_start(vtable_pos);
+  const uint8_t *slot = fb_bytes->ptr() + vector_start + 4 + index * 4;
+  const auto relative = flatbuffers::ReadScalar<uint32_t>(slot);
+  into->assign_buffer(variant, static_cast<int64_t>(slot - fb_bytes->ptr()) + relative);
 }
 
 

@@ -208,6 +208,10 @@ public:
   // One call for a string field. A missing field is an empty string.
   [[nodiscard]] godot::String get_string(int64_t vtable_pos) const;
 
+  // list_at walked the vtable, then returned to GDScript for the length and
+  // the element offset. The caller has a present vector and an index inside it.
+  void read_vector_table_into(FlatBuffer *into, int64_t vtable_pos, int64_t index) const;
+
   // -1 when this table's key is less than key, 0 when equal, 1 when greater.
   // kind is a FlatBufferBuilder::KeyKind value. A missing scalar uses key_default.
   [[nodiscard]] int key_compare(int field, int kind, const godot::Variant &key,

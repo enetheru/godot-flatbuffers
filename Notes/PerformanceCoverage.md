@@ -2,7 +2,7 @@
 
 Coverage here means a performance question has a named benchmark, a timer window written down, and a row in `project/bench/results/history.tres` that can be compared with the other codecs inside one Godot binary. A row is not a baseline. Whether FlatBuffers beats Dictionary is a separate claim, written in `Notes/BeatingDictionary.md`.
 
-The suites live in `project/bench`. `run.ps1` with no arguments runs suite, prealloc, array-size, and scenario on `editor`, then `template_debug`, then `template_release`. `-Suite` selects one. The bench list opens on Scenarios.
+The suites live in `project/bench`. `run.ps1` with no arguments runs suite, prealloc, array-size, scenario, and reuse on `editor`, then `template_debug`, then `template_release`. `-Suite` selects one. The bench list opens on Scenarios.
 
 ## Layout
 
@@ -16,6 +16,9 @@ Three runners register benchmarks. The scenario runner is the comparison. The ot
 
 **Ranges**
   `runner_prealloc.gd` and `runner_array_size.gd` register only `BM_Flatbuffers_Encode` and pass `kPreAllocateSize` from a benchmark range. They do not register Objects or Dictionary, and they do not run the scenario operations.
+
+**Reuse**
+  `runner_reuse.gd` registers `BM_Flatbuffers_LoadReuse`. Same 64-record Load checksum as the scenario, with `list_at(..., into)` and one reused `FBBar` and `FBFoo`. The other four operations are not registered.
 
 ## Methods
 
@@ -71,7 +74,7 @@ Each item is one missing measurement. The scenario payload stays the comparison 
 
 ### A measurement that separates the current costs
 
-- [ ] The five scenario operations with `list_at(..., into)` and reused struct readers, so allocation cost is separate from per-field calls.
+- [ ] The five scenario operations with `list_at(..., into)` and reused struct readers, so allocation cost is separate from per-field calls. Load is `BM_Flatbuffers_LoadReuse` in the `reuse` suite (`project/bench/BENCH.md`, Load with reused readers). Store, Spawn, Update, and Peek still allocate a reader per call.
 - [ ] The same five operations around a native walk that fills a dictionary in one call.
 - [ ] Scenario Store with `kPreAllocateSize` set to the finished buffer size, so growth from `FlatBufferBuilder.create(0)` is separate from construction.
 - [ ] The fourth method in `BENCH.md`: the hot loop inside the extension, compared with the generated GDScript path on the same payload.
