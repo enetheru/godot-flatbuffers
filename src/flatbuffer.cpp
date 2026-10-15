@@ -419,6 +419,9 @@ void FlatBuffer::_bind_methods() {
       D_METHOD( "read_vector_table_into", "into", "vtable_pos", "index" ),
       &FlatBuffer::read_vector_table_into );
   ClassDB::bind_method(
+      D_METHOD( "read_inline_struct_into", "into", "vtable_pos" ),
+      &FlatBuffer::read_inline_struct_into );
+  ClassDB::bind_method(
       D_METHOD( "key_compare", "field", "kind", "key", "key_default" ),
       &FlatBuffer::key_compare );
 
@@ -827,6 +830,19 @@ void FlatBuffer::read_vector_table_into(
   const uint8_t *slot = fb_bytes->ptr() + vector_start + 4 + index * 4;
   const auto relative = flatbuffers::ReadScalar<uint32_t>(slot);
   into->assign_buffer(variant, static_cast<int64_t>(slot - fb_bytes->ptr()) + relative);
+}
+
+/// sibling() did this vtable walk in GDScript, then constructed a reader.
+/// The caller passes the reader it wants to keep. A zero slot means the field
+/// is absent, so into stays on whatever span it already had.
+bool FlatBuffer::read_inline_struct_into(
+    FlatBuffer *into, const int64_t vtable_pos) const {
+  const int64_t start = get_inline_field_start(vtable_pos);
+  if (start == 0) {
+    return false;
+  }
+  into->assign_buffer(variant, start);
+  return true;
 }
 
 

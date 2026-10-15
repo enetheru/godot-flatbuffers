@@ -212,6 +212,11 @@ public:
   // the element offset. The caller has a present vector and an index inside it.
   void read_vector_table_into(FlatBuffer *into, int64_t vtable_pos, int64_t index) const;
 
+  // sibling() walked the vtable in GDScript and then constructed a reader.
+  // The caller passes the reader it wants to keep. A zero slot means the field
+  // is absent, and into is left where it was.
+  bool read_inline_struct_into(FlatBuffer *into, int64_t vtable_pos) const;
+
   // -1 when this table's key is less than key, 0 when equal, 1 when greater.
   // kind is a FlatBufferBuilder::KeyKind value. A missing scalar uses key_default.
   [[nodiscard]] int key_compare(int field, int kind, const godot::Variant &key,
