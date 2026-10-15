@@ -486,34 +486,33 @@ FlatBufferBuilder::CreateVectorOfTable(const godot::Array &array, const godot::C
 }
 
 
-// takes an array and a callable to pack and generate the offsets to the unions.
+// Takes an array and a callable that packs each union into an offset and a type.
+// An empty array is still two vectors of length 0. Offset 0 would leave the
+// fields absent, which is a different buffer than a present empty vector.
 godot::PackedInt32Array
 FlatBufferBuilder::CreateVectorOfUnion(const godot::Array &array, const godot::Callable &creator_func) const {
   ERR_FAIL_COND_V_MSG(creator_func.get_argument_count() < 2, {},
       godot::vformat( "The Callable takes %s arguments, it must take at least two.",
           creator_func.get_argument_count()));
 
-  if( array.size()  == 0 ) return {0,0};
-
-
   std::vector< uint32_t > value_offsets(array.size());
   std::vector< uint8_t > type_offsets(array.size());
   // FIXME, union value type may be different than uint8_t
 
-  {
+  if (array.size() != 0) {
     auto check_variant = creator_func.call(this, array[0]);
     ERR_FAIL_COND_V_MSG(check_variant.get_type() != godot::Variant::Type::PACKED_INT32_ARRAY,
       {}, godot::vformat( "The callable returned (%s) instead of a PackedInt32Array",
         godot::Variant::get_type_name(check_variant.get_type()) ));
     const godot::PackedInt32Array *check_array = godot::VariantInternal::get_int32_array(&check_variant);
     ERR_FAIL_COND_V_MSG(check_array->size() != 2, {}, "callable result must contain exactly two elements( offset, type ) ");
-  }
 
-  for( int i = 0; i < array.size(); ++i ) {
-    auto temp = creator_func.call(this, array[ i ]);
-    godot::PackedInt32Array *func_ret = godot::VariantInternal::get_int32_array(&temp);
-    value_offsets[i] = (*func_ret)[0];
-    type_offsets[i] = (*func_ret)[1];
+    for( int i = 0; i < array.size(); ++i ) {
+      auto temp = creator_func.call(this, array[ i ]);
+      godot::PackedInt32Array *func_ret = godot::VariantInternal::get_int32_array(&temp);
+      value_offsets[i] = (*func_ret)[0];
+      type_offsets[i] = (*func_ret)[1];
+    }
   }
 
   // add the vector of table offsets to the builder and return its offset.
