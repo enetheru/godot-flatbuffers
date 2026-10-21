@@ -151,7 +151,13 @@ endif ()
 # ╘════════════════════════════════════════════════════════════════════════════╛
 
 set( GODOTCPP_GIT_URL "https://github.com/godotengine/godot-cpp.git" CACHE STRING "Location of the godot-cpp git repository" )
-set( GODOTCPP_GIT_TAG "godot-4.5-stable" CACHE STRING "git hash, branch or tag to fetch" )
+# godot-4.5-stable. A commit, so the tag moving does not move this build.
+set( GODOTCPP_GIT_TAG "e83fd0904c13356ed1d4c3d09f8bb9132bdc6b77" CACHE STRING
+        "godot-cpp commit to fetch. Default is the godot-4.5-stable tag." )
+if( GODOTCPP_GIT_TAG STREQUAL "godot-4.5-stable" )
+    set( GODOTCPP_GIT_TAG "e83fd0904c13356ed1d4c3d09f8bb9132bdc6b77" CACHE STRING
+            "godot-cpp commit to fetch. Default is the godot-4.5-stable tag." FORCE )
+endif()
 
 set( GODOTCPP_TARGET "editor" CACHE STRING "")
 set( GODOTCPP_BUILD_PROFILE "${CMAKE_CURRENT_SOURCE_DIR}/src/godot-cpp.build_profile.json")
@@ -160,6 +166,10 @@ set( GODOTCPP_USE_HOT_RELOAD ON)
 #if( GODOT_GIT_TAG STREQUAL "" )
 #    include( godot-cpp-git-tag )
 #endif()
+
+# Later configures must not contact the remote. A new commit has to already
+# be in this clone, or lib/godot-cpp has to be removed so the clone runs again.
+set( FETCHCONTENT_UPDATES_DISCONNECTED_GODOT-CPP ON )
 
 FetchContent_Declare( godot-cpp
         GIT_REPOSITORY  "${GODOTCPP_GIT_URL}"
