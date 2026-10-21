@@ -60,6 +60,7 @@ export_presets.cfg
 
 # Our generated files
 src/entry_point.cpp
+/install/
 
 # external library sources
 lib/*/

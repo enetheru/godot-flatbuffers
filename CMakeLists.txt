@@ -29,18 +29,24 @@ endif()
 # This is a fallback to allow the user to still set it via -DGODOT_EXECUTABLE
 set( GODOT_EXECUTABLE "${GODOT_EXECUTABLE}" CACHE FILEPATH "Path to the godot executable you are targeting" )
 
-set( GODOT_PROJECT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/project" CACHE PATH
-        "Path to a demo project that can test the godot-extension" )
+# Empty: cmake --install writes <source>/install.
+# A Godot project (directory with project.godot): the addon goes under addons/.
+set( GODOT_PROJECT_PATH "" CACHE PATH
+        "Godot project to install the addon into. Empty installs under <source>/install." )
 
 set( AUTHOR_TAG "Enetheru")
 string( TOLOWER "${AUTHOR_TAG}" AUTHOR_TAG_LOWER )
 
 ## Target options
 set( GDE_NAME "flatbuffers" )
-
-set( GODOT_PROJECT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/project" )
 set( GDE_INSTALL_NAME "${AUTHOR_TAG_LOWER}.${GDE_NAME}-extension" )
-set( GDE_INSTALL_PATH "${GODOT_PROJECT_PATH}/addons/${GDE_INSTALL_NAME}")
+
+# Doctool still has a demo tree. Install does not use it unless it is the path above.
+if( GODOT_PROJECT_PATH )
+    set( GODOT_DEMO_PATH "${GODOT_PROJECT_PATH}" )
+else()
+    set( GODOT_DEMO_PATH "${CMAKE_CURRENT_SOURCE_DIR}/project" )
+endif()
 
 #[==============================[ Dependencies ]==============================]
 include(FetchContent)
@@ -49,6 +55,7 @@ include(CMakePrintHelpers)
 include(cmake/findGodotExecutable.cmake)
 include(cmake/godot-dump.cmake)
 include(cmake/godot-docs.cmake)
+include(cmake/gdextension_install.cmake)
 
 find_package(Python3 3.4 REQUIRED) # pathlib should be present
 
@@ -67,6 +74,34 @@ endif()
 # │ ██      ███████ ██   ██    ██    ██████   ██████  ██      ██      ███████  │
 # ╘════════════════════════════════════════════════════════════════════════════╛
 
+# FlatBuffers calls project() before this file does, and that claims
+# CMAKE_INSTALL_PREFIX (Program Files/FlatBuffers). Set it first.
+if( GODOT_PROJECT_PATH )
+    set( _gdfb_install_root "${GODOT_PROJECT_PATH}" )
+else()
+    set( _gdfb_install_root "${CMAKE_CURRENT_SOURCE_DIR}/install" )
+endif()
+set( _gdfb_cached_prefix "" )
+if( DEFINED CACHE{CMAKE_INSTALL_PREFIX} )
+    set( _gdfb_cached_prefix "$CACHE{CMAKE_INSTALL_PREFIX}" )
+endif()
+set( _gdfb_prefix_applied "" )
+if( DEFINED CACHE{GDFB_INSTALL_ROOT_APPLIED} )
+    set( _gdfb_prefix_applied "$CACHE{GDFB_INSTALL_ROOT_APPLIED}" )
+endif()
+set( _gdfb_prefix_stolen FALSE )
+if( _gdfb_cached_prefix MATCHES "/Program Files( \\(x86\\))?/(FlatBuffers|godot-cpp|stduuid)$" )
+    set( _gdfb_prefix_stolen TRUE )
+endif()
+if( NOT _gdfb_cached_prefix OR _gdfb_prefix_stolen
+        OR _gdfb_cached_prefix STREQUAL _gdfb_prefix_applied )
+    set( CMAKE_INSTALL_PREFIX "${_gdfb_install_root}" CACHE PATH
+            "Install root. A Godot project (has project.godot) receives addons/${GDE_INSTALL_NAME}."
+            FORCE )
+    set( GDFB_INSTALL_ROOT_APPLIED "${_gdfb_install_root}" CACHE INTERNAL
+            "Install root last written by this project." FORCE )
+endif()
+
 set( FLATBUFFERS_GIT_URL "https://github.com/enetheru/flatbuffers.git"
         CACHE STRING "Location of the godot-cpp git repository" )
 set( FLATBUFFERS_GIT_TAG "gdscript"
@@ -82,7 +117,6 @@ set( FLATBUFFERS_BUILD_FLATC       YES )
 set( FLATBUFFERS_CPP_STD            17 )
 set( FLATBUFFERS_BUILD_CPP17       YES )
 
-
 FetchContent_Declare( FlatBuffers
         GIT_REPOSITORY  "${FLATBUFFERS_GIT_URL}"
         GIT_TAG         "${FLATBUFFERS_GIT_TAG}"
@@ -97,7 +131,7 @@ set_target_properties(
         PROPERTIES
         EXCLUDE_FROM_ALL OFF
         OUTPUT_NAME "flatc$<$<CONFIG:Debug,RelWithDebInfo>:.$<LOWER_CASE:$<CONFIG>>>"
-        RUNTIME_OUTPUT_DIRECTORY "$<1:${GDE_INSTALL_PATH}/bin>"
+        RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/bin>"
 )
 
 # If we dont want to build the extension then we can stop here
@@ -189,8 +223,12 @@ target_compile_definitions( "godot-flatbuffers"
 set_target_properties( "godot-flatbuffers"
         PROPERTIES
         FOLDER "godot-flatbuffers"
-        #The generator expression here prevents a subdir from being created.
-        RUNTIME_OUTPUT_DIRECTORY "$<1:${GDE_INSTALL_PATH}/bin>"
+        # The build stays in the build tree. cmake --install copies it.
+        # $<1:> keeps multi-config generators from adding a per-config directory.
+        RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/bin>"
+        LIBRARY_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/bin>"
         OUTPUT_NAME "${GDE_NAME}.${GODOTCPP_SUFFIX}$<$<CONFIG:Debug,RelWithDebInfo>:.$<LOWER_CASE:$<CONFIG>>>"
         PREFIX ""
 )
+
+gdextension_install()
