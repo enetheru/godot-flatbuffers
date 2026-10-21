@@ -196,6 +196,11 @@ set_target_properties(
         RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/bin>"
 )
 
+# MARK: extension
+# ╒════════════════════════════════════════════════════════════════════════════╕
+# │ Extension                                                                  │
+# ╘════════════════════════════════════════════════════════════════════════════╛
+
 # If we dont want to build the extension then we can stop here
 # This does break any other targets for this configuration
 # so currently only useful for building flatc.
