@@ -62,8 +62,8 @@ export_presets.cfg
 src/entry_point.cpp
 /install/
 
-# external library sources
-lib/*/
+# FetchContent checkout. The flatbuffers fork is a submodule.
+lib/godot-cpp/
 
 # Obsidian annoyances
 .obsidian/workspace.json

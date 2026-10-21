@@ -65,17 +65,8 @@ if( NOT EXISTS "${GIT_EXECUTABLE}" )
     message( FATAL_ERROR "Unable to find Git at: '${GIT_EXECUTABLE}'")
 endif()
 
-# MARK: flatbuffs
-# ╒════════════════════════════════════════════════════════════════════════════╕
-# │ ███████ ██       █████  ████████ ██████  ██    ██ ███████ ███████ ███████  │
-# │ ██      ██      ██   ██    ██    ██   ██ ██    ██ ██      ██      ██       │
-# │ █████   ██      ███████    ██    ██████  ██    ██ █████   █████   ███████  │
-# │ ██      ██      ██   ██    ██    ██   ██ ██    ██ ██      ██           ██  │
-# │ ██      ███████ ██   ██    ██    ██████   ██████  ██      ██      ███████  │
-# ╘════════════════════════════════════════════════════════════════════════════╛
-
-# FlatBuffers calls project() before this file does, and that claims
-# CMAKE_INSTALL_PREFIX (Program Files/FlatBuffers). Set it first.
+# godot-cpp calls project() before this file does, and that claims
+# CMAKE_INSTALL_PREFIX (Program Files/<project name>). Set it first.
 if( GODOT_PROJECT_PATH )
     set( _gdfb_install_root "${GODOT_PROJECT_PATH}" )
 else()
@@ -101,45 +92,6 @@ if( NOT _gdfb_cached_prefix OR _gdfb_prefix_stolen
     set( GDFB_INSTALL_ROOT_APPLIED "${_gdfb_install_root}" CACHE INTERNAL
             "Install root last written by this project." FORCE )
 endif()
-
-set( FLATBUFFERS_GIT_URL "https://github.com/enetheru/flatbuffers.git"
-        CACHE STRING "Location of the godot-cpp git repository" )
-set( FLATBUFFERS_GIT_TAG "gdscript"
-        CACHE STRING "git hash, branch or tag to fetch" )
-
-# Configuration Options
-set( FLATBUFFERS_BUILD_FLATHASH     NO )
-set( FLATBUFFERS_BUILD_SHAREDLIB    NO )
-set( FLATBUFFERS_BUILD_TESTS        NO )
-set( FLATBUFFERS_INSTALL            NO )
-set( FLATBUFFERS_STATIC_FLATC      YES )
-set( FLATBUFFERS_BUILD_FLATC       YES )
-set( FLATBUFFERS_CPP_STD            17 )
-set( FLATBUFFERS_BUILD_CPP17       YES )
-
-FetchContent_Declare( FlatBuffers
-        GIT_REPOSITORY  "${FLATBUFFERS_GIT_URL}"
-        GIT_TAG         "${FLATBUFFERS_GIT_TAG}"
-        SOURCE_DIR      "${CMAKE_CURRENT_SOURCE_DIR}/lib/flatbuffers"
-        SYSTEM
-        EXCLUDE_FROM_ALL
-)
-FetchContent_MakeAvailable( FlatBuffers )
-
-set_target_properties(
-        flatc
-        PROPERTIES
-        EXCLUDE_FROM_ALL OFF
-        OUTPUT_NAME "flatc$<$<CONFIG:Debug,RelWithDebInfo>:.$<LOWER_CASE:$<CONFIG>>>"
-        RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/bin>"
-)
-
-# If we dont want to build the extension then we can stop here
-# This does break any other targets for this configuration
-# so currently only useful for building flatc.
-if( NOT BUILD_EXTENSION )
-    return()
-endif ()
 
 # MARK: godot-cpp
 # ╒════════════════════════════════════════════════════════════════════════════╕
@@ -178,13 +130,17 @@ FetchContent_Declare( godot-cpp
         SYSTEM
         EXCLUDE_FROM_ALL
 )
-FetchContent_MakeAvailable( godot-cpp )
+if( BUILD_EXTENSION )
+    FetchContent_MakeAvailable( godot-cpp )
+endif()
 
 ### Get useful properties of the library
-get_target_property( GODOTCPP_SUFFIX godot-cpp GODOTCPP_SUFFIX_GENEX )
-get_target_property( GODOTCPP_PLATFORM godot-cpp GODOTCPP_PLATFORM )
-get_target_property( GODOTCPP_TARGET godot-cpp GODOTCPP_TARGET )
-get_target_property( GODOTCPP_ARCH godot-cpp GODOTCPP_ARCH )
+if( BUILD_EXTENSION )
+    get_target_property( GODOTCPP_SUFFIX godot-cpp GODOTCPP_SUFFIX_GENEX )
+    get_target_property( GODOTCPP_PLATFORM godot-cpp GODOTCPP_PLATFORM )
+    get_target_property( GODOTCPP_TARGET godot-cpp GODOTCPP_TARGET )
+    get_target_property( GODOTCPP_ARCH godot-cpp GODOTCPP_ARCH )
+endif()
 
 # MARK: project
 # ╒════════════════════════════════════════════════════════════════════════════╕
@@ -204,6 +160,48 @@ project( godot-flatbuffers-extension
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# MARK: flatbuffs
+# ╒════════════════════════════════════════════════════════════════════════════╕
+# │ ███████ ██       █████  ████████ ██████  ██    ██ ███████ ███████ ███████  │
+# │ ██      ██      ██   ██    ██    ██   ██ ██    ██ ██      ██      ██       │
+# │ █████   ██      ███████    ██    ██████  ██    ██ █████   █████   ███████  │
+# │ ██      ██      ██   ██    ██    ██   ██ ██    ██ ██      ██           ██  │
+# │ ██      ███████ ██   ██    ██    ██████   ██████  ██      ██      ███████  │
+# ╘════════════════════════════════════════════════════════════════════════════╛
+
+# Submodule, not FetchContent. The parent records the commit. CMake does not fetch it.
+set( _flatbuffers_dir "${CMAKE_CURRENT_SOURCE_DIR}/lib/flatbuffers" )
+if( NOT EXISTS "${_flatbuffers_dir}/CMakeLists.txt" )
+    message( FATAL_ERROR
+            "lib/flatbuffers is not checked out. From the extension repo: git submodule update --init lib/flatbuffers" )
+endif()
+
+set( FLATBUFFERS_BUILD_FLATHASH     NO )
+set( FLATBUFFERS_BUILD_SHAREDLIB    NO )
+set( FLATBUFFERS_BUILD_TESTS        NO )
+set( FLATBUFFERS_INSTALL            NO )
+set( FLATBUFFERS_STATIC_FLATC      YES )
+set( FLATBUFFERS_BUILD_FLATC       YES )
+set( FLATBUFFERS_CPP_STD            17 )
+set( FLATBUFFERS_BUILD_CPP17       YES )
+
+add_subdirectory( lib/flatbuffers EXCLUDE_FROM_ALL SYSTEM )
+
+set_target_properties(
+        flatc
+        PROPERTIES
+        EXCLUDE_FROM_ALL OFF
+        OUTPUT_NAME "flatc$<$<CONFIG:Debug,RelWithDebInfo>:.$<LOWER_CASE:$<CONFIG>>>"
+        RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/bin>"
+)
+
+# If we dont want to build the extension then we can stop here
+# This does break any other targets for this configuration
+# so currently only useful for building flatc.
+if( NOT BUILD_EXTENSION )
+    return()
+endif ()
 
 add_subdirectory( src )
 
